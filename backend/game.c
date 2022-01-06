@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include "game.h"
 
 //   C O N S T A N T E S
@@ -79,10 +80,19 @@ uint8_t y_pos;
 uint8_t block_id; // id del bloque
 uint8_t rotation; // 0 - 3 (orientacion de la pieza girando en sentido antihorario)
 
+enum {LEFT, RIGHT, R_LEFT, R_RIGHT, DOWN};
+uint8_t last_movement;
+bool bad_movement = false;
+
+//PRUEBA DE OFFSETS
+uint8_t d_left, d_right;
+
+
 // P R O T O T I P O S    P R I V A D O S
 
 void render(void);
 char block(uint8_t x, uint8_t y);
+int can_write(uint8_t x, uint8_t y); // devuelve 1 si se puede escribir
 
 // F U N C I O N E S
 
@@ -127,41 +137,118 @@ char block(uint8_t x, uint8_t y){
     return blocks[block_id].data[x+y*blocks[block_id].size];
 }
 
+// chequea la validez de las coordenadas para la matriz general
+int can_write(uint8_t y, uint8_t x){
+    if(x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT){
+        return 1;
+    }else{
+        switch (last_movement) {
+            case RIGHT:
+                move_block(0); // La movemos a la izquierda
+                break;
+
+            case LEFT:
+                move_block(1); // La movemos a la derecha
+                break;
+
+            case R_RIGHT:
+                rotate_block(0);
+                break;
+
+            case R_LEFT:
+                rotate_block(1);
+                break;
+        }
+
+        printf("Error! se intento escribir matriz[%u][%u]\n", y, x);
+        return 0;
+    }
+}
+
 // Actualiza la matriz con los datos de coordenadas del bloque
 void render(void){
     clear_matrix();
     uint8_t x,y;
     uint8_t size = blocks[block_id].size;
-//Analiza el valor de rotacion y gira la matriz del tetrino para luego incluirla en la matriz general
+//Analiza el valor de rotacion y gira la matriz del bloque en sentido horario para luego incluirla en la matriz general
     switch (rotation)
     {
-        case 0: //Sin rotacion
-            for(y=0; y<blocks[block_id].size; y++){
-                for(x=0; x<blocks[block_id].size; x++){
-                    matrix[y_pos+y-size/2][x_pos+x-size/2] = block(x,y);
+        case 0: // Sin rotacion
+            for(y=0; y<blocks[block_id].size && !bad_movement; y++){
+                for(x=0; x<blocks[block_id].size && !bad_movement; x++){
+                    int i,j; // coordenadas de la matriz general
+                    i = y_pos+y-size/2;
+                    j = x_pos+x-size/2;
+
+                    char val = block(x,y);
+                    if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
+                    {
+                        if (can_write(i,j)){
+                            matrix[i][j] = val;
+                        }
+                        else
+                            bad_movement = true;
+                    }
+
                 }
             }
             break;
-        case 1: //Rotacion de 90°
-            for(y=0; y<blocks[block_id].size; y++){
-                for(x=0; x<blocks[block_id].size; x++){
-                    matrix[y_pos+y-size/2][x_pos+x-size/2] = block(y, size-1-x);
+        case 1: // Rotacion de 90°
+            for(y=0; y<blocks[block_id].size && !bad_movement; y++){
+                for(x=0; x<blocks[block_id].size && !bad_movement; x++){
+                    int i,j; // coordenadas de la matriz general
+                    i = y_pos+y-size/2;
+                    j = x_pos+x-size/2;
+
+                    char val = block(y, size-1-x);
+                    if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
+                    {
+                        if (can_write(i,j)){
+                            matrix[i][j] = val;
+                        }
+                        else
+                            bad_movement = true;
+                    }
                 }
             }
             break;
 
-        case 2: //Rotacion de 180°
-            for(y=0; y<blocks[block_id].size; y++){
-                for(x=0; x<blocks[block_id].size; x++){
-                    matrix[y_pos+y-size/2][x_pos+x-size/2] = block(size - x -1 , size -y-1);
+        case 2: // Rotacion de 180°
+            for(y=0; y<blocks[block_id].size && !bad_movement; y++){
+                for(x=0; x<blocks[block_id].size && !bad_movement; x++){
+                    int i,j; // coordenadas de la matriz general
+                    i = y_pos+y-size/2;
+                    j = x_pos+x-size/2;
+
+                    char val = block(size - x -1 , size -y-1);
+                    if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
+                    {
+                        if (can_write(i,j)){
+                            matrix[i][j] = val;
+                        }
+                        else
+                            bad_movement = true;
+                    }
                 }
             }
             break;
 
-        case 3: //Rotacion de 270°
-            for(y=0; y<blocks[block_id].size; y++){
-                for(x=0; x<blocks[block_id].size; x++){
-                    matrix[y_pos+y-size/2][x_pos+x-size/2] = block(size-y-1, x);
+        case 3: // Rotacion de 270°
+            for(y=0; y<blocks[block_id].size && !bad_movement; y++){
+                for(x=0; x<blocks[block_id].size && !bad_movement; x++){
+                    int i,j; // coordenadas de la matriz general
+                    i = y_pos+y-size/2;
+                    j = x_pos+x-size/2;
+
+                    char val = block(size-y-1, x);
+                    if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
+                    {
+                        if (can_write(i,j)){
+                            matrix[i][j] = val;
+                        }
+                        else
+                            bad_movement = true;
+                    }
                 }
             }
             break;
@@ -169,6 +256,11 @@ void render(void){
             printf("Error rotacion incorrecta\n");
             break;
 
+    }
+
+    if(bad_movement){
+        bad_movement = false;
+        render(); // Si dio mal, corregimos la posicion
     }
 }
 
@@ -180,20 +272,28 @@ void insert_block(uint8_t id){
     y_pos = blocks[id].size/2;
     rotation = 0; // 0 es la orientacion por defecto
     block_id = id;
+
+    d_left = x_pos- WIDTH/2;
+    d_right = x_pos - WIDTH/2;
 }
 
 
 void descend_block (void){
     printf("descend\n");
     y_pos++;
+    last_movement = DOWN;
 }
 
 void move_block (int direction){
     printf("move %u\n", direction);
-    if (direction) {
+    if (direction)  //Mueve a Derecha
+    {
         x_pos++;
-    }else{
-        x_pos--; // TODO: OJO que se va de la matriz!!!
+        last_movement = RIGHT;
+    }else //Mueve a izquierda
+    {
+        x_pos--;
+        last_movement = LEFT;
     }
 }
 // Maquina de estado para el control del sentido de rotacion de la pieza
@@ -208,6 +308,7 @@ void rotate_block(int direction){
         }
         else
             rotation++;
+        last_movement = R_RIGHT;
     }
     else    //Sentido anti-horario
     {
@@ -216,5 +317,6 @@ void rotate_block(int direction){
         }
         else
             rotation--;
+        last_movement = R_LEFT;
     }
 }
