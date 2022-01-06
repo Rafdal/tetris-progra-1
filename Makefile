@@ -1,8 +1,8 @@
 back: main_back.o game.o easy_timer.o teclado_trucho.o
 	gcc -Wall main_back.o game.o easy_timer.o teclado_trucho.o -o back `pkg-config --libs allegro-5`
 
-front: main_front.o
-	gcc -Wall main_front.o -o front `pkg-config --libs allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5`
+front: main_front.o game_screen.o
+	gcc -Wall main_front.o game_screen.o -o front `pkg-config --libs allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5`
 
 
 main_front.o: main_front.c
@@ -11,6 +11,9 @@ main_front.o: main_front.c
 main_back.o: main_back.c game.o easy_timer.o
 	gcc -c -Wall main_back.c
 
+
+game_screen.o: ./frontend/game_screen.h ./frontend/game_screen.c
+	gcc -c -Wall ./frontend/game_screen.c `pkg-config --cflags allegro-5`
 
 game.o: ./backend/game.c ./backend/game.h
 	gcc -c -Wall ./backend/game.c

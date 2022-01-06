@@ -7,7 +7,7 @@
 //   C O N S T A N T E S
 
 const char BLOCK_0[] = { // Bloque nulo
-        0
+    0
 };
 
 const char BLOCK_1[] = {
@@ -78,8 +78,8 @@ BLOCK_t blocks[] = {
 // V A R I A B L E S
 
 char matrix[HEIGHT][WIDTH]; // Privada
-char game_matrix[HEIGHT][WIDTH]; // Publica
-block_data_t block_data;
+// char game_matrix[HEIGHT][WIDTH]; // Publica
+// block_data_t block_data;
 
 // datos del bloque (coordenadas x,y, rotacion, etc del centro del bloque)
 
