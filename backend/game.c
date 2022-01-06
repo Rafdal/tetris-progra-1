@@ -78,7 +78,8 @@ BLOCK_t blocks[] = {
 // V A R I A B L E S
 
 char matrix[HEIGHT][WIDTH]; // Privada
-//char game_matrix[HEIGHT][WIDTH]; // Publica
+char game_matrix[HEIGHT][WIDTH]; // Publica
+block_data_t block_data;
 
 // datos del bloque (coordenadas x,y, rotacion, etc del centro del bloque)
 
@@ -176,13 +177,15 @@ uint8_t next_block (void)
 // Chequea la validez de las coordenadas para la matriz general. Si da error, corrige las coordenadas y devuelve cero
 int can_write(uint8_t y, uint8_t x){
     if(x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT){
-        if(matrix_game[y][x] > 0){
+        if(game_matrix[y][x] > 0){
             printf("Colision?\n");
                 int i,j;
-            for(i=0; i<HEIGHT; i++){
-                for(j=0; j<WIDTH; j++){
-                    if(matrix[i][j] > 0)    //Si hubo colision y existe algun valor en la matriz de juego, escribe esa pieza en la matriz estatica
+            for(i=0; i<HEIGHT; i++) {
+                for (j = 0; j < WIDTH; j++) {
+                    if (matrix[i][j] > 0)    //Si hubo colision y existe algun valor en la matriz de juego, escribe esa pieza en la matriz estatica
                         game_matrix[i][j] = matrix[i][j];
+                }
+            }
         }
         return 1;
     }else{

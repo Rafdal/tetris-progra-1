@@ -16,6 +16,7 @@ interval_t set_interval(void (*callback)(void), uint64_t time){
     interval_t interval;
     interval.callback = callback;
     interval.time = time;
+    return interval;
 }
 
 void run_interval(interval_t* interval){

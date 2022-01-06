@@ -6,14 +6,16 @@
 #define HEIGHT  16
 #define WIDTH   10
 
-char game_matrix[HEIGHT][WIDTH];
+extern char game_matrix[HEIGHT][WIDTH];
 
-struct block_data {
+typedef struct {
     uint8_t x;
     uint8_t y;
     uint8_t id;
     uint8_t rot;
-}block_data;
+}block_data_t;
+
+extern block_data_t block_data;
 
 // Funciones del juego
 void init_game(void); // inicia el juego en blanco
