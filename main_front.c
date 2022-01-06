@@ -37,7 +37,7 @@ int main(void) {
         al_uninstall_system();
         al_shutdown_image_addon();
         return -1;
-    } else if (!(display_background = al_load_bitmap("background.png"))) {
+    } else if (!(display_background = al_load_bitmap("./frontend/Bitmap/background.png"))) {
         fprintf(stderr, "Unable to load background\n");
         al_uninstall_system();
         al_shutdown_image_addon();
