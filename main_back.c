@@ -10,8 +10,15 @@ void key_up(void){
 
 void key_down(void){
     printf("DOWN pressed\n");
-    descend_block();
-    print_matrix();
+    if(block_data.id == 0){
+        insert_block(next_block());
+        run_game();
+        print_matrix();
+    }else {
+        descend_block();
+        run_game();
+        print_matrix();
+    }
 }
 
 void key_left(void){
@@ -23,6 +30,7 @@ void key_left(void){
     }else{
         move_block(0);
     }
+    run_game();
     print_matrix();
 
 }
@@ -36,6 +44,7 @@ void key_right(void){
     }else{
         move_block(1);
     }
+    run_game();
     print_matrix();
 }
 
@@ -50,9 +59,11 @@ void finish(void){
 //  #            MAIN            #
 //  ##############################
 int main(void) {
+
     teclado_begin();
-    insert_block(6);
+    run_game();
     print_matrix();
+
     // Seteo los callbacks de cada tecla
     set_on_exit(finish);
     set_on_pressed(key_up, KEY_UP);
