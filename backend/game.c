@@ -119,6 +119,7 @@ void clear_matrix(void){
     }
 }
 
+
 // Funcion AUXILIAR que imprime la matriz gral en la terminal
 void print_matrix(void){
     printf("Rotation: %u\nx,y: %u, %u\n", block_data.rot, block_data.x, block_data.y);
@@ -175,6 +176,14 @@ uint8_t next_block (void)
 // Chequea la validez de las coordenadas para la matriz general. Si da error, corrige las coordenadas y devuelve cero
 int can_write(uint8_t y, uint8_t x){
     if(x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT){
+        if(matrix_game[y][x] > 0){
+            printf("Colision?\n");
+                int i,j;
+            for(i=0; i<HEIGHT; i++){
+                for(j=0; j<WIDTH; j++){
+                    if(matrix[i][j] > 0)    //Si hubo colision y existe algun valor en la matriz de juego, escribe esa pieza en la matriz estatica
+                        game_matrix[i][j] = matrix[i][j];
+        }
         return 1;
     }else{
         switch (last_movement) { // Realizamos el movimiento contrario para corregir la posicion de la pieza
