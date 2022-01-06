@@ -95,6 +95,7 @@ void clear_matrix(void){
     }
 }
 
+//Funcion auxiliar que imprime la matriz gral en la terminal
 void print_matrix(void){
     render();
     printf("Rotation: %u\nx,y: %u, %u\n", rotation, x_pos, y_pos);
@@ -121,8 +122,7 @@ void print_matrix(void){
     putchar('\n');
 }
 
-// AUX FUNCTION
-
+// Funcion auxiliar para manejar una matriz de 1D mediante sintaxis de 2D
 char block(uint8_t x, uint8_t y){
     return blocks[block_id].data[x+y*blocks[block_id].size];
 }
@@ -132,17 +132,17 @@ void render(void){
     clear_matrix();
     uint8_t x,y;
     uint8_t size = blocks[block_id].size;
-
+//Analiza el valor de rotacion y gira la matriz del tetrino para luego incluirla en la matriz general
     switch (rotation)
     {
-        case 0:
+        case 0: //Sin rotacion
             for(y=0; y<blocks[block_id].size; y++){
                 for(x=0; x<blocks[block_id].size; x++){
                     matrix[y_pos+y-size/2][x_pos+x-size/2] = block(x,y);
                 }
             }
             break;
-        case 1:
+        case 1: //Rotacion de 90°
             for(y=0; y<blocks[block_id].size; y++){
                 for(x=0; x<blocks[block_id].size; x++){
                     matrix[y_pos+y-size/2][x_pos+x-size/2] = block(y, size-1-x);
@@ -150,7 +150,7 @@ void render(void){
             }
             break;
 
-        case 2:
+        case 2: //Rotacion de 180°
             for(y=0; y<blocks[block_id].size; y++){
                 for(x=0; x<blocks[block_id].size; x++){
                     matrix[y_pos+y-size/2][x_pos+x-size/2] = block(size - x -1 , size -y-1);
@@ -158,12 +158,13 @@ void render(void){
             }
             break;
 
-        case 3:
+        case 3: //Rotacion de 270°
             for(y=0; y<blocks[block_id].size; y++){
                 for(x=0; x<blocks[block_id].size; x++){
                     matrix[y_pos+y-size/2][x_pos+x-size/2] = block(size-y-1, x);
                 }
             }
+            break;
         default:
             printf("Error rotacion incorrecta\n");
             break;
@@ -195,19 +196,21 @@ void move_block (int direction){
         x_pos--; // TODO: OJO que se va de la matriz!!!
     }
 }
-
+// Maquina de estado para el control del sentido de rotacion de la pieza
 // direction = 1  GIRA A LA DERECHA
 // direction = 0  GIRA A LA IZQUIERDA
 void rotate_block(int direction){
     printf("rotate %u\n", direction);
-    if (direction){
+    if (direction) //Sentido horario
+    {
         if (rotation == 3){
             rotation = 0;
         }
         else
             rotation++;
     }
-    else{
+    else    //Sentido anti-horario
+    {
         if (rotation == 0){
             rotation = 3;
         }
