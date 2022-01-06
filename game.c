@@ -5,6 +5,7 @@
 
 #define HEIGHT  16
 #define WIDTH   10
+#define TEST 5
 
 const char BLOCK_1[] = {
     0, 0, 0, 0,
