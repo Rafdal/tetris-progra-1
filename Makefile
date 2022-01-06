@@ -1,14 +1,14 @@
-all: main.o game.o easytimer.o teclado_trucho.o
-	gcc -Wall main.o game.o easytimer.o teclado_trucho.o -o main `pkg-config --libs allegro_ttf-5`
+backend: main_back.o game.o easytimer.o teclado_trucho.o
+	gcc -Wall main.o game.o easytimer.o teclado_trucho.o -o back `pkg-config --libs allegro_ttf-5`
 
-main.o: main.c game.o easytimer.o
-	gcc -c -Wall main.c
+main_back.o: main_back.c game.o easytimer.o
+	gcc -c -Wall main_back.c
 
-game.o: game.c game.h
-	gcc -c -Wall game.c
+game.o: ./backend/game.c ./backend/game.h
+	gcc -c -Wall ./backend/game.c
 
-easy_timer.o: easy_timer.c easy_timer.h
-	gcc -c -Wall easy_timer.c
+easy_timer.o: ./libs/easy_timer.c ./libs/easy_timer.h
+	gcc -c -Wall ./libs/easy_timer.c
 
-teclado_trucho.o: teclado_trucho.c teclado_trucho.h
-	gcc -Wall -c `pkg-config --cflags allegro_ttf-5` teclado_trucho.c
+teclado_trucho.o: ./libs/teclado_trucho.c ./libs/teclado_trucho.h
+	gcc -Wall -c `pkg-config --cflags allegro_ttf-5` ./libs/teclado_trucho.c
