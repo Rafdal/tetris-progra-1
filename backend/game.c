@@ -75,27 +75,23 @@ BLOCK_t blocks[] = {
 
 char matrix[HEIGHT][WIDTH];
 
-uint8_t x_pos;    // coordenadas del centro del bloque
+// coordenadas x,y del centro del bloque
+uint8_t x_pos;
 uint8_t y_pos;
-uint8_t block_id; // id del bloque
-uint8_t rotation; // 0 - 3 (orientacion de la pieza girando en sentido antihorario)
+uint8_t block_id; // id del tipo de bloque
+uint8_t rotation; // 0 - 3 (orientacion de la pieza girando en sentido horario)
 
+// Variables para la correccion de la posicion de la pieza (se usa para los limites de la matriz)
 enum {LEFT, RIGHT, R_LEFT, R_RIGHT, DOWN};
-uint8_t last_movement;
-bool bad_movement = false;
-
-//PRUEBA DE OFFSETS
-uint8_t d_left, d_right;
-
+uint8_t last_movement; // Ultimo movimiento efectuado (se usa para FSM de correccion de posicion)
+bool bad_movement = false; // true si hay que corregir el movimiento
 
 // P R O T O T I P O S    P R I V A D O S
-
-void render(void);
-char block(uint8_t x, uint8_t y);
-int can_write(uint8_t x, uint8_t y); // devuelve 1 si se puede escribir
+void render(void); // Renderiza el bloque en la matriz
+char block(uint8_t x, uint8_t y); // Accede a los datos del bloque con coordenadas cartesianas
+int can_write(uint8_t x, uint8_t y); // devuelve 1 si se puede escribir, si no se puede, corrige la posicion del bloque
 
 // F U N C I O N E S
-
 void clear_matrix(void){
     int i,j;
     for(i=0; i<HEIGHT; i++){
@@ -105,7 +101,7 @@ void clear_matrix(void){
     }
 }
 
-//Funcion auxiliar que imprime la matriz gral en la terminal
+// Funcion AUXILIAR que imprime la matriz gral en la terminal
 void print_matrix(void){
     render();
     printf("Rotation: %u\nx,y: %u, %u\n", rotation, x_pos, y_pos);
@@ -132,12 +128,12 @@ void print_matrix(void){
     putchar('\n');
 }
 
-// Funcion auxiliar para manejar una matriz de 1D mediante sintaxis de 2D
+// Funcion auxiliar para manejar un arreglo unidimensional (de una matriz) con coordenadas cartesianas
 char block(uint8_t x, uint8_t y){
     return blocks[block_id].data[x+y*blocks[block_id].size];
 }
 
-// chequea la validez de las coordenadas para la matriz general
+// chequea la validez de las coordenadas para la matriz general. Si da error, corrige las coordenadas y devuelve cero
 int can_write(uint8_t y, uint8_t x){
     if(x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT){
         return 1;
@@ -157,6 +153,10 @@ int can_write(uint8_t y, uint8_t x){
 
             case R_LEFT:
                 rotate_block(1);
+                break;
+
+            case DOWN:
+                y_pos--;
                 break;
         }
 
@@ -183,9 +183,8 @@ void render(void){
                     char val = block(x,y);
                     if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
                     {
-                        if (can_write(i,j)){
+                        if (can_write(i,j))
                             matrix[i][j] = val;
-                        }
                         else
                             bad_movement = true;
                     }
@@ -203,9 +202,8 @@ void render(void){
                     char val = block(y, size-1-x);
                     if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
                     {
-                        if (can_write(i,j)){
+                        if (can_write(i,j))
                             matrix[i][j] = val;
-                        }
                         else
                             bad_movement = true;
                     }
@@ -223,9 +221,8 @@ void render(void){
                     char val = block(size - x -1 , size -y-1);
                     if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
                     {
-                        if (can_write(i,j)){
+                        if (can_write(i,j))
                             matrix[i][j] = val;
-                        }
                         else
                             bad_movement = true;
                     }
@@ -243,9 +240,8 @@ void render(void){
                     char val = block(size-y-1, x);
                     if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
                     {
-                        if (can_write(i,j)){
+                        if (can_write(i,j))
                             matrix[i][j] = val;
-                        }
                         else
                             bad_movement = true;
                     }
@@ -273,8 +269,6 @@ void insert_block(uint8_t id){
     rotation = 0; // 0 es la orientacion por defecto
     block_id = id;
 
-    d_left = x_pos- WIDTH/2;
-    d_right = x_pos - WIDTH/2;
 }
 
 
