@@ -86,6 +86,8 @@ char block(uint8_t x, uint8_t y);
 
 // F U N C I O N E S
 
+//asd
+
 void clear_matrix(void){
     int i,j;
     for(i=0; i<HEIGHT; i++){
