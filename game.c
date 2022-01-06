@@ -5,7 +5,6 @@
 
 #define HEIGHT  16
 #define WIDTH   10
-#define TEST 5
 
 const char BLOCK_1[] = {
     0, 0, 0, 0,
@@ -49,11 +48,11 @@ const char BLOCK_7[] = {
     0, 0, 0,
 };
 
-const char TEST_BLOCK[] = {
+/* const char TEST_BLOCK[] = {
         1, 2, 3,
         8, 0, 4,
         7, 6, 5,
-};
+}; */
 
 typedef struct{
     const char *data;
@@ -68,14 +67,14 @@ BLOCK_t blocks[] = {
         { BLOCK_5, 3, },
         { BLOCK_6, 3, },
         { BLOCK_7, 3, },
-        { TEST_BLOCK, 3},
+        // { TEST_BLOCK, 3},
 };
 
 // V A R I A B L E S
 
 char matrix[HEIGHT][WIDTH];
 
-uint8_t x_pos;
+uint8_t x_pos;    // coordenadas del centro del bloque
 uint8_t y_pos;
 uint8_t block_id; // id del bloque
 uint8_t rotation; // 0 - 3 (orientacion de la pieza girando en sentido antihorario)
@@ -86,8 +85,6 @@ void render(void);
 char block(uint8_t x, uint8_t y);
 
 // F U N C I O N E S
-
-//asd
 
 void clear_matrix(void){
     int i,j;
@@ -130,14 +127,13 @@ char block(uint8_t x, uint8_t y){
     return blocks[block_id].data[x+y*blocks[block_id].size];
 }
 
-// Se ejecuta cada vez para actualizar la matriz con los datos del bloque
+// Actualiza la matriz con los datos de coordenadas del bloque
 void render(void){
     clear_matrix();
     uint8_t x,y;
     uint8_t size = blocks[block_id].size;
+
     switch (rotation)
-    // x = COL
-    // y = ROW
     {
         case 0:
             for(y=0; y<blocks[block_id].size; y++){
@@ -169,6 +165,7 @@ void render(void){
                 }
             }
         default:
+            printf("Error rotacion incorrecta\n");
             break;
 
     }
@@ -187,7 +184,7 @@ void insert_block(uint8_t id){
 
 void descend_block (void){
     printf("descend\n");
-   y_pos++;
+    y_pos++;
 }
 
 void move_block (int direction){

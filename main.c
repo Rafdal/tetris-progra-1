@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "game.h"
-#include "easytimer.h"
+#include "easy_timer.h"
 
 void down(void);
 void rot(int dir);
