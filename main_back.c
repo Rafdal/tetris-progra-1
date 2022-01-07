@@ -10,11 +10,13 @@ void key_up(void){
 
 void key_down(void){
     printf("DOWN pressed\n");
-    if(block_data.id == 0){
+    if(block_data.id == 0) //La pieza colisiono
+	{
         insert_block(next_block());
         run_game();
         print_matrix();
-    }else {
+    }else //La pieza sigue descendiendo
+	{
         descend_block();
         run_game();
         print_matrix();
