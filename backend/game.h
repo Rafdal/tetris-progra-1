@@ -6,7 +6,7 @@
 #define HEIGHT  16
 #define WIDTH   10
 
-char game_matrix[HEIGHT][WIDTH];
+char static_matrix[HEIGHT][WIDTH];
 
 typedef struct {
     uint8_t x;
