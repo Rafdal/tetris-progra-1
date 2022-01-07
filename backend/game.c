@@ -106,10 +106,11 @@ void init_game(void){
     int i,j;
     for(i=0; i<HEIGHT; i++){
         for(j=0; j<WIDTH; j++){
-            static_matrix[i][j] = (char)0;
+            static_matrix[i][j] = (char)0; // inicio la matriz en cero
         }
     }
 }
+
 
 // Borra la matriz del bloque
 void clear_matrix(void){
@@ -174,10 +175,12 @@ void _undo_movement(void){
             break;
 
         case R_RIGHT:
+            colision = false;
             rotate_block(0);
             break;
 
         case R_LEFT:
+            colision = false;
             rotate_block(1);
             break;
 
