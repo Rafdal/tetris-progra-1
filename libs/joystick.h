@@ -6,7 +6,7 @@
  ************************************/
 
 #include "easy_timer.h"
-#include "~/libs/joydisp/joydrv.o"
+#include "~/libs/joydisp/joydrv.h"
 
 
 #endif // JOYSTICK_H
