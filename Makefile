@@ -36,8 +36,8 @@ teclado_trucho.o: ./libs/teclado_trucho.c ./libs/teclado_trucho.h ./libs/easy_ti
 easy_timer.o: ./libs/easy_timer.c ./libs/easy_timer.h
 	gcc -c -Wall ./libs/easy_timer.c
 
-joystick.o: ./front_rpi/joystick.c ./front_rpi/joystick.h ~/front_rpi/joydrv.o
-	gcc -c -Wall ./front_rpi/joystick.c ~/front_rpi/joydrv.o
+joystick.o: ./front_rpi/joystick.c ./front_rpi/joystick.h ./front_rpi/joydrv.o
+	gcc -c -Wall ./front_rpi/joystick.c ./front_rpi/joydrv.o
 
 
 clean:
