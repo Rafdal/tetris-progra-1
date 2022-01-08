@@ -1,14 +1,14 @@
 #include <stdio.h>
 
-#include "./libs/easy_timer.h"
-#include "./libs/joydrv.h"
-#include "./libs/joystick.h"
 
+#include "./libs/joydrv.h"
 
 int main(void){
-    printf("Funciona\n");
+    joy_init();
+    joy_update();
+    jcoord_t pos = joy_get_coord();
 
-    dpad_run();
+    printf("coord: %d,%d\n", pos.x, pos.y);
 
     return 0;
 }
