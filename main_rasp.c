@@ -24,7 +24,7 @@ void callback(void){
 
 int main(void){
 
-    interval_t inter = set_interval(callback, 200);
+    interval_t inter = set_interval(callback, 50);
     joy_init();
 
     while (1)
