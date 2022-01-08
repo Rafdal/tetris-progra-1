@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "./libs/easy_timer.h"
+#include "./libs/joydrv.h"
 #include "./libs/joystick.h"
 
 
