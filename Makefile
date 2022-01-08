@@ -4,7 +4,7 @@ back: main_back.o game.o easy_timer.o teclado_trucho.o
 front: main_front.o game_screen.o
 	gcc -Wall main_front.o game_screen.o -o front `pkg-config --libs allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5`
 
-rasp: main_rasp.o
+rasp: main_rasp.o easy_timer.o
 	gcc -Wall main_rasp.o easy_timer.o ./libs/joydrv.o -o rasp
 
 
