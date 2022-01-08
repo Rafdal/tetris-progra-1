@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "./libs/joystick.h"
+#include "./front_rpi/joystick.h"
 
 
 int main(void){
