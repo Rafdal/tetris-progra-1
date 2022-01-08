@@ -3,6 +3,7 @@
         "game_screen.h": "c",
         "easy_timer.h": "c",
         "stdbool.h": "c",
-        "joystick.h": "c"
+        "joystick.h": "c",
+        "joydrv.h": "c"
     }
 }

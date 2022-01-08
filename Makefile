@@ -11,7 +11,7 @@ rasp: main_rasp.o joystick.o
 # 	   MAINs	#
 #################
 
-main_rasp.o: main_rasp.c joystick.o easy_timer.o
+main_rasp.o: main_rasp.c joystick.o easy_timer.o ./libs/joydrv.o
 	gcc -c -Wall main_rasp.c
 
 main_front.o: main_front.c
