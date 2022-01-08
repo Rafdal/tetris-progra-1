@@ -4,8 +4,8 @@ back: main_back.o game.o easy_timer.o teclado_trucho.o
 front: main_front.o game_screen.o
 	gcc -Wall main_front.o game_screen.o -o front `pkg-config --libs allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5`
 
-rasp: main_rasp.o easy_timer.o
-	gcc -Wall main_rasp.o easy_timer.o ./libs/joydrv.o -o rasp
+rasp: main_rasp.o easy_timer.o joystick.o
+	gcc -Wall main_rasp.o joystick.o easy_timer.o ./libs/joydrv.o -o rasp
 
 
 #################
@@ -38,7 +38,7 @@ easy_timer.o: ./libs/easy_timer.c ./libs/easy_timer.h
 	gcc -c -Wall ./libs/easy_timer.c
 
 joystick.o: ./libs/joystick.c ./libs/joystick.h
-	gcc -c -Wall ./libs/joystick.c
+	gcc -c -Wall ./libs/joystick.c ./libs/joydrv.o
 
 
 clean:
