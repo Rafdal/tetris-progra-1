@@ -38,7 +38,7 @@ easy_timer.o: ./libs/easy_timer.c ./libs/easy_timer.h
 	gcc -c -Wall ./libs/easy_timer.c
 
 joystick.o: ./libs/joystick.c ./libs/joystick.h
-	gcc -c -Wall ./libs/joystick.c ./libs/joydrv.o
+	gcc -c -Wall ./libs/joystick.c
 
 
 clean:
