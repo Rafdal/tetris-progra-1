@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "./libs/easy_timer.h"
 #include "./front_rpi/joystick.h"
 
 
