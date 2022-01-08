@@ -10,8 +10,7 @@ void callback(void){
     joy_update();
     jcoord_t pos = joy_get_coord();
     if(pos.x != lastPos.x || pos.y != lastPos.y){
-        char buf[32];
-        printf(buf, "coord: %d,%d\n", pos.x, pos.y);
+        printf("coord: %d,%d\n", pos.x, pos.y);
 
         lastPos = pos;
     }
@@ -21,7 +20,7 @@ void callback(void){
 
 int main(void){
 
-    interval_t inter = set_interval(callback, 50);
+    interval_t inter = set_interval(callback, 500);
     joy_init();
 
     while (1)
