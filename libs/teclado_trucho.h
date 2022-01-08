@@ -6,7 +6,7 @@
 #include <stdbool.h>
 
 enum MYKEYS {
-    KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT //arrow keys
+    KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_E, KEY_Q //arrow keys
 };
 
 typedef void (*callback_t)(void);

@@ -103,6 +103,12 @@ void teclado_run(void){
                 case ALLEGRO_KEY_RIGHT:
                     key_state[KEY_RIGHT] = true;
                     break;
+
+                case ALLEGRO_KEY_E:
+                    break;
+
+                case ALLEGRO_KEY_Q:
+                    break;
             }
         }
         else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
