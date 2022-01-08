@@ -4,6 +4,15 @@ back: main_back.o game.o easy_timer.o teclado_trucho.o
 front: main_front.o game_screen.o
 	gcc -Wall main_front.o game_screen.o -o front `pkg-config --libs allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5`
 
+rasp: main_rasp.o 
+	gcc -Wall main_rasp.o
+
+#################
+# 	   MAINs	#
+#################
+
+main_rasp.o: main_rasp.c
+	gcc -c -Wall main_rasp.c
 
 main_front.o: main_front.c
 	gcc -c -Wall main_front.c `pkg-config --cflags allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5`
@@ -11,6 +20,9 @@ main_front.o: main_front.c
 main_back.o: main_back.c game.o easy_timer.o
 	gcc -c -Wall main_back.c
 
+#################
+# 	LIBRERIAS 	#
+#################
 
 game_screen.o: ./frontend/game_screen.h ./frontend/game_screen.c
 	gcc -c -Wall ./frontend/game_screen.c `pkg-config --cflags allegro-5`
@@ -24,12 +36,16 @@ teclado_trucho.o: ./libs/teclado_trucho.c ./libs/teclado_trucho.h ./libs/easy_ti
 easy_timer.o: ./libs/easy_timer.c ./libs/easy_timer.h
 	gcc -c -Wall ./libs/easy_timer.c
 
+joystick.o: ./libs/joystick.c ./libs/joystick.h ./libs/easy_timer.o ~/libs/joydisp/joydrv.o
+	gcc -c -Wall ./libs/joystick.c ~/libs/joydisp/joydrv.o
+
 
 clean:
 	rm *.o
 
 
-### LIBRERIAS ALLEGRO PARA AGREGAR al comando
+
+### LIBRERIAS ALLEGRO PARA AGREGAR al comando pkg-config (si las necesita)
 
 # allegro_ttf-5                  allegro_ttf - Allegro game programming library, TrueType fonts addon
 # allegro_color-5                allegro_color - Allegro game programming library, colors addon

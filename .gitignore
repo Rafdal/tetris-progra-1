@@ -1,5 +1,6 @@
 
 *.o
 
+# para evitar los merge conflicts
 back
 front
