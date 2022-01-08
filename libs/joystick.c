@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 #include "joystick.h"
-#include "./libs/joydrv.h"
+#include "joydrv.h"
 
 jcoord_t pos, lastPos;
 
