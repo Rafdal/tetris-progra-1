@@ -11,11 +11,8 @@ void callback(void){
     jcoord_t pos = joy_get_coord();
     if(pos.x != lastPos.x || pos.y != lastPos.y){
         char buf[32];
-        sprintf(buf, "coord: %d,%d\n\0", pos.x, pos.y);
-        printf(buf);
-        for(int i=0; i< strlen(buf); i++){
-            putchar((char)8);
-        }
+        printf(buf, "coord: %d,%d\n", pos.x, pos.y);
+
         lastPos = pos;
     }
 
