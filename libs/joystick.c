@@ -50,13 +50,13 @@ void dpad_run(void){
 
 
     // UPLEFT KEY
-    if(pos.y > DPAD_UMBRAL && pos.x > DPAD_UMBRAL/2)
+    if(pos.y > DPAD_UMBRAL && pos.x > DPAD_UMBRAL/3)
         key_state[DPAD_UPLEFT] = true;
     else
         key_state[DPAD_UPLEFT] = false;
 
     // UPRIGHT ARROW
-    if(pos.y > DPAD_UMBRAL && pos.x < -DPAD_UMBRAL/2)
+    if(pos.y > DPAD_UMBRAL && pos.x < -DPAD_UMBRAL/3)
         key_state[DPAD_UPRIGHT] = true;
     else
         key_state[DPAD_UPRIGHT] = false;
