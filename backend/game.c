@@ -233,8 +233,16 @@ void run_game(void){
         insert_block(0); // Borramos el bloque
         clear_matrix();
         colision = false;
+
+		while (_check_row_compleate())
+		{
+			int row = _check_row_compleate();
+			_delete_compleate_row(row);
+			_move_blocks(row);
+		}
     }
 }
+
 
 void _move_blocks (uint8_t row)
 {

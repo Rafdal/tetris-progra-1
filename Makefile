@@ -18,11 +18,11 @@ game_screen.o: ./frontend/game_screen.h ./frontend/game_screen.c
 game.o: ./backend/game.c ./backend/game.h
 	gcc -c -Wall ./backend/game.c
 
+teclado_trucho.o: ./libs/teclado_trucho.c ./libs/teclado_trucho.h ./libs/easy_timer.o
+	gcc -Wall -c `pkg-config --cflags allegro-5` ./libs/teclado_trucho.c
+
 easy_timer.o: ./libs/easy_timer.c ./libs/easy_timer.h
 	gcc -c -Wall ./libs/easy_timer.c
-
-teclado_trucho.o: ./libs/teclado_trucho.c ./libs/teclado_trucho.h
-	gcc -Wall -c `pkg-config --cflags allegro-5` ./libs/teclado_trucho.c
 
 
 clean:
