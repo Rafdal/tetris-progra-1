@@ -50,6 +50,32 @@ void key_right(void){
     print_matrix();
 }
 
+void long_press(void){
+    printf("long press\n");
+    int i;
+    for(i=0; i<4; i++){
+        if(is_pressed(i)){
+            switch (i)
+            {
+            case KEY_DOWN:
+                key_down();
+                break;
+            
+            case KEY_LEFT:
+                key_left();
+                break;
+
+            case KEY_RIGHT:
+                key_right();
+                break;
+
+            default:
+                break;
+            }
+        }
+    }
+}
+
 int run=1;
 
 void finish(void){
@@ -61,6 +87,8 @@ void finish(void){
 //  #            MAIN            #
 //  ##############################
 int main(void) {
+
+    interval_t longpress_int = set_interval(long_press, 150);
 
     teclado_begin();
     run_game();
@@ -76,6 +104,9 @@ int main(void) {
     // Loop en tiempo-real (no bloqueante)
     while (run)
     {
+        if(is_long_pressed(KEY_DOWN) || is_long_pressed(KEY_LEFT) || is_long_pressed(KEY_RIGHT)){
+            run_interval(&longpress_int);
+        }
         teclado_run(); // lee las teclas (No bloqueante)
     }
 
