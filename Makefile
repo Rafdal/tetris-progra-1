@@ -7,6 +7,7 @@ front: main_front.o game_screen.o
 rasp: main_rasp.o
 	gcc -Wall main_rasp.o ./libs/joydrv.o -o rasp
 
+
 #################
 # 	   MAINs	#
 #################
