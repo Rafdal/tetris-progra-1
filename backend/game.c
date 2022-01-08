@@ -237,6 +237,7 @@ void run_game(void){
 		while (_check_row_compleate())
 		{
 			int row = _check_row_compleate();
+			printf("Compleate Row: %d\n", row);
 			_delete_compleate_row(row);
 			_move_blocks(row);
 		}
@@ -253,27 +254,24 @@ void _move_blocks (uint8_t row)
 		for( j = 0 ; j < WIDTH; j++)
 		{
 			static_matrix[i][j] = static_matrix[i-1][j];
+			static_matrix[i-1][j] = 0 ;
 		}
 	}
 }
 
 uint8_t _check_row_compleate (void)
 {
-	int i , j= 0;
+	int i , j;
 	for (i = 0 ; i< HEIGHT ; i++)
 	{
-		while ( static_matrix[i][j] != 0)
+		for (j= 0 ; (j<WIDTH) && (static_matrix[i][j] != 0); j++)
 		{
-			if ( j < WIDTH -1)
-				j++;
-			else if (j == WIDTH -1)
-				return i;
+			//Do nothing
 		}
-
+		if (j == WIDTH)	//Si el for recorrio todas las columnas de esa fila y su contenido fue diferente a cero
+			return i;	//Devuelvo la fila completa
 	}
-
-	return 0;  //Retorna 0 si no hay fila completa a eliminar
-
+	return 0; //Devuelve cero si no existe fila completa
 }
 
 void _delete_compleate_row (uint8_t row)
