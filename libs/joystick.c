@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "joystick.h"
 #include "easy_timer.h"
+#include "joydrv.h"
+
 
 void callback(void){
     printf("callback\n");
