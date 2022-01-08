@@ -11,7 +11,7 @@ rasp: main_rasp.o
 # 	   MAINs	#
 #################
 
-main_rasp.o: main_rasp.c joystick.o
+main_rasp.o: main_rasp.c joystick.o ./libs/easy_timer.o
 	gcc -c -Wall main_rasp.c
 
 main_front.o: main_front.c
@@ -36,7 +36,7 @@ teclado_trucho.o: ./libs/teclado_trucho.c ./libs/teclado_trucho.h ./libs/easy_ti
 easy_timer.o: ./libs/easy_timer.c ./libs/easy_timer.h
 	gcc -c -Wall ./libs/easy_timer.c
 
-joystick.o: ./front_rpi/joystick.c ./front_rpi/joystick.h ./libs/easy_timer.o ~/front_rpi/joydrv.o
+joystick.o: ./front_rpi/joystick.c ./front_rpi/joystick.h ~/front_rpi/joydrv.o
 	gcc -c -Wall ./front_rpi/joystick.c ~/front_rpi/joydrv.o
 
 

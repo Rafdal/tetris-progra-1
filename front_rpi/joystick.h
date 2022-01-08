@@ -5,7 +5,10 @@
  *      JOYSTICK TO DPAD RASPBERRY  *
  ************************************/
 
-#include "easy_timer.h"
+#ifndef EASY_TIMER_H
+#error "Falta easy timer"
+#endif
+
 #include "joydrv.h"
 
 
