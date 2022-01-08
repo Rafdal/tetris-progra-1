@@ -96,6 +96,10 @@ void _render(void); // Renderiza el bloque en la matriz
 char _block(uint8_t x, uint8_t y); // Accede a los datos del bloque con coordenadas cartesianas
 int _can_write(uint8_t x, uint8_t y); // devuelve 1 si se puede escribir, si no se puede, corrige la posicion del bloque
 void _undo_movement(void); // deshace el movimiento anterior
+void _delete_compleate_row (uint8_t row); // elimina la fila completa
+uint8_t _check_row_compleate (void); // chequea si una fila se elimino y en caso de serlo devuelve en numero de fila
+void _move_blocks (uint8_t row); // desplaza las filas que quedaron por arriba de la fila completada
+
 
 // F U N C I O N E S
 
@@ -230,6 +234,47 @@ void run_game(void){
         clear_matrix();
         colision = false;
     }
+}
+
+void _move_blocks (uint8_t row)
+{
+	printf("TEST\n");
+	int i, j;
+	for ( i = row ; i > 0 ; i--)
+	{
+		for( j = 0 ; j < WIDTH; j++)
+		{
+			static_matrix[i][j] = static_matrix[i-1][j];
+		}
+	}
+}
+
+uint8_t _check_row_compleate (void)
+{
+	int i , j= 0;
+	for (i = 0 ; i< HEIGHT ; i++)
+	{
+		while ( static_matrix[i][j] != 0)
+		{
+			if ( j < WIDTH -1)
+				j++;
+			else if (j == WIDTH -1)
+				return i;
+		}
+
+	}
+
+	return 0;  //Retorna 0 si no hay fila completa a eliminar
+
+}
+
+void _delete_compleate_row (uint8_t row)
+{
+	int j;
+	for (j= 0; j< WIDTH ; j++)
+	{
+		static_matrix[row][j] = 0;
+	}
 }
 
 // Actualiza la matriz con los datos de coordenadas del bloque
