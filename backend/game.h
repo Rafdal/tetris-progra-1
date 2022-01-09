@@ -6,7 +6,7 @@
 #define HEIGHT  16
 #define WIDTH   10
 
-char static_matrix[HEIGHT][WIDTH];
+char public_matrix [HEIGHT][WIDTH];
 
 typedef struct {
     uint8_t x;
@@ -41,6 +41,9 @@ void move_block(int direction);
 
 //Devuelve un ID de bloque aleatorio
 uint8_t next_block (void);
+
+// Actualiza el score
+int update_score(int score, int streak, char game_level);
 
 
 #endif // GAME_H

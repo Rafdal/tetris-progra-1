@@ -4,6 +4,8 @@
 #include <time.h>
 #include "game.h"
 
+#define game_level 1
+
 //   C O N S T A N T E S
 
 const char BLOCK_0[] = { // Bloque nulo
@@ -78,8 +80,8 @@ BLOCK_t blocks[] = {
 // V A R I A B L E S
 
 char matrix[HEIGHT][WIDTH]; // Privada
-// char static_matrix[HEIGHT][WIDTH]; // Publica
-// block_data_t block_data;
+char static_matrix[HEIGHT][WIDTH]; // Privada
+//char public_matrix [HEIGHT][WIDTH]; //Publica (definida en el .h)
 
 // datos del bloque (coordenadas x,y, rotacion, etc del centro del bloque)
 
@@ -98,7 +100,8 @@ int _can_write(uint8_t x, uint8_t y); // devuelve 1 si se puede escribir, si no 
 void _undo_movement(void); // deshace el movimiento anterior
 void _delete_compleate_row (uint8_t row); // elimina la fila completa
 uint8_t _check_row_compleate (void); // chequea si una fila se elimino y en caso de serlo devuelve en numero de fila
-void _move_blocks (uint8_t row); // desplaza las filas que quedaron por arriba de la fila completada
+void _delete_row (uint8_t row); // elimina y desplaza la fila completa
+void _update_public_matrix (void); // actualiza los valores de la matriz publica (la cual contiene la suma de la matriz estatic y dinamica)
 
 
 // F U N C I O N E S
@@ -216,6 +219,7 @@ int _can_write(uint8_t y, uint8_t x){
 
 void run_game(void){
     _render();
+	static int score;
     // TODO: capaz seria mejor poner un switch case
     if(bad_movement){
         bad_movement = false;
@@ -233,23 +237,45 @@ void run_game(void){
         insert_block(0); // Borramos el bloque
         clear_matrix();
         colision = false;
+		int streak = 0;
 
 		while (_check_row_compleate())
 		{
 			int row = _check_row_compleate();
+
 			printf("Compleate Row: %d\n", row);
-			_delete_compleate_row(row);
-			_move_blocks(row);
+			_delete_row(row);
+
+			streak++;
+			score = update_score(score, streak, game_level);
+			printf("score is: %d points\n", score);
 		}
-    }
-    
+   	 }
+	_update_public_matrix();
+
 }
 
-
-void _move_blocks (uint8_t row)
+void _update_public_matrix (void)
 {
-	printf("TEST\n");
 	int i, j;
+	for (i=0 ; i < HEIGHT; i ++)
+	{
+		for (j=0 ; j < WIDTH;  j++)
+		{
+			public_matrix[i][j] = matrix[i][j] + static_matrix[i][j];
+		}
+	}
+}
+
+void _delete_row (uint8_t row)
+{
+	int i,j;
+	for (j= 0; j< WIDTH ; j++)
+	{
+		static_matrix[row][j] = 0;
+	}
+
+	printf("TEST\n");
 	for ( i = row ; i > 0 ; i--)
 	{
 		for( j = 0 ; j < WIDTH; j++)
@@ -275,14 +301,6 @@ uint8_t _check_row_compleate (void)
 	return 0; //Devuelve cero si no existe fila completa
 }
 
-void _delete_compleate_row (uint8_t row)
-{
-	int j;
-	for (j= 0; j< WIDTH ; j++)
-	{
-		static_matrix[row][j] = 0;
-	}
-}
 
 // Actualiza la matriz con los datos de coordenadas del bloque
 void _render(void){
@@ -426,4 +444,27 @@ void rotate_block(int direction){
             block_data.rot--;
         last_movement = R_LEFT;
     }
+}
+
+// update_score actualiza el score segun el nivel en el que se encuentra
+
+int update_score(int score, int streak, char lvl){
+	int result = score;
+	switch (streak) {
+		case 1:
+			result += 40*(lvl+1);
+			break;
+		case 2:
+			result += 100*(lvl+1);
+			break;
+		case 3:
+			result += 300*(lvl+1);
+			break;
+		case 4:
+			result += 1200*(lvl+1);
+			printf("TETRIS!!");
+			break;
+	}
+	return result;
+
 }

@@ -5,8 +5,10 @@
  *
  * Created on June 4, 2016, 6:38 PM
  */
-
+#include "./backend/game.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
 #include <allegro5/allegro.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
 #include <allegro5/allegro_image.h> //NO OLVIDAR INCLUIR ALLEGRO_IMAGE EN LINKER
 #include <allegro5/allegro_audio.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
@@ -22,10 +24,11 @@
     ALLEGRO_SAMPLE *sample = NULL;
 
 
-void playAudio(void){
+/*void playAudio(void){
     al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
 }
-
+*/
+void printer (void);
 int main(void) {
 
 
@@ -34,7 +37,7 @@ int main(void) {
         return -1;
     }
 
-    if (!al_install_audio()) {
+    /*if (!al_install_audio()) {
         fprintf(stderr, "failed to initialize audio!\n");
         return -1;
     }
@@ -55,14 +58,14 @@ int main(void) {
     if (!sample) {
         printf("Audio clip sample \"%s\" not loaded!\n", path);
         return -1;
-    }
+    }*/
 
     if (!al_init_image_addon()) { // ADDON necesario para manejo(no olvidar el freno de mano) de imagenes 
         fprintf(stderr, "failed to initialize image addon !\n");
         return -1;
     }
 
-    image = al_load_bitmap("./frontend/images/tetrisblocks.png");
+    image = al_load_bitmap("./frontend/images/piezastetris.png");
     if (!image) {
         fprintf(stderr, "failed to load image !\n");
         return 0;
@@ -93,7 +96,7 @@ int main(void) {
     al_draw_scaled_bitmap(muroV, 0, 0, al_get_bitmap_width(muroV), al_get_bitmap_height(muroV), 0, 0, BLOCKSZ, al_get_display_height(display)-BLOCKSZ, 0);
     al_draw_scaled_bitmap(muroV, 0, 0, al_get_bitmap_width(muroV), al_get_bitmap_height(muroV),al_get_display_width(display)-BLOCKSZ , 0, BLOCKSZ, al_get_display_height(display)-BLOCKSZ, 0);
     
-    al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8)*2, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ-5, 0, BLOCKSZ, BLOCKSZ, 0);
+    /*al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8)*2, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ-5, 0, BLOCKSZ, BLOCKSZ, 0);
         al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8), 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*2, 0, BLOCKSZ, BLOCKSZ, 0);
             al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8)*2, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*3-4, 0, BLOCKSZ, BLOCKSZ, 0);
 
@@ -107,28 +110,30 @@ int main(void) {
 
     al_flip_display();
     al_rest(3);
+  
     
-    playAudio();
+    //playAudio();
 
-    al_get_backbuffer(display);
-    al_flip_display();
-    al_rest(3);
+    
     
     al_destroy_display(display);
     al_destroy_bitmap(image);
-    al_uninstall_audio(); // borrar audio
-
+    //al_uninstall_audio(); // borrar audio
+    //al_destroy_sample(sample);
     //al_shutdown_image_addon(); VER DOCUMENTACION ES LLAMADO AUTOMATICAMENTE AL SALIR DEL PROGRAMA
 
     return 0;
 }
-
-/*void printer (char color, char xpos, char ypos){
-    char offsetX = (xpos? 4 : 0);
-    char offsetY = (ypos? 4 : 0);
-    al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8)*color, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ + BLOCKSZ*xpos - offsetX, BLOCKSZ*ypos-offsetY, BLOCKSZ, BLOCKSZ, 0);
+void printer (void){
+    char x, y;
+    for(x=0; x<WIDTH ; x++)
+    {
+        for(y=0; y<HEIGHT ; y++)
+        {
+        al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * static_matrix[y][x], 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ + BLOCKSZ*x, BLOCKSZ*y, BLOCKSZ, BLOCKSZ, 0);\
+        }
+    }
 }
-*/
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////AUDIO/////////////////////////////////////////////////////////////////
