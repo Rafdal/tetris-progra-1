@@ -22,8 +22,19 @@
     ALLEGRO_SAMPLE *sample = NULL;
 
 
-int loadAudio(void){
-        if (!al_install_audio()) {
+void playAudio(void){
+    al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
+}
+
+int main(void) {
+
+
+    if (!al_init()) {
+        fprintf(stderr, "failed to initialize allegro!\n");
+        return -1;
+    }
+
+    if (!al_install_audio()) {
         fprintf(stderr, "failed to initialize audio!\n");
         return -1;
     }
@@ -38,24 +49,11 @@ int loadAudio(void){
         return -1;
     }
 
-    sample = al_load_sample("./frontend/Audio/audio.wav");
+    const char* path = "tetris.wav";
+    sample = al_load_sample(path);
 
     if (!sample) {
-        printf("Audio clip sample not loaded!\n");
-        return -1;
-    }
-    return 0;
-}
-
-void playAudio(void){
-    al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
-}
-
-int main(void) {
-
-
-    if (!al_init()) {
-        fprintf(stderr, "failed to initialize allegro!\n");
+        printf("Audio clip sample \"%s\" not loaded!\n", path);
         return -1;
     }
 
@@ -87,6 +85,7 @@ int main(void) {
         fprintf(stderr, "failed to create display!\n");
         return -1;
     }
+
     //ahora dibujo el muro horizontal
     al_draw_scaled_bitmap(muroH, 0, 0, al_get_bitmap_width(muroH), al_get_bitmap_height(muroH), 0, BLOCKSZ*(ALTO), al_get_display_width(display), BLOCKSZ, 0);
     //empiezo uso la ultima fila
