@@ -22,18 +22,24 @@ void init_rpi_display (void)
 
 void rpi_copyToDis (char** fromMat, uint8_t height, uint8_t width, uint8_t x, uint8_t y)
 {
-	if (height+y <= RPI_HEIGHT && width+x <= RPI_WIDTH) //Analiza si es posible copiar la matriz dada en la de la RPI
+	int i, j;
+	if (height+y < RPI_HEIGHT && width+x < RPI_WIDTH) //Analiza si es posible copiar la matriz dada en la de la RPI
 	{
-		int i, j;
 		for( i = y; i < height ; i++)
 		{
 			for (j = x; j < width ; j++)
 			{
-				matrix[i][j]= fromMat[i][j];
+				if(i < RPI_HEIGHT && j < RPI_WIDTH){
+					matrix[i][j]= fromMat[i][j];
+				}
+				else{
+					printf("ERROR: Exceden los tamaños de la matriz sobre la RPI (y,x)=(%d,%d)\n", i,j);
+				}
 			}
 		}
-	} else
-		printf("ERROR: Exceden los tamaños de la matriz sobre la RPI\n");
+	} else {
+		printf("ERROR: Exceden los tamaños de la matriz sobre la RPI (y,x)=(%d,%d)\n", i,j);
+	}
 }
 
 
