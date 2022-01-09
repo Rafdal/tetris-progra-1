@@ -38,7 +38,7 @@ void key_press_callback(uint8_t key_id){
 }
 
 void update_display(void) {
-	rpi_copyToDis(public_matrix, HEIGHT, WIDTH, 0,0);
+	rpi_copyToDis(&public_matrix[0][0], HEIGHT, WIDTH, 0,0);
 	run_rpi_display();
 }
 
