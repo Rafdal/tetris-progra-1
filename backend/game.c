@@ -80,8 +80,8 @@ BLOCK_t blocks[] = {
 // V A R I A B L E S
 
 char matrix[HEIGHT][WIDTH]; // Privada
-// char static_matrix[HEIGHT][WIDTH]; // Publica
-// block_data_t block_data;
+char static_matrix[HEIGHT][WIDTH]; // Privada
+//char public_matrix [HEIGHT][WIDTH]; //Publica (definida en el .h)
 
 // datos del bloque (coordenadas x,y, rotacion, etc del centro del bloque)
 
@@ -100,7 +100,8 @@ int _can_write(uint8_t x, uint8_t y); // devuelve 1 si se puede escribir, si no 
 void _undo_movement(void); // deshace el movimiento anterior
 void _delete_compleate_row (uint8_t row); // elimina la fila completa
 uint8_t _check_row_compleate (void); // chequea si una fila se elimino y en caso de serlo devuelve en numero de fila
-void _move_blocks (uint8_t row); // desplaza las filas que quedaron por arriba de la fila completada
+void _delete_row (uint8_t row); // elimina y desplaza la fila completa
+void _update_public_matrix (void); // actualiza los valores de la matriz publica (la cual contiene la suma de la matriz estatic y dinamica)
 
 
 // F U N C I O N E S
@@ -245,25 +246,42 @@ void run_game(void){
         colision = false;
 		int streak = 0;
 
-
 		while (_check_row_compleate())
 		{
 			int row = _check_row_compleate();
 
 			printf("Compleate Row: %d\n", row);
-			_delete_compleate_row(row);
-			_move_blocks(row);
+			_delete_row(row);
+
 			streak++;
-			score = _update_score(score, streak, game_level);
+			score = update_score(score, streak, game_level);
 			printf("score is: %d points\n", score);
 		}
-    }
+   	 }
+	_update_public_matrix();
 
 }
 
-
-void _move_blocks (uint8_t row)
+void _update_public_matrix (void)
 {
+	int i, j;
+	for (i=0 ; i < HEIGHT; i ++)
+	{
+		for (j=0 ; j < WIDTH;  j++)
+		{
+			public_matrix[i][j] = matrix[i][j] + static_matrix[i][j];
+		}
+	}
+}
+
+void _delete_row (uint8_t row)
+{
+	int i,j;
+	for (j= 0; j< WIDTH ; j++)
+	{
+		static_matrix[row][j] = 0;
+	}
+
 	printf("TEST\n");
 	int i, j;
 	for ( i = row ; i > 0 ; i--)
@@ -291,14 +309,6 @@ uint8_t _check_row_compleate (void)
 	return 0; //Devuelve cero si no existe fila completa
 }
 
-void _delete_compleate_row (uint8_t row)
-{
-	int j;
-	for (j= 0; j< WIDTH ; j++)
-	{
-		static_matrix[row][j] = 0;
-	}
-}
 
 // Actualiza la matriz con los datos de coordenadas del bloque
 void _render(void){
@@ -444,9 +454,9 @@ void rotate_block(int direction){
     }
 }
 
-// _update_score actualiza el score segun el nivel en el que se encuentra
+// update_score actualiza el score segun el nivel en el que se encuentra
 
-int _update_score(int score, int streak, char lvl){
+int update_score(int score, int streak, char lvl){
 	int result = score;
 	switch (streak) {
 		case 1:
@@ -466,4 +476,3 @@ int _update_score(int score, int streak, char lvl){
 	return result;
 
 }
-

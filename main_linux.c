@@ -24,15 +24,11 @@
     ALLEGRO_SAMPLE *sample = NULL;
 
 
-<<<<<<< HEAD:main_front.c
-
-=======
 /*void playAudio(void){
     al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
 }
 */
 void printer (void);
->>>>>>> a2db4713218df2804c182adf74927effc79e5797:main_linux.c
 int main(void) {
 
 

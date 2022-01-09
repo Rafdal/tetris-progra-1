@@ -6,7 +6,7 @@
 #define HEIGHT  16
 #define WIDTH   10
 
-char static_matrix[HEIGHT][WIDTH];
+char public_matrix [HEIGHT][WIDTH];
 
 typedef struct {
     uint8_t x;
@@ -43,7 +43,7 @@ void move_block(int direction);
 uint8_t next_block (void);
 
 // Actualiza el score
-int _update_score(int score, int streak, char game_level);
+int update_score(int score, int streak, char game_level);
 
 // Chequea el fin de juego
 
