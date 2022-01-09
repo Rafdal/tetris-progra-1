@@ -7,9 +7,9 @@
 
 uint8_t press_count[DPAD_KEYS];
 
-void key_press_callback(uint8_t key_id){
-    press_count[key_id]++;
-    switch (key_id)
+void key_press_callback(uint8_t key){
+    press_count[key]++;
+    switch (key)
     {
     case DPAD_UP:
         printf("UP\n");
@@ -42,7 +42,7 @@ void key_press_callback(uint8_t key_id){
     default:
         break;
     }
-    printf("Pressed %u times\n", press_count[key_id]);
+    printf("Pressed %u times\n", press_count[key]);
 }
 
 void update_display(void) {
@@ -61,6 +61,9 @@ int main(void){
 
     while (1)
     {
+        if(dpad_is_longpressed(DPAD_BTN)){
+            printf("longpress BTN\n");
+        }
 		// run_interval(&display_interval);
         dpad_run();
     }
