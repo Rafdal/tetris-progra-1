@@ -35,15 +35,24 @@ void key_press_callback(uint8_t key_id){
     }
 }
 
+void update_display(void) {
+	rpi_copyToDis(&&**public_matrix, HEIGHT, WIDTH, 0,0);
+	run_rpi_display();
+}
+
 int main(void){
 
     dpad_init();
     dpad_on_press(key_press_callback);
 
+	interval_t display_interval = set_interval(update_display, 200);
+
     while (1)
     {
+		run_interval(&display_interval);
         dpad_run();
     }
 
     return 0;
 }
+
