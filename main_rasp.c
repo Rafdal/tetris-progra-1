@@ -2,6 +2,8 @@
 
 #include "./libs/easy_timer.h"
 #include "./libs/joystick.h"
+#include "./libs/rpi_display.h"
+#include "./backend/game.h"
 
 void key_press_callback(uint8_t key_id){
     switch (key_id)
