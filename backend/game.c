@@ -260,7 +260,7 @@ void _update_public_matrix (void)
 	int i, j;
 	for (i=0 ; i < HEIGHT; i ++)
 	{
-		for (j=0 ; j < WIDTH; ; j++)
+		for (j=0 ; j < WIDTH;  j++)
 		{
 			public_matrix[i][j] = matrix[i][j] + static_matrix[i][j];
 		}
