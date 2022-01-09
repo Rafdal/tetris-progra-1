@@ -1,8 +1,8 @@
 back: main_back.o game.o easy_timer.o teclado_trucho.o
 	gcc -Wall main_back.o game.o easy_timer.o teclado_trucho.o -o back `pkg-config --libs allegro-5`
 
-front: main_front.o game_screen.o
-	gcc -Wall main_front.o game_screen.o -o front `pkg-config --libs allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5`
+front: main_front.o
+	gcc -Wall main_front.o -o front `pkg-config --libs allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5`
 
 rasp: main_rasp.o easy_timer.o joystick.o
 	gcc -Wall main_rasp.o joystick.o easy_timer.o ./libs/joydrv.o -o rasp
@@ -24,9 +24,6 @@ main_back.o: main_back.c game.o easy_timer.o
 #################
 # 	LIBRERIAS 	#
 #################
-
-game_screen.o: ./frontend/game_screen.h ./frontend/game_screen.c
-	gcc -c -Wall ./frontend/game_screen.c `pkg-config --cflags allegro-5`
 
 game.o: ./backend/game.c ./backend/game.h
 	gcc -c -Wall ./backend/game.c

@@ -4,6 +4,7 @@
         "easy_timer.h": "c",
         "stdbool.h": "c",
         "joystick.h": "c",
-        "joydrv.h": "c"
+        "joydrv.h": "c",
+        "allegro.h": "c"
     }
 }
