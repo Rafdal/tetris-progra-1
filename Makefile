@@ -1,9 +1,19 @@
 back: main_back.o game.o easy_timer.o teclado_trucho.o
 	gcc -Wall main_back.o game.o easy_timer.o teclado_trucho.o -o back `pkg-config --libs allegro-5`
 
-front: main_front.o
-	gcc -Wall main_front.o -o front `pkg-config --libs allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5`
+front: main_front.o game_screen.o
+	gcc -Wall main_front.o game_screen.o -o front `pkg-config --libs allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5`
 
+rasp: main_rasp.o easy_timer.o joystick.o
+	gcc -Wall main_rasp.o joystick.o easy_timer.o ./libs/joydrv.o -o rasp
+
+
+#################
+# 	   MAINs	#
+#################
+
+main_rasp.o: main_rasp.c
+	gcc -c -Wall main_rasp.c
 
 main_front.o: main_front.c
 	gcc -c -Wall main_front.c `pkg-config --cflags allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5`
@@ -11,22 +21,32 @@ main_front.o: main_front.c
 main_back.o: main_back.c game.o easy_timer.o
 	gcc -c -Wall main_back.c
 
+#################
+# 	LIBRERIAS 	#
+#################
+
+game_screen.o: ./frontend/game_screen.h ./frontend/game_screen.c
+	gcc -c -Wall ./frontend/game_screen.c `pkg-config --cflags allegro-5`
 
 game.o: ./backend/game.c ./backend/game.h
 	gcc -c -Wall ./backend/game.c
 
+teclado_trucho.o: ./libs/teclado_trucho.c ./libs/teclado_trucho.h ./libs/easy_timer.o
+	gcc -Wall -c `pkg-config --cflags allegro-5` ./libs/teclado_trucho.c
+
 easy_timer.o: ./libs/easy_timer.c ./libs/easy_timer.h
 	gcc -c -Wall ./libs/easy_timer.c
 
-teclado_trucho.o: ./libs/teclado_trucho.c ./libs/teclado_trucho.h
-	gcc -Wall -c `pkg-config --cflags allegro-5` ./libs/teclado_trucho.c
+joystick.o: ./libs/joystick.c ./libs/joystick.h
+	gcc -c -Wall ./libs/joystick.c
 
 
 clean:
 	rm *.o
 
 
-### LIBRERIAS ALLEGRO PARA AGREGAR al comando
+
+### LIBRERIAS ALLEGRO PARA AGREGAR al comando pkg-config (si las necesita)
 
 # allegro_ttf-5                  allegro_ttf - Allegro game programming library, TrueType fonts addon
 # allegro_color-5                allegro_color - Allegro game programming library, colors addon

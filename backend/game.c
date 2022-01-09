@@ -7,7 +7,7 @@
 //   C O N S T A N T E S
 
 const char BLOCK_0[] = { // Bloque nulo
-        0
+    0
 };
 
 const char BLOCK_1[] = {
@@ -78,8 +78,8 @@ BLOCK_t blocks[] = {
 // V A R I A B L E S
 
 char matrix[HEIGHT][WIDTH]; // Privada
-char game_matrix[HEIGHT][WIDTH]; // Publica
-block_data_t block_data;
+// char static_matrix[HEIGHT][WIDTH]; // Publica
+// block_data_t block_data;
 
 // datos del bloque (coordenadas x,y, rotacion, etc del centro del bloque)
 
@@ -92,9 +92,14 @@ uint8_t last_movement; // Ultimo movimiento efectuado (se usa para FSM de correc
 bool bad_movement = false; // true si hay que corregir el movimiento
 
 // P R O T O T I P O S    P R I V A D O S
-void render(void); // Renderiza el bloque en la matriz
-char block(uint8_t x, uint8_t y); // Accede a los datos del bloque con coordenadas cartesianas
-int can_write(uint8_t x, uint8_t y); // devuelve 1 si se puede escribir, si no se puede, corrige la posicion del bloque
+void _render(void); // Renderiza el bloque en la matriz
+char _block(uint8_t x, uint8_t y); // Accede a los datos del bloque con coordenadas cartesianas
+int _can_write(uint8_t x, uint8_t y); // devuelve 1 si se puede escribir, si no se puede, corrige la posicion del bloque
+void _undo_movement(void); // deshace el movimiento anterior
+void _delete_compleate_row (uint8_t row); // elimina la fila completa
+uint8_t _check_row_compleate (void); // chequea si una fila se elimino y en caso de serlo devuelve en numero de fila
+void _move_blocks (uint8_t row); // desplaza las filas que quedaron por arriba de la fila completada
+
 
 // F U N C I O N E S
 
@@ -105,10 +110,11 @@ void init_game(void){
     int i,j;
     for(i=0; i<HEIGHT; i++){
         for(j=0; j<WIDTH; j++){
-            game_matrix[i][j] = (char)0;
+            static_matrix[i][j] = (char)0; // inicio la matriz en cero
         }
     }
 }
+
 
 // Borra la matriz del bloque
 void clear_matrix(void){
@@ -132,24 +138,11 @@ void print_matrix(void){
         putchar('|');
         for(int x=0; x<WIDTH; x++)
         {
-            if(matrix[y][x] == 0)
+            char out = matrix[y][x]+static_matrix[y][x];
+            if(out == 0)
                 putchar('-');
             else
-                putchar('0'+matrix[y][x]); // La data
-
-            printf("  ");
-        }
-        putchar('|');
-        putchar('\t');
-        putchar('\t');
-
-        putchar('|');
-        for(int x=0; x<WIDTH; x++)
-        {
-            if(game_matrix[y][x] == 0)
-                putchar('-');
-            else
-                putchar('0'+game_matrix[y][x]); // La data
+                putchar('0'+out); // La data
 
             printf("  ");
         }
@@ -162,7 +155,7 @@ void print_matrix(void){
 }
 
 // Funcion auxiliar para manejar un arreglo unidimensional (de una matriz) con coordenadas cartesianas
-char block(uint8_t x, uint8_t y){
+char _block(uint8_t x, uint8_t y){
     return blocks[block_data.id].data[x+y*blocks[block_data.id].size];
 }
 
@@ -173,7 +166,19 @@ uint8_t next_block (void)
     return rand() % 7 + 1;
 }
 
+void _undo_movement(void){
+    switch (last_movement) { // Realizamos el movimiento contrario para corregir la posicion de la pieza
+        case RIGHT:
+            colision = false;
+            move_block(0); // La movemos a la izquierda
+            break;
 
+<<<<<<< HEAD
+        case LEFT:
+            colision = false;
+            move_block(1); // La movemos a la derecha
+            break;
+=======
 // Chequea la validez de las coordenadas para la matriz general. Si da error, corrige las coordenadas y devuelve cero
 int can_write(uint8_t y, uint8_t x){
     if(x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT){
@@ -191,53 +196,115 @@ int can_write(uint8_t y, uint8_t x){
             case RIGHT:
                 move_block(0); // La movemos a la izquierda
                 break;
+>>>>>>> main
 
-            case LEFT:
-                move_block(1); // La movemos a la derecha
-                break;
+        case R_RIGHT:
+            colision = false;
+            rotate_block(0);
+            break;
 
-            case R_RIGHT:
-                rotate_block(0);
-                break;
+        case R_LEFT:
+            colision = false;
+            rotate_block(1);
+            break;
 
-            case R_LEFT:
-                rotate_block(1);
-                break;
+        case DOWN: // Choque con el piso
+            colision = true;
 
-            case DOWN: // Choque con el piso
-                colision = true;
+            block_data.y--;
+            break;
+    }
+}
 
-                block_data.y--;
-                break;
+
+// Chequea la validez de las coordenadas para la matriz general. Si da error, corrige las coordenadas y devuelve cero
+int _can_write(uint8_t y, uint8_t x){
+    if(x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT){
+
+        if(static_matrix[y][x] > 0){
+            printf("Colision?\n");
+            colision = true;
+            return 0;
         }
 
+        return 1;
+    }else{
         printf("Error! se intento escribir matriz[%u][%u]\n", y, x);
         return 0;
     }
 }
 
 void run_game(void){
-    render();
+    _render();
+    // TODO: capaz seria mejor poner un switch case
     if(bad_movement){
         bad_movement = false;
-        render(); // Si dio mal, corregimos la posicion
+        _undo_movement(); // Si dio mal, corregimos la posicion
+        _render();
     }
     if(colision){
         int i,j;
         for(i=0; i<HEIGHT; i++){
             for(j=0; j<WIDTH; j++){
                 if(matrix[i][j] > 0)
-                    game_matrix[i][j] = matrix[i][j];
+                    static_matrix[i][j] = matrix[i][j];
             }
         }
         insert_block(0); // Borramos el bloque
         clear_matrix();
         colision = false;
+
+		while (_check_row_compleate())
+		{
+			int row = _check_row_compleate();
+			printf("Compleate Row: %d\n", row);
+			_delete_compleate_row(row);
+			_move_blocks(row);
+		}
     }
 }
 
+
+void _move_blocks (uint8_t row)
+{
+	printf("TEST\n");
+	int i, j;
+	for ( i = row ; i > 0 ; i--)
+	{
+		for( j = 0 ; j < WIDTH; j++)
+		{
+			static_matrix[i][j] = static_matrix[i-1][j];
+			static_matrix[i-1][j] = 0 ;
+		}
+	}
+}
+
+uint8_t _check_row_compleate (void)
+{
+	int i , j;
+	for (i = 0 ; i< HEIGHT ; i++)
+	{
+		for (j= 0 ; (j<WIDTH) && (static_matrix[i][j] != 0); j++)
+		{
+			//Do nothing
+		}
+		if (j == WIDTH)	//Si el for recorrio todas las columnas de esa fila y su contenido fue diferente a cero
+			return i;	//Devuelvo la fila completa
+	}
+	return 0; //Devuelve cero si no existe fila completa
+}
+
+void _delete_compleate_row (uint8_t row)
+{
+	int j;
+	for (j= 0; j< WIDTH ; j++)
+	{
+		static_matrix[row][j] = 0;
+	}
+}
+
 // Actualiza la matriz con los datos de coordenadas del bloque
-void render(void){
+void _render(void){
     clear_matrix();
     uint8_t x,y;
     uint8_t size = blocks[block_data.id].size;
@@ -251,10 +318,10 @@ void render(void){
                     i = block_data.y+y-size/2;
                     j = block_data.x+x-size/2;
 
-                    char val = block(x,y);
+                    char val = _block(x,y);
                     if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
                     {
-                        if (can_write(i,j))
+                        if (_can_write(i,j))
                             matrix[i][j] = val;
                         else
                             bad_movement = true;
@@ -270,10 +337,10 @@ void render(void){
                     i = block_data.y+y-size/2;
                     j = block_data.x+x-size/2;
 
-                    char val = block(y, size-1-x);
+                    char val = _block(y, size-1-x);
                     if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
                     {
-                        if (can_write(i,j))
+                        if (_can_write(i,j))
                             matrix[i][j] = val;
                         else
                             bad_movement = true;
@@ -289,10 +356,10 @@ void render(void){
                     i = block_data.y+y-size/2;
                     j = block_data.x+x-size/2;
 
-                    char val = block(size - x -1 , size -y-1);
+                    char val = _block(size - x -1 , size -y-1);
                     if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
                     {
-                        if (can_write(i,j))
+                        if (_can_write(i,j))
                             matrix[i][j] = val;
                         else
                             bad_movement = true;
@@ -308,10 +375,10 @@ void render(void){
                     i = block_data.y+y-size/2;
                     j = block_data.x+x-size/2;
 
-                    char val = block(size-y-1, x);
+                    char val = _block(size-y-1, x);
                     if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
                     {
-                        if (can_write(i,j))
+                        if (_can_write(i,j))
                             matrix[i][j] = val;
                         else
                             bad_movement = true;

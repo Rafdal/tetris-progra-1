@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <allegro5/allegro.h>
+#include "easy_timer.h"
 #include "teclado_trucho.h"
 
 ALLEGRO_DISPLAY *display = NULL;
@@ -10,6 +11,7 @@ ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 
 bool key_state[4] = {false, false, false, false};
 bool last_keystate[4] = {false, false, false, false}; //Estado de teclas, true cuando esta apretada
+uint64_t key_press_timestamp[4] = {0, 0, 0, 0}; // timestamp de cuando se presiono la tecla
 bool redraw = false;
 
 callback_t on_press[4];
@@ -27,6 +29,10 @@ void set_on_exit(callback_t f){
 
 bool is_pressed(int key_id){
     return key_state[key_id];
+}
+
+bool is_long_pressed(int key_id){
+    return (get_millis()-key_press_timestamp[key_id] >= LONG_PRESS_TIMEOUT) && key_state[key_id];
 }
 
 
@@ -73,28 +79,14 @@ int teclado_begin(void){
 void teclado_run(void){
     ALLEGRO_EVENT ev;
 
-    int i;
-    for(i=0; i<4; i++){
-        if(key_state[i] != last_keystate[i]){
-            if(key_state[i] & !last_keystate[i]){
-                // printf("Presionada la tecla %u\n", i);
-                if (on_press[i] != NULL)
-                    on_press[i]();
-                
-            }
-            last_keystate[i] = key_state[i];
-        }
-    }
 
     if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
     {            
-        
+
         if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
             if(al_salir != NULL)
                 al_salir();
-        }
-
-        else if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
+        }else if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
             switch (ev.keyboard.keycode) {
                 case ALLEGRO_KEY_UP:
                     key_state[KEY_UP] = true;
@@ -110,6 +102,12 @@ void teclado_run(void){
 
                 case ALLEGRO_KEY_RIGHT:
                     key_state[KEY_RIGHT] = true;
+                    break;
+
+                case ALLEGRO_KEY_E:
+                    break;
+
+                case ALLEGRO_KEY_Q:
                     break;
             }
         }
@@ -139,11 +137,29 @@ void teclado_run(void){
             }
         }
 
-        if (redraw && al_is_event_queue_empty(event_queue)) {
+        int i;
+        if(ev.type == ALLEGRO_EVENT_KEY_DOWN || ev.type == ALLEGRO_EVENT_KEY_UP){
+            for(i=0; i<4; i++){
+
+                if(key_state[i] != last_keystate[i]){
+                    if(key_state[i] & !last_keystate[i]){
+                        key_press_timestamp[i] = get_millis();
+                        // printf("Presionada la tecla %u\n", i);
+                        if (on_press[i] != NULL){
+                            on_press[i]();
+                        }
+                        
+                    }
+                    last_keystate[i] = key_state[i];
+                }
+            }
+        }
+        
+        /* if (redraw && al_is_event_queue_empty(event_queue)) {
             redraw = false;
             al_clear_to_color(al_map_rgb(0, 0, 0));
             al_flip_display();
-        }
+        } */
 }
 
 void teclado_close(void){
