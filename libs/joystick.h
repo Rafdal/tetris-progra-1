@@ -10,7 +10,8 @@
 typedef void (*dpad_callback_t)(uint8_t);
 
 #define DPAD_LONG_PRESS 500 // milisegundos
-#define DPAD_UMBRAL 70 // umbral de activacion (joystick)
+#define DPAD_UMBRAL 80      // umbral de activacion (joystick)
+#define DPAD_DEBOUNCE 30    // umbral de desactivacion (joystick)
 
 enum {DPAD_UP, DPAD_RIGHT, DPAD_DOWN, DPAD_LEFT, DPAD_UPLEFT, DPAD_UPRIGHT};
 
