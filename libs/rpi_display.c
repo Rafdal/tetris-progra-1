@@ -30,6 +30,7 @@ void rpi_copyToDis (char** fromMat, uint8_t height, uint8_t width, uint8_t x, ui
 			for (j = x; j < width ; j++)
 			{
 				if(i < RPI_HEIGHT && j < RPI_WIDTH){
+					printf("copying (%d,%d)\n", i,j);
 					matrix[i][j]= fromMat[i][j];
 				}
 				else{
