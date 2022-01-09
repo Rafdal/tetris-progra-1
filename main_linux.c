@@ -9,6 +9,9 @@
 #include <stdio.h>
 #include <allegro5/allegro.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
 #include <allegro5/allegro_image.h> //NO OLVIDAR INCLUIR ALLEGRO_IMAGE EN LINKER
+#include <allegro5/allegro_audio.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
+#include <allegro5/allegro_acodec.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
+
 #define BLOCKSZ 50
 #define ANCHO   10
 #define ALTO    16
@@ -16,7 +19,37 @@
     ALLEGRO_BITMAP *image = NULL;
     ALLEGRO_BITMAP *muroH = NULL;
     ALLEGRO_BITMAP *muroV = NULL;
+    ALLEGRO_SAMPLE *sample = NULL;
 
+
+int loadAudio(void){
+        if (!al_install_audio()) {
+        fprintf(stderr, "failed to initialize audio!\n");
+        return -1;
+    }
+
+    if (!al_init_acodec_addon()) {
+        fprintf(stderr, "failed to initialize audio codecs!\n");
+        return -1;
+    }
+
+    if (!al_reserve_samples(1)) {
+        fprintf(stderr, "failed to reserve samples!\n");
+        return -1;
+    }
+
+    sample = al_load_sample("./frontend/Audio/audio.wav");
+
+    if (!sample) {
+        printf("Audio clip sample not loaded!\n");
+        return -1;
+    }
+    return 0;
+}
+
+void playAudio(void){
+    al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
+}
 
 int main(void) {
 
@@ -75,12 +108,17 @@ int main(void) {
 
     al_flip_display();
     al_rest(3);
+    
+    playAudio();
+
     al_get_backbuffer(display);
     al_flip_display();
     al_rest(3);
     
     al_destroy_display(display);
     al_destroy_bitmap(image);
+    al_uninstall_audio(); // borrar audio
+
     //al_shutdown_image_addon(); VER DOCUMENTACION ES LLAMADO AUTOMATICAMENTE AL SALIR DEL PROGRAMA
 
     return 0;
