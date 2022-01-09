@@ -5,7 +5,10 @@
 #include "./backend/game.h"
 // #include "./libs/rpi_display.h"
 
+uint8_t press_count[DPAD_KEYS];
+
 void key_press_callback(uint8_t key_id){
+    press_count[key_id]++;
     switch (key_id)
     {
     case DPAD_UP:
@@ -32,9 +35,14 @@ void key_press_callback(uint8_t key_id){
         printf("UPLEFT\n");
         break;
 
+    case DPAD_BTN:
+        printf("BTN\n");
+        break;
+
     default:
         break;
     }
+    printf("Pressed %u times\n", press_count[key_id]);
 }
 
 void update_display(void) {

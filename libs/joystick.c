@@ -6,7 +6,7 @@
 bool key_state[DPAD_KEYS];
 bool last_key_state[DPAD_KEYS];
 
-uint64_t btn_timestamp; // last press para debouncear el boton
+uint64_t key_timestamp[DPAD_KEYS]; // last press para debouncear el boton
 
 dpad_callback_t press_cback;
 dpad_callback_t long_cback;
@@ -68,14 +68,19 @@ void dpad_run(void){
 
 
     // ########## TO-DO #########
-    /* // Joystick button - Flanco ascendente
-    if(!key_state[DPAD_BTN] && btn == J_PRESS &&  (get_millis() - btn_timestamp) >= DPAD_BTN_DEBOUNCE_TIME ){
-        key_state[DPAD_BTN] = true;
-        btn_timestamp = get_millis();
+    // Joystick button - Flanco ascendente
+    if(btn = J_PRESS){
+        key_state[DPAD_BTN] = true; //  ### NO DEBOUNCE
     }
-
-    if(key_state[DPAD_BTN] && btn == J_NOPRESS && (get_millis() - btn_timestamp) >= DPAD_BTN_DEBOUNCE_TIME){
-        key_state = false;
+    else{
+        key_state[DPAD_BTN] = false;
+    }
+    /* if(!key_state[DPAD_BTN] && btn == J_PRESS){
+        key_state[DPAD_BTN] = true;
+        key_timestamp[DPAD_BTN] = get_millis();
+    }
+    else if(key_state[DPAD_BTN] && btn == J_NOPRESS && (get_millis() - key_timestamp[DPAD_BTN]) >= DPAD_BTN_DEBOUNCE_TIME){
+        key_state[DPAD_BTN] = false;
     } */
 
     int id;
