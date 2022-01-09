@@ -45,5 +45,9 @@ uint8_t next_block (void);
 // Actualiza el score
 int _update_score(int score, int streak, char game_level);
 
+// Chequea el fin de juego
+
+char _check_you_lose(void);
+
 
 #endif // GAME_H

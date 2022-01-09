@@ -210,10 +210,17 @@ int _can_write(uint8_t y, uint8_t x){
         }
 
         return 1;
-    }else{
-        printf("Error! se intento escribir matriz[%u][%u]\n", y, x);
-        return 0;
     }
+	else {
+		if (y == 255) {                                          // deteccion fin de juego
+			printf("Perdiste bro sos nefastex\n");        // mensaje fin de juego
+			// insertar funcion a llamar cuando termina el juego para cada plataforma
+			return 0;
+		}
+
+		printf("Error! se intento escribir matriz[%u][%u]\n", y, x);
+		return 0;
+	}
 }
 
 void run_game(void){
@@ -237,6 +244,7 @@ void run_game(void){
         clear_matrix();
         colision = false;
 		int streak = 0;
+
 
 		while (_check_row_compleate())
 		{
@@ -458,3 +466,4 @@ int _update_score(int score, int streak, char lvl){
 	return result;
 
 }
+
