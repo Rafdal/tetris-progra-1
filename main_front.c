@@ -31,18 +31,18 @@ int main(void) {
         return -1;
     }
 
-    image = al_load_bitmap("tetrisblocks.png");
+    image = al_load_bitmap("./frontend/images/tetrisblocks.png");
     if (!image) {
         fprintf(stderr, "failed to load image !\n");
         return 0;
     }
 
-     muroH = al_load_bitmap("muroH.jpg");
+     muroH = al_load_bitmap("./frontend/images/muroH.jpg");
     if (!image) {
         fprintf(stderr, "failed to load image !\n");
         return 0;
     }
-     muroV = al_load_bitmap("muroV.jpg");
+     muroV = al_load_bitmap("./frontend/images/muroV.jpg");
     if (!image) {
         fprintf(stderr, "failed to load image !\n");
         return 0;
