@@ -2,8 +2,8 @@
 
 #include "./libs/easy_timer.h"
 #include "./libs/joystick.h"
-#include "./libs/rpi_display.h"
 #include "./backend/game.h"
+#include "./libs/rpi_display.h"
 
 void key_press_callback(uint8_t key_id){
     switch (key_id)
@@ -38,12 +38,13 @@ void key_press_callback(uint8_t key_id){
 }
 
 void update_display(void) {
-	rpi_copyToDis((char**)&public_matrix[0][0], HEIGHT, WIDTH, 0,0);
+	rpi_copyToDis((char**)&public_matrix[0][0], HEIGHT, WIDTH, 0,0); // SEGMENTATION FAULT
 	run_rpi_display();
 }
 
 int main(void){
 
+    init_rpi_display();
     init_game();
     dpad_init();
     dpad_on_press(key_press_callback);
