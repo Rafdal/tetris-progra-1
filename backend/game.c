@@ -173,30 +173,10 @@ void _undo_movement(void){
             move_block(0); // La movemos a la izquierda
             break;
 
-<<<<<<< HEAD
         case LEFT:
             colision = false;
             move_block(1); // La movemos a la derecha
             break;
-=======
-// Chequea la validez de las coordenadas para la matriz general. Si da error, corrige las coordenadas y devuelve cero
-int can_write(uint8_t y, uint8_t x){
-    if(x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT){
-        if(game_matrix[y][x] > 0)
-		{
-            printf("Colision?\n");
-
-			colision = true;
-			block_data.y--;
-			return 0;
-		}
-        return 1;
-    }else{
-        switch (last_movement) { // Realizamos el movimiento contrario para corregir la posicion de la pieza
-            case RIGHT:
-                move_block(0); // La movemos a la izquierda
-                break;
->>>>>>> main
 
         case R_RIGHT:
             colision = false;
