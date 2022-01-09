@@ -4,6 +4,8 @@
 #include <time.h>
 #include "game.h"
 
+#define game_level 1
+
 //   C O N S T A N T E S
 
 const char BLOCK_0[] = { // Bloque nulo
@@ -216,6 +218,7 @@ int _can_write(uint8_t y, uint8_t x){
 
 void run_game(void){
     _render();
+	static int score;
     // TODO: capaz seria mejor poner un switch case
     if(bad_movement){
         bad_movement = false;
@@ -233,15 +236,21 @@ void run_game(void){
         insert_block(0); // Borramos el bloque
         clear_matrix();
         colision = false;
+		int streak = 0;
 
 		while (_check_row_compleate())
 		{
 			int row = _check_row_compleate();
+
 			printf("Compleate Row: %d\n", row);
 			_delete_compleate_row(row);
 			_move_blocks(row);
+			streak++;
+			score = _update_score(score, streak, game_level);
+			printf("score is: %d points\n", score);
 		}
     }
+
 }
 
 
@@ -425,4 +434,27 @@ void rotate_block(int direction){
             block_data.rot--;
         last_movement = R_LEFT;
     }
+}
+
+// _update_score actualiza el score segun el nivel en el que se encuentra
+
+int _update_score(int score, int streak, char lvl){
+	int result = score;
+	switch (streak) {
+		case 1:
+			result += 40*(lvl+1);
+			break;
+		case 2:
+			result += 100*(lvl+1);
+			break;
+		case 3:
+			result += 300*(lvl+1);
+			break;
+		case 4:
+			result += 1200*(lvl+1);
+			printf("TETRIS!!");
+			break;
+	}
+	return result;
+
 }

@@ -42,5 +42,8 @@ void move_block(int direction);
 //Devuelve un ID de bloque aleatorio
 uint8_t next_block (void);
 
+// Actualiza el score
+int _update_score(int score, int streak, char game_level);
+
 
 #endif // GAME_H
