@@ -242,6 +242,7 @@ void run_game(void){
 			_move_blocks(row);
 		}
     }
+    
 }
 
 
