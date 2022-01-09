@@ -9,6 +9,9 @@
 #include <stdio.h>
 #include <allegro5/allegro.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
 #include <allegro5/allegro_image.h> //NO OLVIDAR INCLUIR ALLEGRO_IMAGE EN LINKER
+#include <allegro5/allegro_audio.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
+#include <allegro5/allegro_acodec.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
+
 #define BLOCKSZ 50
 #define ANCHO   10
 #define ALTO    16
@@ -16,8 +19,17 @@
     ALLEGRO_BITMAP *image = NULL;
     ALLEGRO_BITMAP *muroH = NULL;
     ALLEGRO_BITMAP *muroV = NULL;
+    ALLEGRO_SAMPLE *sample = NULL;
 
+
+<<<<<<< HEAD:main_front.c
 void disp_printer (void);
+=======
+void playAudio(void){
+    al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
+}
+
+>>>>>>> a2db4713218df2804c182adf74927effc79e5797:main_linux.c
 int main(void) {
 
 
@@ -26,23 +38,46 @@ int main(void) {
         return -1;
     }
 
+    if (!al_install_audio()) {
+        fprintf(stderr, "failed to initialize audio!\n");
+        return -1;
+    }
+
+    if (!al_init_acodec_addon()) {
+        fprintf(stderr, "failed to initialize audio codecs!\n");
+        return -1;
+    }
+
+    if (!al_reserve_samples(1)) {
+        fprintf(stderr, "failed to reserve samples!\n");
+        return -1;
+    }
+
+    const char* path = "tetris.wav";
+    sample = al_load_sample(path);
+
+    if (!sample) {
+        printf("Audio clip sample \"%s\" not loaded!\n", path);
+        return -1;
+    }
+
     if (!al_init_image_addon()) { // ADDON necesario para manejo(no olvidar el freno de mano) de imagenes 
         fprintf(stderr, "failed to initialize image addon !\n");
         return -1;
     }
 
-    image = al_load_bitmap("tetrisblocks.png");
+    image = al_load_bitmap("./frontend/images/tetrisblocks.png");
     if (!image) {
         fprintf(stderr, "failed to load image !\n");
         return 0;
     }
 
-     muroH = al_load_bitmap("muroH.jpg");
+     muroH = al_load_bitmap("./frontend/images/muroH.jpg");
     if (!image) {
         fprintf(stderr, "failed to load image !\n");
         return 0;
     }
-     muroV = al_load_bitmap("muroV.jpg");
+     muroV = al_load_bitmap("./frontend/images/muroV.jpg");
     if (!image) {
         fprintf(stderr, "failed to load image !\n");
         return 0;
@@ -54,6 +89,7 @@ int main(void) {
         fprintf(stderr, "failed to create display!\n");
         return -1;
     }
+
     //ahora dibujo el muro horizontal
     al_draw_scaled_bitmap(muroH, 0, 0, al_get_bitmap_width(muroH), al_get_bitmap_height(muroH), 0, BLOCKSZ*(ALTO), al_get_display_width(display), BLOCKSZ, 0);
     //empiezo uso la ultima fila
@@ -75,14 +111,27 @@ int main(void) {
 
     al_flip_display();
     al_rest(3);
+<<<<<<< HEAD:main_front.c
   
+=======
+    
+    playAudio();
+
+    al_get_backbuffer(display);
+    al_flip_display();
+    al_rest(3);
+    
+>>>>>>> a2db4713218df2804c182adf74927effc79e5797:main_linux.c
     al_destroy_display(display);
     al_destroy_bitmap(image);
+    al_uninstall_audio(); // borrar audio
+
     //al_shutdown_image_addon(); VER DOCUMENTACION ES LLAMADO AUTOMATICAMENTE AL SALIR DEL PROGRAMA
 
     return 0;
 }
 
+<<<<<<< HEAD:main_front.c
 void disp_printer (void){
     char x, y;
     for(x=0; x<WIDTH ; x++)
@@ -93,3 +142,16 @@ void disp_printer (void){
         }
     }
 }
+=======
+/*void printer (char color, char xpos, char ypos){
+    char offsetX = (xpos? 4 : 0);
+    char offsetY = (ypos? 4 : 0);
+    al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8)*color, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ + BLOCKSZ*xpos - offsetX, BLOCKSZ*ypos-offsetY, BLOCKSZ, BLOCKSZ, 0);
+}
+*/
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////AUDIO/////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+>>>>>>> a2db4713218df2804c182adf74927effc79e5797:main_linux.c

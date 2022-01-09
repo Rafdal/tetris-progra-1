@@ -5,7 +5,12 @@
         "stdbool.h": "c",
         "joystick.h": "c",
         "joydrv.h": "c",
+<<<<<<< HEAD
         "stdio.h": "c"
     },
     "C_Cpp.errorSquiggles": "Enabled"
+=======
+        "allegro.h": "c"
+    }
+>>>>>>> a2db4713218df2804c182adf74927effc79e5797
 }
