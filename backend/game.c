@@ -114,6 +114,7 @@ void init_game(void){
     for(i=0; i<HEIGHT; i++){
         for(j=0; j<WIDTH; j++){
             static_matrix[i][j] = (char)0; // inicio la matriz en cero
+            public_matrix[i][j] = (char)0;
         }
     }
 }
