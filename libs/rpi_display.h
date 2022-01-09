@@ -2,8 +2,10 @@
 #define TETRIS_PROGRA_1_RPI_DISPLAY_H
 
 //   C O N S T A N T E S
-#define RPI_WIDTHT 16
+#define RPI_WIDTH 16
 #define RPI_HEIGHT 16
+
+#include <stdint.h>
 
 //   P R O T O T I P O S
 void init_rpi_display (void); // inicializa el display de la RPI

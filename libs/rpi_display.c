@@ -2,7 +2,7 @@
 #include "rpi_display.h"
 #include "disdrv.h"
 
-char matrix[RPI_HEIGHT][RPI_WIDTHT];
+char matrix[RPI_HEIGHT][RPI_WIDTH];
 
 // Funcion que inicializa el display de la RPI
 void init_rpi_display (void)
@@ -10,7 +10,7 @@ void init_rpi_display (void)
 	disp_init(); //Inicializa el display
 	disp_clear(); //Borra el buffer
 	int y,x;
-	for (y = 0 ; y < RPI_HEIGHT ; .y++)
+	for (y = 0 ; y < RPI_HEIGHT ; y++)
 	{
 		for (x = 0 ; x < RPI_WIDTH; x++)
 		{
@@ -33,7 +33,7 @@ void rpi_copyToDis (char** fromMat, uint8_t height, uint8_t width, uint8_t x, ui
 			}
 		}
 	} else
-		printf("ERROR: Exceden los tamaños de la matriz sobre la RPI\n")
+		printf("ERROR: Exceden los tamaños de la matriz sobre la RPI\n");
 }
 
 
