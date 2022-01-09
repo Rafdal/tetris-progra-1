@@ -69,7 +69,7 @@ void dpad_run(void){
 
     // ########## TO-DO #########
     // Joystick button - Flanco ascendente
-    if(btn = J_PRESS){
+    if(btn == J_PRESS){
         key_state[DPAD_BTN] = true; //  ### NO DEBOUNCE
     }
     else{

@@ -57,7 +57,7 @@ int main(void){
     dpad_init();
     dpad_on_press(key_press_callback);
 
-	interval_t display_interval = set_interval(update_display, 200);
+	// interval_t display_interval = set_interval(update_display, 200);
 
     while (1)
     {
