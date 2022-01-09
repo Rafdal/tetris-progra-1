@@ -7,29 +7,88 @@
  */
 
 #include <stdio.h>
+#include <allegro5/allegro.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
+#include <allegro5/allegro_image.h> //NO OLVIDAR INCLUIR ALLEGRO_IMAGE EN LINKER
+#define BLOCKSZ 50
+#define ANCHO   10
+#define ALTO    16
+    ALLEGRO_DISPLAY *display = NULL;
+    ALLEGRO_BITMAP *image = NULL;
+    ALLEGRO_BITMAP *muroH = NULL;
+    ALLEGRO_BITMAP *muroV = NULL;
 
-#include "./frontend/game_screen.h"
 
-const color_t colors[4] = {
-    {255, 0, 0}, // RED
-    {0, 255, 0}, // GREEN
-    {0, 0, 255}, // BLUE
-    {128, 128, 128}, // GREY
-};
+int main(void) {
 
-int main(void){
-    game_screen_begin();
 
-    game_screen_clear();
+    if (!al_init()) {
+        fprintf(stderr, "failed to initialize allegro!\n");
+        return -1;
+    }
+
+    if (!al_init_image_addon()) { // ADDON necesario para manejo(no olvidar el freno de mano) de imagenes 
+        fprintf(stderr, "failed to initialize image addon !\n");
+        return -1;
+    }
+
+    image = al_load_bitmap("tetrisblocks.png");
+    if (!image) {
+        fprintf(stderr, "failed to load image !\n");
+        return 0;
+    }
+
+     muroH = al_load_bitmap("muroH.jpg");
+    if (!image) {
+        fprintf(stderr, "failed to load image !\n");
+        return 0;
+    }
+     muroV = al_load_bitmap("muroV.jpg");
+    if (!image) {
+        fprintf(stderr, "failed to load image !\n");
+        return 0;
+    }
+     
+    display = al_create_display(((ANCHO+2)*BLOCKSZ), ((ALTO+1)*BLOCKSZ));
+    if (!display) {
+        al_destroy_bitmap(image);
+        fprintf(stderr, "failed to create display!\n");
+        return -1;
+    }
+    //ahora dibujo el muro horizontal
+    al_draw_scaled_bitmap(muroH, 0, 0, al_get_bitmap_width(muroH), al_get_bitmap_height(muroH), 0, BLOCKSZ*(ALTO), al_get_display_width(display), BLOCKSZ, 0);
+    //empiezo uso la ultima fila
+    //dibujo las paredes
+    al_draw_scaled_bitmap(muroV, 0, 0, al_get_bitmap_width(muroV), al_get_bitmap_height(muroV), 0, 0, BLOCKSZ, al_get_display_height(display)-BLOCKSZ, 0);
+    al_draw_scaled_bitmap(muroV, 0, 0, al_get_bitmap_width(muroV), al_get_bitmap_height(muroV),al_get_display_width(display)-BLOCKSZ , 0, BLOCKSZ, al_get_display_height(display)-BLOCKSZ, 0);
     
-    for(int i=0; i<4; i++){
-        game_screen_draw(16+i*34, 16, colors[i]);
-    }
+    al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8)*2, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ-5, 0, BLOCKSZ, BLOCKSZ, 0);
+        al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8), 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*2, 0, BLOCKSZ, BLOCKSZ, 0);
+            al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8)*2, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*3-4, 0, BLOCKSZ, BLOCKSZ, 0);
 
-    game_screen_show();
-    while (run)
-    {
-        game_screen_run();
-    }
-    game_screen_end();
+
+    al_draw_tinted_scaled_bitmap(image, al_map_rgba_f(0.2, 0.2, 0.2, 0.2), (al_get_bitmap_width(image)/8)*2, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*2, BLOCKSZ, BLOCKSZ, BLOCKSZ, 0);
+    //void al_draw_bitmap(ALLEGRO_BITMAP *bitmap, float dx, float dy, int flags) 
+    /*al_draw_scaled_bitmap(image,
+            0, 0, al_get_bitmap_width(image), al_get_bitmap_height(image), //imagen
+            0, 0, al_get_display_width(display), al_get_display_height(display), //a que tamaño queres que se dibuje la imagen
+            0);*/ //SIn flags podrian usar ALLEGRO_FLIP_HORIZONTAL o ALLEGRO_FLIP_VERTICAL muy utiles
+
+    al_flip_display();
+    al_rest(3);
+    al_get_backbuffer(display);
+    al_flip_display();
+    al_rest(3);
+    
+    al_destroy_display(display);
+    al_destroy_bitmap(image);
+    //al_shutdown_image_addon(); VER DOCUMENTACION ES LLAMADO AUTOMATICAMENTE AL SALIR DEL PROGRAMA
+
+    return 0;
 }
+
+/*void printer (char color, char xpos, char ypos){
+    char offsetX = (xpos? 4 : 0);
+    char offsetY = (ypos? 4 : 0);
+    al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8)*color, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ + BLOCKSZ*xpos - offsetX, BLOCKSZ*ypos-offsetY, BLOCKSZ, BLOCKSZ, 0);
+}
+*/
