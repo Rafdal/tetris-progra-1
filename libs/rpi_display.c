@@ -38,7 +38,7 @@ void rpi_copyToDis (char** fromMat, uint8_t height, uint8_t width, uint8_t x, ui
 			}
 		}
 	} else {
-		printf("ERROR: Exceden los tamaños de la matriz sobre la RPI\n", i,j);
+		printf("ERROR: Exceden los tamaños de la matriz sobre la RPI\n");
 	}
 }
 
