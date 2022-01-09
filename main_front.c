@@ -5,7 +5,7 @@
  *
  * Created on June 4, 2016, 6:38 PM
  */
-
+#include "./backend/game.h"
 #include <stdio.h>
 #include <allegro5/allegro.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
 #include <allegro5/allegro_image.h> //NO OLVIDAR INCLUIR ALLEGRO_IMAGE EN LINKER
@@ -17,7 +17,7 @@
     ALLEGRO_BITMAP *muroH = NULL;
     ALLEGRO_BITMAP *muroV = NULL;
 
-
+void disp_printer (void);
 int main(void) {
 
 
@@ -61,7 +61,7 @@ int main(void) {
     al_draw_scaled_bitmap(muroV, 0, 0, al_get_bitmap_width(muroV), al_get_bitmap_height(muroV), 0, 0, BLOCKSZ, al_get_display_height(display)-BLOCKSZ, 0);
     al_draw_scaled_bitmap(muroV, 0, 0, al_get_bitmap_width(muroV), al_get_bitmap_height(muroV),al_get_display_width(display)-BLOCKSZ , 0, BLOCKSZ, al_get_display_height(display)-BLOCKSZ, 0);
     
-    al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8)*2, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ-5, 0, BLOCKSZ, BLOCKSZ, 0);
+    /*al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8)*2, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ-5, 0, BLOCKSZ, BLOCKSZ, 0);
         al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8), 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*2, 0, BLOCKSZ, BLOCKSZ, 0);
             al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8)*2, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*3-4, 0, BLOCKSZ, BLOCKSZ, 0);
 
@@ -75,10 +75,7 @@ int main(void) {
 
     al_flip_display();
     al_rest(3);
-    al_get_backbuffer(display);
-    al_flip_display();
-    al_rest(3);
-    
+  
     al_destroy_display(display);
     al_destroy_bitmap(image);
     //al_shutdown_image_addon(); VER DOCUMENTACION ES LLAMADO AUTOMATICAMENTE AL SALIR DEL PROGRAMA
@@ -86,9 +83,13 @@ int main(void) {
     return 0;
 }
 
-/*void printer (char color, char xpos, char ypos){
-    char offsetX = (xpos? 4 : 0);
-    char offsetY = (ypos? 4 : 0);
-    al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8)*color, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ + BLOCKSZ*xpos - offsetX, BLOCKSZ*ypos-offsetY, BLOCKSZ, BLOCKSZ, 0);
+void disp_printer (void){
+    char x, y;
+    for(x=0; x<WIDTH ; x++)
+    {
+        for(y=0; y<HEIGHT ; y++)
+        {
+        al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8)*static_matrix[y][x], 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ + BLOCKSZ*x, BLOCKSZ*y, BLOCKSZ, BLOCKSZ, 0);\
+        }
+    }
 }
-*/

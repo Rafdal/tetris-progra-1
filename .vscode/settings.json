@@ -4,6 +4,8 @@
         "easy_timer.h": "c",
         "stdbool.h": "c",
         "joystick.h": "c",
-        "joydrv.h": "c"
-    }
+        "joydrv.h": "c",
+        "stdio.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "Enabled"
 }
