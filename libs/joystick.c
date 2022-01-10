@@ -3,6 +3,8 @@
 #include "joystick.h"
 #include "joydrv.h"
 
+const char dpad_key_names[][DPAD_NAMELEN]= {"UP", "RIGHT", "DOWN", "LEFT", "UPLEFT", "UPRIGHT", "BTN", "idle"};
+
 //  #############################
 //  #     PRIVATE VARIABLES     #
 //  #############################
@@ -20,6 +22,7 @@ dpad_callback_t on_press;
 //  #############################
 
 void dpad_init(void){
+
     joy_init();
     int id;
     idle_flag = false;
