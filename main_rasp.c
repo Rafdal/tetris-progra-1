@@ -9,40 +9,40 @@ uint8_t press_count[DPAD_KEYS];
 
 void key_press_callback(uint8_t key){
     press_count[key]++;
-    switch (key)
+    /* switch (key)
     {
-    case DPAD_UP:
-        printf("UP\n");
-        break;
+        case DPAD_UP:
+            printf("UP\n");
+            break;
 
-    case DPAD_DOWN:
-        printf("DOWN\n");
-        break;
+        case DPAD_DOWN:
+            printf("DOWN\n");
+            break;
 
-    case DPAD_LEFT:
-        printf("LEFT\n");
-        break;
+        case DPAD_LEFT:
+            printf("LEFT\n");
+            break;
 
-    case DPAD_RIGHT:
-        printf("RIGHT\n");
-        break;
+        case DPAD_RIGHT:
+            printf("RIGHT\n");
+            break;
 
-    case DPAD_UPRIGHT:
-        printf("UPRIGHT\n");
-        break;
+        case DPAD_UPRIGHT:
+            printf("UPRIGHT\n");
+            break;
 
-    case DPAD_UPLEFT:
-        printf("UPLEFT\n");
-        break;
+        case DPAD_UPLEFT:
+            printf("UPLEFT\n");
+            break;
 
-    case DPAD_BTN:
-        printf("BTN\n");
-        break;
+        case DPAD_BTN:
+            printf("BTN\n");
+            break;
 
-    default:
-        break;
-    }
-    printf("Pressed %u times\n", press_count[key]);
+        default:
+            break;
+    } */
+    printf("Pressed %s %u times\n", dpad_key_names[key], press_count[key]);
 }
 
 void update_display(void) {
@@ -61,8 +61,11 @@ int main(void){
 
     while (1)
     {
-        if(dpad_is_longpressed(DPAD_BTN)){
-            printf("longpress BTN\n");
+        int key;
+        for(key=0; key<DPAD_KEYS; key++){
+            if(dpad_is_longpressed(key)){
+                printf("LONG Pressed %s\n", dpad_key_names[key]);
+            }
         }
 		// run_interval(&display_interval);
         dpad_run();
