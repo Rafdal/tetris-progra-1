@@ -18,7 +18,7 @@ main_rasp.o: main_rasp.c
 main_linux.o: main_linux.c
 	gcc -c -Wall main_linux.c `pkg-config --cflags allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5`
 
-main_back.o: main_back.c game.o easy_timer.o
+main_back.o: main_back.c
 	gcc -c -Wall main_back.c
 
 #################
@@ -28,8 +28,8 @@ main_back.o: main_back.c game.o easy_timer.o
 game.o: ./backend/game.c ./backend/game.h
 	gcc -c -Wall ./backend/game.c
 
-teclado_trucho.o: ./libs/teclado_trucho.c ./libs/teclado_trucho.h ./libs/easy_timer.o
-	gcc -Wall -c `pkg-config --cflags allegro-5` ./libs/teclado_trucho.c
+teclado_trucho.o: ./libs/teclado_trucho.c ./libs/teclado_trucho.h
+	gcc -Wall -c ./libs/teclado_trucho.c `pkg-config --cflags allegro-5`
 
 easy_timer.o: ./libs/easy_timer.c ./libs/easy_timer.h
 	gcc -c -Wall ./libs/easy_timer.c
