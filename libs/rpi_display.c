@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "rpi_display.h"
-#include "dispEmu.h" // RASPBERRY DISPLAY EMULATOR
+#include "disdrv.h" // RASPBERRY DISPLAY EMULATOR
 
 // char matrix[RPI_HEIGHT][RPI_WIDTH];
 

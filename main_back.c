@@ -10,15 +10,15 @@ void key_up(void){
 
 void key_down(void){
     printf("DOWN pressed\n");
-    if(block_data.id == 0) //La pieza colisiono
+    if(game_block_data.id == 0) //La pieza colisiono
 	{
-        insert_block(next_block());
-        run_game();
+        game_insert_block(game_get_next_block());
+        game_run();
         print_matrix();
     }else //La pieza sigue descendiendo
 	{
-        descend_block();
-        run_game();
+        game_move_down();
+        game_run();
         print_matrix();
     }
 }
@@ -28,11 +28,11 @@ void key_left(void){
 
     if(is_pressed(KEY_UP)){
         printf("UP+LEFT pressed\n");
-        rotate_block(0);
+        game_rotate(0);
     }else{
-        move_block(0);
+        game_move_horizontal(0);
     }
-    run_game();
+    game_run();
     print_matrix();
 
 }
@@ -42,11 +42,11 @@ void key_right(void){
 
     if(is_pressed(KEY_UP)){
         printf("UP+RIGHT pressed\n");
-        rotate_block(1);
+        game_rotate(1);
     }else{
-        move_block(1);
+        game_move_horizontal(1);
     }
-    run_game();
+    game_run();
     print_matrix();
 }
 
@@ -91,7 +91,7 @@ int main(void) {
     interval_t longpress_int = set_interval(long_press, 150);
 
     teclado_begin();
-    run_game();
+    game_run();
     print_matrix();
 
     // Seteo los callbacks de cada tecla

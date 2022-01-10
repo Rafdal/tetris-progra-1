@@ -1,37 +1,41 @@
 #include <stdio.h>
+#include <assert.h>
 
 #include "./libs/easy_timer.h"
 #include "./libs/joystick.h"
 #include "./backend/game.h"
-// #include "./libs/rpi_display.h"
-
-uint8_t press_count[DPAD_KEYS];
+#include "./libs/matrix_handler.h"
+#include "./libs/rpi_display.h"
 
 void key_press_callback(uint8_t key){
-    press_count[key]++;
-    /* switch (key)
+    switch (key)
     {
         case DPAD_UP:
             printf("UP\n");
             break;
 
         case DPAD_DOWN:
+            game_move_down();
             printf("DOWN\n");
             break;
 
         case DPAD_LEFT:
+            game_move_horizontal(0);
             printf("LEFT\n");
             break;
 
         case DPAD_RIGHT:
+            game_move_horizontal(1);
             printf("RIGHT\n");
             break;
 
         case DPAD_UPRIGHT:
+            game_rotate(1);
             printf("UPRIGHT\n");
             break;
 
         case DPAD_UPLEFT:
+            game_rotate(0);
             printf("UPLEFT\n");
             break;
 
@@ -41,18 +45,30 @@ void key_press_callback(uint8_t key){
 
         default:
             break;
-    } */
+    }
+
+    game_run();
+    update_display();
 }
 
-void update_display(void) {
-	// rpi_copyToDis((char**)&public_matrix[0][0], HEIGHT, WIDTH, 0,0);     //  SEGMENTATION FAULT
-	// rpi_run_display();
+void update_display(void) { // TODO: Este codigo es ineficiente, habria que implementar matrix_handler.h en game.h
+    matrix_hand_t aux_mat;
+    assert(mat_init(&aux_mat, HEIGHT, WIDTH));
+
+
+    MAT_COPY_FROM_2D_ARRAY(&aux_mat, game_public_matrix, HEIGHT, WIDTH)
+
+    rpi_copyToDis(aux_mat, 0, 0);
+	rpi_run_display();
+
+    mat_delete(&aux_mat);
 }
 
 int main(void){
 
-    // rpi_init_display();
-    // init_game();
+    rpi_init_display();
+    game_init();
+
     dpad_init();
     dpad_on_press(key_press_callback);
 
@@ -60,15 +76,7 @@ int main(void){
 
     while (1)
     {
-        int key;
-        for(key=0; key<DPAD_KEYS; key++){
-            if(dpad_is_longpressed(key)){
-                // printf("LONG Pressed %s\n", dpad_key_names[key]);
-            }
-        }
-		// run_interval(&display_interval);
         dpad_run();
     }
-
     return 0;
 }
