@@ -20,7 +20,7 @@ typedef void (*dpad_callback_t)(uint8_t);
 
 enum {DPAD_UP, DPAD_RIGHT, DPAD_DOWN, DPAD_LEFT, DPAD_UPLEFT, DPAD_UPRIGHT, DPAD_BTN, DPAD_idle};
 
-extern const char dpad_key_names[][DPAD_NAMELEN];
+const char dpad_key_names[][DPAD_NAMELEN];
 
 void dpad_init(void); // iniciar libreria
 void dpad_run(void);  // leer botones y ejecutar callbacks (debe llamarse en Tiempo Real)

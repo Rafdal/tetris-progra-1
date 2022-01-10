@@ -3,7 +3,7 @@
 #include "joystick.h"
 #include "joydrv.h"
 
-const char dpad_key_names[][DPAD_NAMELEN]= {"UP", "RIGHT", "DOWN", "LEFT", "UPLEFT", "UPRIGHT", "BTN", "idle"};
+extern const char dpad_key_names[][DPAD_NAMELEN]= {"UP", "RIGHT", "DOWN", "LEFT", "UPLEFT", "UPRIGHT", "BTN", "idle"};
 
 //  #############################
 //  #     PRIVATE VARIABLES     #
