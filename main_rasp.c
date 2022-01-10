@@ -42,17 +42,16 @@ void key_press_callback(uint8_t key){
         default:
             break;
     } */
-    printf("Pressed %s %u times\n", dpad_key_names[key], press_count[key]);
 }
 
 void update_display(void) {
 	// rpi_copyToDis((char**)&public_matrix[0][0], HEIGHT, WIDTH, 0,0);     //  SEGMENTATION FAULT
-	// run_rpi_display();
+	// rpi_run_display();
 }
 
 int main(void){
 
-    // init_rpi_display();
+    // rpi_init_display();
     // init_game();
     dpad_init();
     dpad_on_press(key_press_callback);
