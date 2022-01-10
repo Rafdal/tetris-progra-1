@@ -1,9 +1,11 @@
 #include <stdio.h>
-
-#include "./testing/rpi_display.h"
-#include "./libs/easy_timer.h"
+#include <assert.h>
 #include <time.h>
 #include <stdlib.h>
+
+#include "./testing/rpi_display.h"
+#include "./testing/matrix_handler.h"
+#include "./libs/easy_timer.h"
 
 char game_mat[16][10] = {
     {0,0,0,0,0,0,0,0,0,9},
@@ -54,10 +56,16 @@ char menu_mat[16][6] = {
 int main(void){
     srand(time(NULL));
     rpi_init_display();
+
+    matrix_hand_t mat;
+
+    assert(mat_init(&mat, 4, 4));
+    MAT_COPY_FROM_2D_ARRAY(&mat, small_mat, 4, 4)
+
     rpi_run_display();
-    rpi_copyToDis(&small_mat[0], 4, 4, 5, 5);
-    // rpi_set_display(3,3, 9);
+    rpi_copyToDis(mat, 5, 5);
+
     rpi_run_display();
-    printf("%u\n", rand()%10000);
+
     return 0;
 }

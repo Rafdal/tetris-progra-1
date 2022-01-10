@@ -1,5 +1,5 @@
-test: main_test.o test_rpi_display.o easy_timer.o dispEmu.o
-	gcc -Wall main_test.o test_rpi_display.o easy_timer.o dispEmu.o -o test
+test: main_test.o test_rpi_display.o easy_timer.o dispEmu.o matrix_handler.o
+	gcc -Wall main_test.o test_rpi_display.o easy_timer.o dispEmu.o matrix_handler.o -o test
 
 back: main_back.o game.o easy_timer.o teclado_trucho.o
 	gcc -Wall main_back.o game.o easy_timer.o teclado_trucho.o -o back `pkg-config --libs allegro-5`
@@ -49,6 +49,9 @@ rpi_display.o: ./libs/rpi_display.c ./libs/rpi_display.h
 #################
 # TESTING LIBS 	#
 #################
+
+matrix_handler.o: ./testing/matrix_handler.c ./testing/matrix_handler.h
+	gcc -c -Wall ./testing/matrix_handler.c
 
 test_rpi_display.o: ./testing/rpi_display.c ./testing/rpi_display.h
 	gcc -c -Wall ./testing/rpi_display.c -o test_rpi_display.o
