@@ -22,12 +22,14 @@
     ALLEGRO_BITMAP *muroH = NULL;
     ALLEGRO_BITMAP *muroV = NULL;
     ALLEGRO_SAMPLE *sample = NULL;
-
+    ALLEGRO_EVENT_QUEUE * event_queue = NULL;
 
 /*void playAudio(void){
     al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
 }
 */
+    pthread_t th1;
+
 void printer (void);
 int main(void) {
 
@@ -109,8 +111,8 @@ int main(void) {
             0);*/ //SIn flags podrian usar ALLEGRO_FLIP_HORIZONTAL o ALLEGRO_FLIP_VERTICAL muy utiles
 
     al_flip_display();
-    al_rest(3);
-  
+
+    
     
     //playAudio();
 
