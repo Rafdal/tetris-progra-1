@@ -1,3 +1,6 @@
+test: main_test.o test_rpi_display.o easy_timer.o dispEmu.o
+	gcc -Wall main_test.o test_rpi_display.o easy_timer.o dispEmu.o -o test
+
 back: main_back.o game.o easy_timer.o teclado_trucho.o
 	gcc -Wall main_back.o game.o easy_timer.o teclado_trucho.o -o back `pkg-config --libs allegro-5`
 
@@ -12,13 +15,16 @@ rasp: main_rasp.o easy_timer.o joystick.o rpi_display.o game.o
 # 	   MAINs	#
 #################
 
+main_test.o: main_test.c
+	gcc -c -Wall main_test.c
+
 main_rasp.o: main_rasp.c
 	gcc -c -Wall main_rasp.c
 
 main_linux.o: main_linux.c
 	gcc -c -Wall main_linux.c `pkg-config --cflags allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5`
 
-main_back.o: main_back.c game.o easy_timer.o
+main_back.o: main_back.c
 	gcc -c -Wall main_back.c
 
 #################
@@ -28,8 +34,8 @@ main_back.o: main_back.c game.o easy_timer.o
 game.o: ./backend/game.c ./backend/game.h
 	gcc -c -Wall ./backend/game.c
 
-teclado_trucho.o: ./libs/teclado_trucho.c ./libs/teclado_trucho.h ./libs/easy_timer.o
-	gcc -Wall -c `pkg-config --cflags allegro-5` ./libs/teclado_trucho.c
+teclado_trucho.o: ./libs/teclado_trucho.c ./libs/teclado_trucho.h
+	gcc -Wall -c ./libs/teclado_trucho.c `pkg-config --cflags allegro-5`
 
 easy_timer.o: ./libs/easy_timer.c ./libs/easy_timer.h
 	gcc -c -Wall ./libs/easy_timer.c
@@ -39,6 +45,16 @@ joystick.o: ./libs/joystick.c ./libs/joystick.h
 
 rpi_display.o: ./libs/rpi_display.c ./libs/rpi_display.h
 	gcc -c -Wall ./libs/rpi_display.c
+
+#################
+# TESTING LIBS 	#
+#################
+
+test_rpi_display.o: ./testing/rpi_display.c ./testing/rpi_display.h
+	gcc -c -Wall ./testing/rpi_display.c -o test_rpi_display.o
+
+dispEmu.o: ./testing/dispEmu.c ./testing/dispEmu.h
+	gcc -c -Wall ./testing/dispEmu.c
 
 clean:
 	rm *.o
