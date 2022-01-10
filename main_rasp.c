@@ -64,7 +64,7 @@ int main(void){
         int key;
         for(key=0; key<DPAD_KEYS; key++){
             if(dpad_is_longpressed(key)){
-                printf("LONG Pressed %s\n", dpad_key_names[key]);
+                // printf("LONG Pressed %s\n", dpad_key_names[key]);
             }
         }
 		// run_interval(&display_interval);
