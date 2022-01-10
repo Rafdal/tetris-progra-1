@@ -13,6 +13,8 @@
 #include <allegro5/allegro_image.h> //NO OLVIDAR INCLUIR ALLEGRO_IMAGE EN LINKER
 #include <allegro5/allegro_audio.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
 #include <allegro5/allegro_acodec.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
+#include <stdbool.h>
+
 
 #define BLOCKSZ 50
 #define ANCHO   10
@@ -29,13 +31,35 @@
 }
 */
     pthread_t th1;
+    bool close_display = false; 
 
+int initialize_display(void);
 void printer (void);
-int main(void) {
+void endgame (void);
+
+void thread1 (){
+    while (!close_display) {
+        ALLEGRO_EVENT ev;
+        if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
+        {
+            if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+                close_display = true;
+        }
+        printer();
+    }
+}
+
+int initialize_display(void) {
 
 
     if (!al_init()) {
         fprintf(stderr, "failed to initialize allegro!\n");
+        return -1;
+    }
+
+    event_queue = al_create_event_queue(); //creo cola de eventos
+    if (!event_queue) {
+        fprintf(stderr, "failed to create event_queue!\n");
         return -1;
     }
 
@@ -90,7 +114,7 @@ int main(void) {
         fprintf(stderr, "failed to create display!\n");
         return -1;
     }
-
+    al_register_event_source(event_queue, al_get_display_event_source(display));
     //ahora dibujo el muro horizontal
     al_draw_scaled_bitmap(muroH, 0, 0, al_get_bitmap_width(muroH), al_get_bitmap_height(muroH), 0, BLOCKSZ*(ALTO), al_get_display_width(display), BLOCKSZ, 0);
     //empiezo uso la ultima fila
@@ -111,21 +135,21 @@ int main(void) {
             0);*/ //SIn flags podrian usar ALLEGRO_FLIP_HORIZONTAL o ALLEGRO_FLIP_VERTICAL muy utiles
 
     al_flip_display();
-
-    
     
     //playAudio();
 
-    
-    
+    return 0;
+}
+
+void endgame (void){
     al_destroy_display(display);
     al_destroy_bitmap(image);
+    al_destroy_event_queue(event_queue);
     //al_uninstall_audio(); // borrar audio
     //al_destroy_sample(sample);
     //al_shutdown_image_addon(); VER DOCUMENTACION ES LLAMADO AUTOMATICAMENTE AL SALIR DEL PROGRAMA
-
-    return 0;
 }
+
 void printer (void){
     char x, y;
     for(x=0; x<WIDTH ; x++)
@@ -135,6 +159,8 @@ void printer (void){
         al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * static_matrix[y][x], 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ + BLOCKSZ*x, BLOCKSZ*y, BLOCKSZ, BLOCKSZ, 0);\
         }
     }
+    al_flip_display(); //despues de esribir toda la matriz muestro lo que escribi
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
