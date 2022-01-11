@@ -12,7 +12,7 @@ void key_press_callback(uint8_t key);
 
 int main(void){
 
-    rpi_init_display();
+    assert(rpi_init_display());
     game_init();
 
     dpad_init();
@@ -82,7 +82,7 @@ void update_display(void) { // TODO: Este codigo es ineficiente, habria que impl
 
     mat_print(&aux_mat);
 
-    rpi_copyToDis(aux_mat, 0, 0);
+    rpi_copyToDis(&aux_mat, 0, 0);
 	rpi_run_display();
 
     mat_delete(&aux_mat);
