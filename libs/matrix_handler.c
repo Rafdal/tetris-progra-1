@@ -30,17 +30,6 @@ bool mat_init(matrix_hand_t *mat, uint8_t _height, uint8_t _width){
 
 // Retorna true si la matriz esta inicializada con por lo menos ciertas dimensiones
 bool mat_validate(matrix_hand_t *mat, uint8_t min_height, uint8_t min_width){
-    if(mat == NULL)
-        printf("handler NULL\n");
-    if(mat->mat == NULL)
-        printf("mat NULL\n");
-
-    if(mat->height < min_height)
-        printf("mat_height: %u < min_height %u\n", mat->height, min_height);
-
-    if(mat->width < min_width)
-        printf("mat_width: %u < min_width %u\n", mat->width, min_width);
-
     return mat != NULL && mat->mat != NULL && mat->height >= min_height && mat->width >= min_width;
 }
 
