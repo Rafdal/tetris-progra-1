@@ -22,6 +22,7 @@ void rpi_set_display(uint8_t y, uint8_t x, uint8_t val){
 
 void rpi_copyToDis (matrix_hand_t fromMat, uint8_t y_offset, uint8_t x_offset)
 {
+	assert(mat_validate(&fromMat, 16, 10));
 	mat_copyFromTo(&fromMat, &matrix, y_offset, x_offset);
 }
 
