@@ -77,7 +77,8 @@ BLOCK_t blocks[] = {
         // { TEST_BLOCK, 3},
 };
 
-// V A R I A B L E S
+
+// V A R I A B L E S   Y   C O N S T A N T E S
 
 static char matrix[HEIGHT][WIDTH]; // Privada
 static char static_matrix[HEIGHT][WIDTH]; // Privada
@@ -88,10 +89,11 @@ static char static_matrix[HEIGHT][WIDTH]; // Privada
 // Variables para el manejo de colisiones
 static bool colision = false; // true si hubo colision (con piso o pieza)
 
-// Variables para la correccion de la posicion de la pieza (se usa para los limites de la matriz)
+// Variables y constantes para la correccion de la posicion de la pieza (se usa para los limites de la matriz)
 enum {LEFT, RIGHT, R_LEFT, R_RIGHT, DOWN};
 static uint8_t last_movement; // Ultimo movimiento efectuado (se usa para FSM de correccion de posicion)
 static bool bad_movement = false; // true si hay que corregir el movimiento
+static unsigned int score;
 
 // P R O T O T I P O S    P R I V A D O S
 void _render(void); // Renderiza el bloque en la matriz
@@ -103,11 +105,13 @@ uint8_t _check_row_compleate (void); // chequea si una fila se elimino y en caso
 void _delete_row (uint8_t row); // elimina y desplaza la fila completa
 void _update_game_public_matrix (void); // actualiza los valores de la matriz publica (la cual contiene la suma de la matriz estatic y dinamica)
 void _clear_matrix(void);
+unsigned int _update_score(int score, int streak, char lvl);
 
 // F U N C I O N E S
 
 // Inicia el juego con las matrices en blanco
 void game_init(void){
+    srand(time(NULL));
     _clear_matrix();
     game_block_data.id = 0; // ningun bloque
     int i,j;
@@ -131,7 +135,7 @@ void _clear_matrix(void){
 }
 
 
-// Funcion AUXILIAR que imprime la matriz gral en la terminal
+/* // Funcion AUXILIAR que imprime la matriz gral en la terminal
 void print_matrix(void){
     printf("Rotation: %u\nx,y: %u, %u\n", game_block_data.rot, game_block_data.x, game_block_data.y);
     for (int i = 0; i < 32; i++)        //34 es lo que queda bien jajaj
@@ -156,7 +160,8 @@ void print_matrix(void){
     for (int i = 0; i < 32; i++)
         putchar('_');
     putchar('\n');
-}
+} */
+
 
 // Funcion auxiliar para manejar un arreglo unidimensional (de una matriz) con coordenadas cartesianas
 char _block(uint8_t x, uint8_t y){
@@ -166,7 +171,6 @@ char _block(uint8_t x, uint8_t y){
 // Funcion que devuelve un ID de un bloque de manera aleatoria
 uint8_t game_get_next_block (void)
 {
-    srand(time(NULL));
     return rand() % 7 + 1;
 }
 
@@ -220,7 +224,6 @@ int _can_write(uint8_t y, uint8_t x){
 
 void game_run(void){
     _render();
-	static int score;
     // TODO: capaz seria mejor poner un switch case
     if(bad_movement){
         bad_movement = false;
@@ -237,6 +240,7 @@ void game_run(void){
         }
         game_insert_block(0); // Borramos el bloque
         _clear_matrix();
+
         colision = false;
 		int streak = 0;
 
@@ -248,7 +252,7 @@ void game_run(void){
 			_delete_row(row);
 
 			streak++;
-			score = game_update_score(score, streak, game_level);
+			score = _update_score(score, streak, game_level);
 			printf("score is: %d points\n", score);
 		}
    	 }
@@ -403,13 +407,14 @@ void game_insert_block(uint8_t id){
     game_block_data.id = id;
 }
 
-
+// Mueve la pieza hacia abajo
 void game_move_down (void){
     printf("descend\n");
     game_block_data.y++;
     last_movement = DOWN;
 }
 
+// Mueve la pieza horizontalmente (1 = DERECHA | 0 = IZQUIERDA)
 void game_move_horizontal (int direction){
     printf("move %u\n", direction);
     if (direction)  //Mueve a Derecha
@@ -422,6 +427,7 @@ void game_move_horizontal (int direction){
         last_movement = LEFT;
     }
 }
+
 // Maquina de estado para el control del sentido de rotacion de la pieza
 // direction = 1  GIRA A LA DERECHA
 // direction = 0  GIRA A LA IZQUIERDA
@@ -447,9 +453,9 @@ void game_rotate(int direction){
     }
 }
 
-// game_update_score actualiza el score segun el nivel en el que se encuentra
+// _update_score actualiza el score segun el nivel en el que se encuentra
 
-int game_update_score(int score, int streak, char lvl){
+unsigned int _update_score(int score, int streak, char lvl){
 	int result = score;
 	switch (streak) {
 		case 1:
@@ -469,3 +475,5 @@ int game_update_score(int score, int streak, char lvl){
 	return result;
 
 }
+
+unsigned int game_get_score(void){ return score; }

@@ -156,7 +156,7 @@ void printer (void){
     {
         for(y=0; y<HEIGHT ; y++)
         {
-        al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * static_matrix[y][x], 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ + BLOCKSZ*x, BLOCKSZ*y, BLOCKSZ, BLOCKSZ, 0);\
+        al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * game_public_matrix[y][x], 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ + BLOCKSZ*x, BLOCKSZ*y, BLOCKSZ, BLOCKSZ, 0);\
         }
     }
     al_flip_display(); //despues de esribir toda la matriz muestro lo que escribi

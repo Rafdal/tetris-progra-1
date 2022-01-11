@@ -40,8 +40,8 @@ void game_move_horizontal(int direction);
 //Devuelve un ID de bloque aleatorio
 uint8_t game_get_next_block (void);
 
-// Actualiza el score
-int game_update_score(int score, int streak, char game_level);
+// Obtiene el score actual
+unsigned int game_get_score(void);
 
 
 #endif // GAME_H

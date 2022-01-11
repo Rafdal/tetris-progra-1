@@ -4,8 +4,8 @@ test: main_test.o rpi_display.o easy_timer.o dispEmu.o matrix_handler.o teclado_
 back: main_back.o game.o easy_timer.o teclado_trucho.o
 	gcc -Wall main_back.o game.o easy_timer.o teclado_trucho.o -o back `pkg-config --libs allegro-5`
 
-linux: main_linux.o
-	gcc -Wall main_linux.o -o linux `pkg-config --libs allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5`
+linux: main_linux.o game.o
+	gcc -Wall main_linux.o game.o -o linux `pkg-config --libs allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5`
 
 rasp: main_rasp.o easy_timer.o joystick.o rpi_display.o game.o matrix_handler.o
 	gcc -Wall main_rasp.o joystick.o easy_timer.o rpi_display.o game.o matrix_handler.o ./libs/joydrv.o ./libs/disdrv.o -o rasp
