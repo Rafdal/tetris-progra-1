@@ -79,19 +79,19 @@ BLOCK_t blocks[] = {
 
 // V A R I A B L E S
 
-char matrix[HEIGHT][WIDTH]; // Privada
-char static_matrix[HEIGHT][WIDTH]; // Privada
+static char matrix[HEIGHT][WIDTH]; // Privada
+static char static_matrix[HEIGHT][WIDTH]; // Privada
 //char game_public_matrix [HEIGHT][WIDTH]; //Publica (definida en el .h)
 
 // datos del bloque (coordenadas x,y, rotacion, etc del centro del bloque)
 
 // Variables para el manejo de colisiones
-bool colision = false; // true si hubo colision (con piso o pieza)
+static bool colision = false; // true si hubo colision (con piso o pieza)
 
 // Variables para la correccion de la posicion de la pieza (se usa para los limites de la matriz)
 enum {LEFT, RIGHT, R_LEFT, R_RIGHT, DOWN};
-uint8_t last_movement; // Ultimo movimiento efectuado (se usa para FSM de correccion de posicion)
-bool bad_movement = false; // true si hay que corregir el movimiento
+static uint8_t last_movement; // Ultimo movimiento efectuado (se usa para FSM de correccion de posicion)
+static bool bad_movement = false; // true si hay que corregir el movimiento
 
 // P R O T O T I P O S    P R I V A D O S
 void _render(void); // Renderiza el bloque en la matriz

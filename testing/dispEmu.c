@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "dispEmu.h"
 
-static int mat[16][16];
+static char mat[16][16];
 
 void disp_init(void){
     disp_clear();

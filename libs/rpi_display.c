@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <assert.h>
 #include "rpi_display.h"
-#include "dispEmu.h" // RASPBERRY DISPLAY EMULATOR
+#include "disdrv.h" // RASPBERRY DISPLAY
 
-char matrix[RPI_HEIGHT][RPI_WIDTH];
+static char matrix[RPI_HEIGHT][RPI_WIDTH];
 
 void rpi_clear_display(void){
 	disp_clear(); //Borra el buffer
