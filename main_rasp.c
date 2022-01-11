@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <assert.h>
 
+#include "./libs/rpi_display.h"
 #include "./libs/easy_timer.h"
 #include "./libs/joystick.h"
 #include "./backend/game.h"
 #include "./libs/matrix_handler.h"
-#include "./libs/rpi_display.h"
 
 void update_display(void);
 void key_press_callback(uint8_t key);
