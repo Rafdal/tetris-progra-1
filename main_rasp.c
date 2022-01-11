@@ -29,7 +29,7 @@ int main(void){
     dpad_init();
     dpad_on_press(key_press_callback);
 
-    interval_t down_long_press = set_interval()
+    interval_t down_long_press = set_interval(long_press, 200);
 
     while (run)
     {
