@@ -80,6 +80,8 @@ void update_display(void) { // TODO: Este codigo es ineficiente, habria que impl
 
     MAT_COPY_FROM_2D_ARRAY(&aux_mat, game_public_matrix, HEIGHT, WIDTH)
 
+    mat_print(&aux_mat);
+
     rpi_copyToDis(aux_mat, 0, 0);
 	rpi_run_display();
 
