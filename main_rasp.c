@@ -14,7 +14,9 @@ int run = 1;
 
 int main(void){
 
+    printf("Init game.h\n");
     game_init();
+    printf("Init rpi_display.h\n");
     rpi_init_display();
     rpi_set_display(10,3, 1);
     rpi_run_display();
@@ -22,6 +24,7 @@ int main(void){
     dpad_init();
     dpad_on_press(key_press_callback);
 
+    printf("Initialized!\n");
 	// interval_t display_interval = set_interval(update_display, 200);
 
     while (run)
@@ -31,7 +34,7 @@ int main(void){
 
         dpad_run();
     }
-    
+
     printf("Closing...");
 
     rpi_end_display();
