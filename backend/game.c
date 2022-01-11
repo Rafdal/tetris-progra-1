@@ -125,6 +125,9 @@ void game_init(void){
     }
 }
 
+game_data_t game_get_data(void){
+    return game_data;
+}
 
 // Borra la matriz del bloque
 void _clear_matrix(void){
@@ -474,5 +477,3 @@ void _update_score(int streak, char lvl){
 	}
     game_data.speed_interval -= game_data.speed_interval/15;
 }
-
-game_data_t game_get_data(void){ return game_data; }

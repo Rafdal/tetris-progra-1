@@ -6,6 +6,8 @@
 #include "easy_timer.h"
 #include "joystick.h"
 
+#warning "OJO ESTAS LIBRERIAS VAN EN /TESTING"
+
 ALLEGRO_DISPLAY *display = NULL;
 ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 

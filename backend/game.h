@@ -10,7 +10,7 @@
 
 char game_public_matrix [HEIGHT][WIDTH];
 
-enum {GAME_OFF, GAME_RUN, GAME_PAUSE, GAME_QUIT, GAME_LOSE};
+typedef enum {GAME_OFF, GAME_RUN, GAME_PAUSE, GAME_QUIT, GAME_LOSE} game_state_t;
 
 typedef struct {
     uint8_t x;
@@ -18,7 +18,7 @@ typedef struct {
     uint8_t id;
     uint8_t rot;
     uint32_t score;
-    uint8_t state;
+    game_state_t state;
     uint64_t speed_interval;
 }game_data_t;
 

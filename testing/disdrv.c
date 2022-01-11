@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "disdrv.h"
 
+#warning "OJO ESTAS LIBRERIAS VAN EN /TESTING"
+
 static char mat[16][16];
 
 void disp_init(void){
