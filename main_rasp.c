@@ -14,9 +14,7 @@ int run = 1;
 void update_display(void);
 
 void long_press(void){
-    game_move_down();
-    game_run();
-    update_display();
+    key_press_callback(DPAD_DOWN);
 }
 
 int main(void){
