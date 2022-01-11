@@ -42,8 +42,6 @@ void update_display(void){
     assert(mat_init(&mat_handler, HEIGHT, WIDTH));
     MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, HEIGHT, WIDTH);
 
-    printf("MAT_HANDLER:\n");
-    mat_print(&mat_handler);
     rpi_copyToDis(&mat_handler, 0, 0);
     rpi_run_display();
 }
