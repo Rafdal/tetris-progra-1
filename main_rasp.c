@@ -18,7 +18,7 @@ int main(void){
     game_init();
     printf("Init rpi_display.h\n");
     rpi_init_display();
-    rpi_set_display(10,3, 1);
+    rpi_set_display(3,3, 1);
     rpi_run_display();
 
     dpad_init();
