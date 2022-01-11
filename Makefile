@@ -34,17 +34,17 @@ main_back.o: main_back.c
 game.o: ./backend/game.c ./backend/game.h
 	gcc -c -Wall ./backend/game.c
 
-easy_timer.o: ./testing/easy_timer.c ./testing/easy_timer.h
-	gcc -c -Wall ./testing/easy_timer.c
+easy_timer.o: ./libs/easy_timer.c ./libs/easy_timer.h
+	gcc -c -Wall ./libs/easy_timer.c
 
 joystick.o: ./libs/joystick.c ./libs/joystick.h
 	gcc -c -Wall ./libs/joystick.c
 
-rpi_display.o: ./testing/rpi_display.c ./testing/rpi_display.h
-	gcc -c -Wall ./testing/rpi_display.c
+rpi_display.o: ./libs/rpi_display.c ./libs/rpi_display.h
+	gcc -c -Wall ./libs/rpi_display.c
 
-matrix_handler.o: ./testing/matrix_handler.c ./testing/matrix_handler.h
-	gcc -c -Wall ./testing/matrix_handler.c
+matrix_handler.o: ./libs/matrix_handler.c ./libs/matrix_handler.h
+	gcc -c -Wall ./libs/matrix_handler.c
 
 #################
 # TESTING LIBS 	#
