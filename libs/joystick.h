@@ -11,7 +11,7 @@
 
 typedef void (*dpad_callback_t)(uint8_t);
 
-#define DPAD_LONG_PRESS 500         // milisegundos
+#define DPAD_LONG_PRESS 250         // milisegundos
 #define DPAD_UMBRAL 80              // umbral de activacion (joystick)
 #define DPAD_DEBOUNCE 30            // umbral de desactivacion (joystick)
 
