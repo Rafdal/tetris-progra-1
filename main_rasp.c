@@ -11,6 +11,7 @@ void update_display(void);
 void key_press_callback(uint8_t key);
 
 int run = 1;
+matrix_hand_t aux_mat;
 
 int main(void){
 
@@ -21,6 +22,7 @@ int main(void){
     rpi_set_display(3,3, 1);
     rpi_run_display();
 
+    assert(mat_init(&aux_mat, HEIGHT, WIDTH));
     dpad_init();
     dpad_on_press(key_press_callback);
 
@@ -37,6 +39,7 @@ int main(void){
 
     printf("Closing...");
 
+    mat_delete(&aux_mat);
     rpi_end_display();
     return 0;
 }
@@ -88,8 +91,6 @@ void key_press_callback(uint8_t key){
 }
 
 void update_display(void) { // TODO: Este codigo es ineficiente, habria que implementar matrix_handler.h en game.h
-    matrix_hand_t aux_mat;
-    assert(mat_init(&aux_mat, HEIGHT, WIDTH));
 
 
     MAT_COPY_FROM_2D_ARRAY(&aux_mat, game_public_matrix, HEIGHT, WIDTH)
@@ -99,5 +100,4 @@ void update_display(void) { // TODO: Este codigo es ineficiente, habria que impl
     printf("running display...\n");
 	rpi_run_display();
 
-    mat_delete(&aux_mat);
 }
