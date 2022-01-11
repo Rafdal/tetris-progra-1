@@ -11,6 +11,14 @@ void key_press_callback(uint8_t key);
 
 int run = 1;
 
+void update_display(void);
+
+void long_press(void){
+    game_move_down();
+    game_run();
+    update_display();
+}
+
 int main(void){
 
     rpi_init_display();
@@ -21,6 +29,8 @@ int main(void){
     dpad_init();
     dpad_on_press(key_press_callback);
 
+    interval_t down_long_press = set_interval()
+
     while (run)
     {
         dpad_run();
@@ -28,13 +38,24 @@ int main(void){
         if(dpad_is_longpressed(DPAD_BTN)){
             run = 0;
         }
+        if(dpad_is_longpressed(DPAD_DOWN)){
+
+        }
     }
     
     return 0;
 }
 
+void update_display(void){
+    matrix_hand_t mat_handler;
+    assert(mat_init(&mat_handler, HEIGHT, WIDTH));
+    MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, HEIGHT, WIDTH);
+
+    rpi_copyToDis(&mat_handler, 0, 0);
+    rpi_run_display();
+}
+
 void key_press_callback(uint8_t key){
-    rpi_clear_display();
     switch (key)
     {
         case DPAD_UP:
@@ -79,10 +100,5 @@ void key_press_callback(uint8_t key){
             break;
     }
     game_run();
-    matrix_hand_t mat_handler;
-    assert(mat_init(&mat_handler, HEIGHT, WIDTH));
-    MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, HEIGHT, WIDTH);
-
-    rpi_copyToDis(&mat_handler, 0, 0);
-    rpi_run_display();
+    update_display();
 }
