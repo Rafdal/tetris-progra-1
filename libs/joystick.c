@@ -80,13 +80,13 @@ void dpad_run(void){
         key_state[DPAD_DOWN] = false;
 
     // UPLEFT KEY
-    if(joy.y > DPAD_UMBRAL && joy.x > DPAD_UMBRAL/8)
+    if(joy.y > DPAD_UMBRAL && joy.x < -DPAD_UMBRAL/8)
         key_state[DPAD_UPLEFT] = true;
     else if(joy.y < DPAD_DEBOUNCE)
         key_state[DPAD_UPLEFT] = false;
 
     // UPRIGHT ARROW
-    if(joy.y > DPAD_UMBRAL && joy.x < -DPAD_UMBRAL/8)
+    if(joy.y > DPAD_UMBRAL && joy.x > DPAD_UMBRAL/8)
         key_state[DPAD_UPRIGHT] = true;
     else if(joy.y < DPAD_DEBOUNCE)
         key_state[DPAD_UPRIGHT] = false;
