@@ -11,13 +11,28 @@ void key_press_callback(uint8_t key);
 int run = 1;
 matrix_hand_t aux_mat;
 
+uint8_t x,y;
+
 int main(void){
 
     printf("Init rpi_display.h\n");
     rpi_init_display();
-    rpi_set_display(3,3, 1);
+    rpi_set_display(y,x, 1);
     rpi_run_display();
 
+    dpad_init();
+    dpad_on_press(key_press_callback);
+
+    while (run)
+    {
+        dpad_run();
+
+        if(dpad_is_longpressed(DPAD_BTN)){
+            run = 0;
+        }
+    }
+    
+    rpi_end_display();
     return 0;
 }
 
@@ -26,17 +41,29 @@ void key_press_callback(uint8_t key){
     {
         case DPAD_UP:
             printf("UP\n");
+            if(y>0){
+                y--;
+            }
             break;
 
         case DPAD_DOWN:
+            if(y<RPI_HEIGHT-1){
+                y++;
+            }
             printf("DOWN\n");
             break;
 
         case DPAD_LEFT:
+            if(x>0){
+                x--;
+            }
             printf("LEFT\n");
             break;
 
         case DPAD_RIGHT:
+            if(x<RPI_WIDTH-1){
+                x++;
+            }
             printf("RIGHT\n");
             break;
 
@@ -55,4 +82,7 @@ void key_press_callback(uint8_t key){
         default:
             break;
     }
+    rpi_clear_display();
+    rpi_set_display(y,x,1);
+    rpi_run_display();
 }

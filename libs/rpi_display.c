@@ -5,7 +5,16 @@
 
 char matrix[RPI_HEIGHT][RPI_WIDTH];
 
+void rpi_clear_display(void){
+	disp_clear(); //Borra el buffer
+	int x,y;
+	for(y=0; y<RPI_HEIGHT; y++){
+		for(x=0; x<RPI_WIDTH; x++){
+			matrix[y][x] = (char)0;
+		}
+	}
 
+}
 
 // Funcion que inicializa el display de la RPI. true = OK | false = ERROR
 void rpi_init_display (void)
