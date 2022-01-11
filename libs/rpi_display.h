@@ -16,6 +16,5 @@ void rpi_clear_display(void);
 void rpi_init_display (void); // inicializa el display de la RPI, retorna true si fue exitoso
 void rpi_run_display (void); // analiza el valor de la matriz publica y prende el respectivo led sobre la RPI
 void rpi_copyToDis (matrix_hand_t* pfromMat, uint8_t y_offset, uint8_t x_offset); // copia la matriz "fromMat" en la matriz de la RPI
-void rpi_end_display(void);
 
 #endif //TETRIS_PROGRA_1_RPI_DISPLAY_H

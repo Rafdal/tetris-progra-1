@@ -32,7 +32,6 @@ int main(void){
         }
     }
     
-    rpi_end_display();
     return 0;
 }
 
