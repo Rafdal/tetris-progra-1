@@ -13,6 +13,7 @@ void key_press_callback(uint8_t key);
 int main(void){
 
     assert(rpi_init_display());
+    rpi_run_display();
     game_init();
 
     dpad_init();
@@ -79,8 +80,6 @@ void update_display(void) { // TODO: Este codigo es ineficiente, habria que impl
 
 
     MAT_COPY_FROM_2D_ARRAY(&aux_mat, game_public_matrix, HEIGHT, WIDTH)
-
-    mat_print(&aux_mat);
 
     rpi_copyToDis(&aux_mat, 0, 0);
 	rpi_run_display();
