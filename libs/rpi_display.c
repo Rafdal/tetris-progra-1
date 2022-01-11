@@ -7,6 +7,10 @@
 
 matrix_hand_t matrix;
 
+void rpi_end_display(void){
+	mat_delete(&matrix);
+}
+
 // Funcion que inicializa el display de la RPI. true = OK | false = ERROR
 void rpi_init_display (void)
 {
@@ -14,6 +18,7 @@ void rpi_init_display (void)
 	disp_clear(); //Borra el buffer
 	assert(mat_init(&matrix, RPI_HEIGHT, RPI_WIDTH));
 	assert(mat_validate(&matrix, RPI_HEIGHT, RPI_WIDTH));
+	mat_print(&matrix);
 }
 
 void rpi_set_display(uint8_t y, uint8_t x, uint8_t val){

@@ -10,11 +10,13 @@
 void update_display(void);
 void key_press_callback(uint8_t key);
 
+int run = 1;
+
 int main(void){
 
     game_init();
     rpi_init_display();
-    rpi_set_display(3,3, 1);
+    rpi_set_display(10,3, 1);
     rpi_run_display();
 
     dpad_init();
@@ -22,10 +24,17 @@ int main(void){
 
 	// interval_t display_interval = set_interval(update_display, 200);
 
-    while (1)
+    while (run)
     {
+        if(dpad_is_longpressed(DPAD_BTN))
+            run = 0;    // Salir
+
         dpad_run();
     }
+    
+    printf("Closing...");
+
+    rpi_end_display();
     return 0;
 }
 
