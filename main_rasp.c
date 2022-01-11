@@ -12,7 +12,7 @@ void key_press_callback(uint8_t key);
 
 int main(void){
 
-    assert(rpi_init_display());
+    rpi_init_display();
     rpi_run_display();
     game_init();
 
