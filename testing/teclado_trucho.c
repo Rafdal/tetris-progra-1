@@ -9,42 +9,35 @@
 ALLEGRO_DISPLAY *display = NULL;
 ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 
-bool key_state[4] = {false, false, false, false};
-bool last_keystate[4] = {false, false, false, false}; //Estado de teclas, true cuando esta apretada
-uint64_t key_press_timestamp[4] = {0, 0, 0, 0}; // timestamp de cuando se presiono la tecla
+bool key_state[7] = {false, false, false, false, false, false, false};
+bool last_keystate[7] = {false, false, false, false, false, false, false}; //Estado de teclas, true cuando esta apretada
+uint64_t key_press_timestamp[7] = {0,0,0,0,0,0,0}; // timestamp de cuando se presiono la tecla
 bool redraw = false;
 
-callback_t on_press[4];
+dpad_callback_t on_press;
 
-callback_t al_salir;
-
-void set_on_pressed(callback_t f, int id){
-    if(id>=0 && id <= 3)
-        on_press[id] = f;
+void dpad_on_press(dpad_callback_t f){
+    on_press = f;
 }
 
-void set_on_exit(callback_t f){
-    al_salir = f;
-}
-
-bool is_pressed(int key_id){
+bool dpad_is_pressed(uint8_t key_id){
     return key_state[key_id];
 }
 
-bool is_long_pressed(int key_id){
+bool dpad_is_longpressed(uint8_t key_id){
     return (get_millis()-key_press_timestamp[key_id] >= LONG_PRESS_TIMEOUT) && key_state[key_id];
 }
 
 
-int teclado_begin(void){
+void dpad_init(void){
     if (!al_init()) {
         fprintf(stderr, "failed to initialize allegro!\n");
-        return -1;
+        return;
     }
 
     if (!al_install_keyboard()) {
         fprintf(stderr, "failed to initialize the keyboard!\n");
-        return -1;
+        return;
     }
 
 
@@ -53,7 +46,7 @@ int teclado_begin(void){
     if (!event_queue) {
         fprintf(stderr, "failed to create event_queue!\n");
 
-        return -1;
+        return;
     }
 
     display = al_create_display(SCREEN_W, SCREEN_H);
@@ -61,7 +54,7 @@ int teclado_begin(void){
         fprintf(stderr, "failed to create display!\n");
 
         al_destroy_event_queue(event_queue);
-        return -1;
+        return;
     }
 
     al_clear_to_color(al_map_rgb(255, 0, 255));
@@ -73,10 +66,10 @@ int teclado_begin(void){
 
     al_clear_to_color(al_map_rgb(0, 0, 0));
     al_flip_display();
-    return 0;
+    return;
 }
 
-void teclado_run(void){
+void dpad_run(void){
     ALLEGRO_EVENT ev;
 
 
@@ -84,69 +77,88 @@ void teclado_run(void){
     {            
 
         if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
-            if(al_salir != NULL)
-                al_salir();
+            al_destroy_display(display);
+            al_destroy_event_queue(event_queue);
         }else if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
             switch (ev.keyboard.keycode) {
                 case ALLEGRO_KEY_UP:
-                    key_state[KEY_UP] = true;
+                    key_state[DPAD_UP] = true;
                     break;
 
                 case ALLEGRO_KEY_DOWN:
-                    key_state[KEY_DOWN] = true;
+                    key_state[DPAD_DOWN] = true;
                     break;
 
                 case ALLEGRO_KEY_LEFT:
-                    key_state[KEY_LEFT] = true;
+                    key_state[DPAD_LEFT] = true;
                     break;
 
                 case ALLEGRO_KEY_RIGHT:
-                    key_state[KEY_RIGHT] = true;
+                    key_state[DPAD_RIGHT] = true;
                     break;
 
                 case ALLEGRO_KEY_E:
+                    key_state[DPAD_UPRIGHT] = true;
                     break;
 
                 case ALLEGRO_KEY_Q:
+                    key_state[DPAD_UPLEFT] = true;
+                    break;
+
+                case ALLEGRO_KEY_SPACE:
+                    key_state[DPAD_BTN] = true;
                     break;
             }
         }
         else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
             switch (ev.keyboard.keycode) {
                 case ALLEGRO_KEY_UP:
-                    key_state[KEY_UP] = false;
+                    key_state[DPAD_UP] = false;
                     break;
 
                 case ALLEGRO_KEY_DOWN:
-                    key_state[KEY_DOWN] = false;
+                    key_state[DPAD_DOWN] = false;
                     break;
 
                 case ALLEGRO_KEY_LEFT:
-                    key_state[KEY_LEFT] = false;
+                    key_state[DPAD_LEFT] = false;
                     break;
 
                 case ALLEGRO_KEY_RIGHT:
-                    key_state[KEY_RIGHT] = false;
+                    key_state[DPAD_RIGHT] = false;
                     break;
 
+                case ALLEGRO_KEY_E:
+                    key_state[DPAD_UPRIGHT] = false;
+                    break;
+
+                case ALLEGRO_KEY_Q:
+                    key_state[DPAD_UPLEFT] = false;
+                    break;
+
+                case ALLEGRO_KEY_SPACE:
+                    key_state[DPAD_BTN] = false;
+                    break;
+
+
                 case ALLEGRO_KEY_ESCAPE:
-                        if(al_salir != NULL)
-                            al_salir();
-                        break;
+                    al_destroy_display(display);
+                    al_destroy_event_queue(event_queue);
+                    break;
                 }
             }
         }
 
         int i;
         if(ev.type == ALLEGRO_EVENT_KEY_DOWN || ev.type == ALLEGRO_EVENT_KEY_UP){
-            for(i=0; i<4; i++){
+            for(i=0; i<7; i++){
 
                 if(key_state[i] != last_keystate[i]){
                     if(key_state[i] & !last_keystate[i]){
                         key_press_timestamp[i] = get_millis();
                         // printf("Presionada la tecla %u\n", i);
-                        if (on_press[i] != NULL){
-                            on_press[i]();
+                        if (on_press != NULL){
+                            on_press(i);
                         }
                         
                     }
@@ -160,9 +172,4 @@ void teclado_run(void){
             al_clear_to_color(al_map_rgb(0, 0, 0));
             al_flip_display();
         } */
-}
-
-void teclado_close(void){
-    al_destroy_display(display);
-    al_destroy_event_queue(event_queue);
 }

@@ -2,20 +2,15 @@
 #include <assert.h>
 
 #include "./backend/game.h"
-#include "./libs/rpi_display.h"
-#include "./libs/easy_timer.h"
 #include "./libs/joystick.h"
+#include "./libs/easy_timer.h"
 #include "./libs/matrix_handler.h"
+#include "./libs/rpi_display.h"
 
 void key_press_callback(uint8_t key);
 
-int run = 1;
-
 void update_display(void);
 
-void long_press(void){
-    key_press_callback(DPAD_DOWN);
-}
 
 int main(void){
 
@@ -25,20 +20,18 @@ int main(void){
     game_init();
 
     dpad_init();
+    dpad_use_press_callback_for_longpress(DPAD_DOWN);
+    dpad_use_press_callback_for_longpress(DPAD_RIGHT);
+    dpad_use_press_callback_for_longpress(DPAD_LEFT);
     dpad_on_press(key_press_callback);
 
-    interval_t down_long_press = set_interval(long_press, 100);
 
+    int run = 1;
     while (run)
     {
         dpad_run();
 
-        if(dpad_is_longpressed(DPAD_BTN)){
-            run = 0;
-        }
-        if(dpad_is_longpressed(DPAD_DOWN)){
-            run_interval(&down_long_press);
-        }
+        uint8_t key;
     }
     
     return 0;
@@ -90,6 +83,7 @@ void key_press_callback(uint8_t key){
 
         case DPAD_BTN:
             {
+                update_display();
             }
             printf("BTN\n");
             break;
