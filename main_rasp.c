@@ -13,6 +13,12 @@ matrix_hand_t aux_mat;
 
 uint8_t x,y;
 
+uint8_t game_mat[3][3] = {
+    {0,1,0},
+    {1,1,1},
+    {0,1,0},
+};
+
 int main(void){
 
     printf("Init rpi_display.h\n");
@@ -36,6 +42,7 @@ int main(void){
 }
 
 void key_press_callback(uint8_t key){
+    rpi_clear_display();
     switch (key)
     {
         case DPAD_UP:
@@ -75,13 +82,19 @@ void key_press_callback(uint8_t key){
             break;
 
         case DPAD_BTN:
+            {
+                matrix_hand_t mat;
+                mat_init(&mat, 3, 3);
+                MAT_COPY_FROM_2D_ARRAY(&mat, game_mat, 3, 3)
+                rpi_copyToDis(&mat, y-1, x-1);
+                mat_delete(&mat);
+            }
             printf("BTN\n");
             break;
 
         default:
             break;
     }
-    rpi_clear_display();
     rpi_set_display(y,x,1);
     rpi_run_display();
 }
