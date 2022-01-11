@@ -1,5 +1,5 @@
-test: main_test.o test_rpi_display.o easy_timer.o dispEmu.o matrix_handler.o
-	gcc -Wall main_test.o test_rpi_display.o easy_timer.o dispEmu.o matrix_handler.o -o test
+test: main_test.o rpi_display.o easy_timer.o dispEmu.o matrix_handler.o teclado_trucho.o game.o
+	gcc -Wall main_test.o rpi_display.o easy_timer.o dispEmu.o teclado_trucho.o game.o matrix_handler.o -o test `pkg-config --libs allegro-5`
 
 back: main_back.o game.o easy_timer.o teclado_trucho.o
 	gcc -Wall main_back.o game.o easy_timer.o teclado_trucho.o -o back `pkg-config --libs allegro-5`
@@ -16,7 +16,7 @@ rasp: main_rasp.o easy_timer.o joystick.o rpi_display.o game.o matrix_handler.o
 #################
 
 main_test.o: main_test.c
-	gcc -c -Wall main_test.c
+	gcc -c -Wall main_test.c `pkg-config --cflags allegro-5`
 
 main_rasp.o: main_rasp.c
 	gcc -c -Wall main_rasp.c
@@ -34,25 +34,25 @@ main_back.o: main_back.c
 game.o: ./backend/game.c ./backend/game.h
 	gcc -c -Wall ./backend/game.c
 
-teclado_trucho.o: ./libs/teclado_trucho.c ./libs/teclado_trucho.h
-	gcc -Wall -c ./libs/teclado_trucho.c `pkg-config --cflags allegro-5`
-
-easy_timer.o: ./libs/easy_timer.c ./libs/easy_timer.h
-	gcc -c -Wall ./libs/easy_timer.c
+easy_timer.o: ./testing/easy_timer.c ./testing/easy_timer.h
+	gcc -c -Wall ./testing/easy_timer.c
 
 joystick.o: ./libs/joystick.c ./libs/joystick.h
 	gcc -c -Wall ./libs/joystick.c
 
-rpi_display.o: ./libs/rpi_display.c ./libs/rpi_display.h
-	gcc -c -Wall ./libs/rpi_display.c
+rpi_display.o: ./testing/rpi_display.c ./testing/rpi_display.h
+	gcc -c -Wall ./testing/rpi_display.c
 
-matrix_handler.o: ./libs/matrix_handler.c ./libs/matrix_handler.h
-	gcc -c -Wall ./libs/matrix_handler.c
+matrix_handler.o: ./testing/matrix_handler.c ./testing/matrix_handler.h
+	gcc -c -Wall ./testing/matrix_handler.c
 
 #################
 # TESTING LIBS 	#
 #################
 
+
+teclado_trucho.o: ./testing/teclado_trucho.c ./testing/teclado_trucho.h
+	gcc -Wall -c ./testing/teclado_trucho.c `pkg-config --cflags allegro-5`
 
 dispEmu.o: ./testing/dispEmu.c ./testing/dispEmu.h
 	gcc -c -Wall ./testing/dispEmu.c

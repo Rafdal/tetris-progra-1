@@ -1,71 +1,102 @@
 #include <stdio.h>
 #include <assert.h>
-#include <time.h>
-#include <stdlib.h>
 
-#include "./testing/rpi_display.h"
+#include "./backend/game.h"
+#include "./testing/teclado_trucho.h"
+#include "./testing/easy_timer.h"
 #include "./testing/matrix_handler.h"
-#include "./libs/easy_timer.h"
+#include "./testing/rpi_display.h"
 
-char game_mat[16][10] = {
-    {0,0,0,0,0,0,0,0,0,9},
-    {0,1,1,1,1,0,0,0,0,0},
-    {0,1,0,0,1,0,0,0,0,0},
-    {0,1,0,0,1,0,0,0,0,0},
-    {0,1,1,1,1,0,0,0,0,0},
-    {0,0,2,2,0,0,0,0,0,0},
-    {0,3,0,0,3,0,0,0,0,0},
-    {0,0,4,4,0,0,0,0,0,0},
-    {0,5,0,0,5,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {8,0,0,0,0,0,0,0,0,7},
-};
+void key_press_callback(uint8_t key);
 
-char small_mat[4][4] = {
-    {1,2,3,4},
-    {5,6,7,8},
-    {9,9,9,9},
-    {5,4,3,2},
-};
+int run = 1;
 
-char menu_mat[16][6] = {
-    {0,0,0,0,0,0},
-    {0,0,0,0,0,0},
-    {0,0,0,0,0,0},
-    {0,0,0,0,0,0},
-    {0,0,0,0,0,0},
-    {0,0,0,0,0,0},
-    {0,0,0,0,0,0},
-    {0,0,0,0,0,0},
-    {0,0,0,0,0,0},
-    {0,0,0,0,0,0},
-    {0,0,0,0,0,0},
-    {0,0,0,0,0,0},
-    {0,0,0,0,0,0},
-    {0,0,8,8,0,0},
-    {0,8,8,8,8,0},
-    {8,8,8,8,8,8},
-};
+void update_display(void);
 
+void long_press(void){
+    key_press_callback(DPAD_DOWN);
+}
 
 int main(void){
-    srand(time(NULL));
+
     rpi_init_display();
-
-    matrix_hand_t mat;
-
-    assert(mat_init(&mat, 4, 4));
-    MAT_COPY_FROM_2D_ARRAY(&mat, small_mat, 4, 4)
-
-    rpi_run_display();
-    rpi_copyToDis(mat, 5, 5);
-
     rpi_run_display();
 
+    game_init();
+
+    dpad_init();
+    dpad_on_press(key_press_callback);
+
+    interval_t down_long_press = set_interval(long_press, 100);
+
+    while (run)
+    {
+        dpad_run();
+
+        if(dpad_is_longpressed(DPAD_BTN)){
+            run = 0;
+        }
+        if(dpad_is_longpressed(DPAD_DOWN)){
+            run_interval(&down_long_press);
+        }
+    }
+    
     return 0;
+}
+
+void update_display(void){
+    matrix_hand_t mat_handler;
+    assert(mat_init(&mat_handler, HEIGHT, WIDTH));
+    MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, HEIGHT, WIDTH);
+
+    rpi_copyToDis(&mat_handler, 0, 0);
+    rpi_run_display();
+}
+
+void key_press_callback(uint8_t key){
+    switch (key)
+    {
+        case DPAD_UP:
+            printf("UP\n");
+            break;
+
+        case DPAD_DOWN:
+            if(game_block_data.id == 0)
+                game_insert_block(game_get_next_block());
+            else
+                game_move_down();
+            printf("DOWN\n");
+            break;
+
+        case DPAD_LEFT:
+            game_move_horizontal(0);
+            printf("LEFT\n");
+            break;
+
+        case DPAD_RIGHT:
+            game_move_horizontal(1);
+            printf("RIGHT\n");
+            break;
+
+        case DPAD_UPRIGHT:
+            game_rotate(1);
+            printf("UPRIGHT\n");
+            break;
+
+        case DPAD_UPLEFT:
+            game_rotate(0);
+            printf("UPLEFT\n");
+            break;
+
+        case DPAD_BTN:
+            {
+            }
+            printf("BTN\n");
+            break;
+
+        default:
+            break;
+    }
+    game_run();
+    update_display();
 }
