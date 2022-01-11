@@ -4,17 +4,19 @@
 #include <stdio.h>
 #include <allegro5/allegro.h>
 #include "easy_timer.h"
-#include "teclado_trucho.h"
+#include "joystick.h"
 
 ALLEGRO_DISPLAY *display = NULL;
 ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 
-bool key_state[7] = {false, false, false, false, false, false, false};
-bool last_keystate[7] = {false, false, false, false, false, false, false}; //Estado de teclas, true cuando esta apretada
-uint64_t key_press_timestamp[7] = {0,0,0,0,0,0,0}; // timestamp de cuando se presiono la tecla
-bool redraw = false;
+static bool key_state[7];
+static bool last_keystate[7]; //Estado de teclas, true cuando esta apretada
+static uint64_t key_press_timestamp[7]; // timestamp de cuando se presiono la tecla
+static bool use_press_callback_for_longpress[7];
 
-dpad_callback_t on_press;
+static dpad_callback_t on_press;
+static uint64_t lastMillis;
+
 
 void dpad_on_press(dpad_callback_t f){
     on_press = f;
@@ -28,8 +30,14 @@ bool dpad_is_longpressed(uint8_t key_id){
     return (get_millis()-key_press_timestamp[key_id] >= LONG_PRESS_TIMEOUT) && key_state[key_id];
 }
 
+void dpad_use_press_callback_for_longpress(uint8_t key){
+    use_press_callback_for_longpress[key] = true;
+}
+
 
 void dpad_init(void){
+    printf("OJO: ESTA LIBRERIA ES UN EMULADOR\n");
+
     if (!al_init()) {
         fprintf(stderr, "failed to initialize allegro!\n");
         return;
@@ -40,6 +48,14 @@ void dpad_init(void){
         return;
     }
 
+
+    int i;
+    for(i=0; i<7; i++){
+        key_state[i] = false;
+        last_keystate[i] = false; //Estado de teclas, true cuando esta apretada
+        key_press_timestamp[i] = 0; // timestamp de cuando se presiono la tecla
+        use_press_callback_for_longpress[i] = false;
+    }
 
 
     event_queue = al_create_event_queue();
@@ -147,8 +163,6 @@ void dpad_run(void){
                     break;
                 }
             }
-        }
-
         int i;
         if(ev.type == ALLEGRO_EVENT_KEY_DOWN || ev.type == ALLEGRO_EVENT_KEY_UP){
             for(i=0; i<7; i++){
@@ -166,10 +180,18 @@ void dpad_run(void){
                 }
             }
         }
-        
-        /* if (redraw && al_is_event_queue_empty(event_queue)) {
-            redraw = false;
-            al_clear_to_color(al_map_rgb(0, 0, 0));
-            al_flip_display();
-        } */
+    }
+
+    int id;
+    if(get_millis()-lastMillis >= 100){
+        for(id=0; id< 7; id++){
+            if(use_press_callback_for_longpress[id] && dpad_is_longpressed(id)){
+                if(on_press != NULL)        // Si el callback esta seteado
+                    on_press(id);
+                
+            }
+        }
+        lastMillis = get_millis();
+    }
+
 }

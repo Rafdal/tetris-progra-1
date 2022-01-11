@@ -2,22 +2,18 @@
 #include <assert.h>
 
 #include "./backend/game.h"
-#include "./testing/teclado_trucho.h"
+#include "./testing/joystick.h"
 #include "./testing/easy_timer.h"
 #include "./testing/matrix_handler.h"
 #include "./testing/rpi_display.h"
 
 void key_press_callback(uint8_t key);
 
-int run = 1;
-
 void update_display(void);
 
-void long_press(void){
-    key_press_callback(DPAD_DOWN);
-}
-
 int main(void){
+
+    printf("Inicializando...\n");
 
     rpi_init_display();
     rpi_run_display();
@@ -26,18 +22,31 @@ int main(void){
 
     dpad_init();
     dpad_on_press(key_press_callback);
+    dpad_use_press_callback_for_longpress(DPAD_DOWN);
+    dpad_use_press_callback_for_longpress(DPAD_LEFT);
+    dpad_use_press_callback_for_longpress(DPAD_RIGHT);
 
-    interval_t down_long_press = set_interval(long_press, 100);
+    uint64_t lastMillis;
+    game_data_t game_data = game_get_data();
 
-    while (run)
+    while (game_get_data().state != GAME_QUIT)
     {
         dpad_run();
+        
+        game_data = game_get_data();
+
+        if(game_data.state == GAME_RUN && get_millis()-lastMillis >= game_data.speed_interval){
+            if(game_data.id == 0)
+                game_insert_block(game_get_next_block());
+            else
+                game_move_down();
+            game_run();
+            update_display();
+            lastMillis = get_millis();
+        }
 
         if(dpad_is_longpressed(DPAD_BTN)){
-            run = 0;
-        }
-        if(dpad_is_longpressed(DPAD_DOWN)){
-            run_interval(&down_long_press);
+            ;// ;
         }
     }
     
@@ -63,7 +72,7 @@ void key_press_callback(uint8_t key){
             break;
 
         case DPAD_DOWN:
-            if(game_block_data.id == 0)
+            if(game_get_data().id == 0)
                 game_insert_block(game_get_next_block());
             else
                 game_move_down();

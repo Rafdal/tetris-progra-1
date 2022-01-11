@@ -10,7 +10,7 @@ void key_up(void){
 
 void key_down(void){
     printf("DOWN pressed\n");
-    if(game_block_data.id == 0) //La pieza colisiono
+    if(game_data.id == 0) //La pieza colisiono
 	{
         game_insert_block(game_get_next_block());
         game_run();
