@@ -12,9 +12,10 @@ void key_press_callback(uint8_t key);
 
 int main(void){
 
-    rpi_init_display();
-    rpi_run_display();
     game_init();
+    rpi_init_display();
+    rpi_set_display(3,3, 1);
+    rpi_run_display();
 
     dpad_init();
     dpad_on_press(key_press_callback);
