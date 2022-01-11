@@ -1,74 +1,104 @@
 #include <stdio.h>
+#include <assert.h>
 
+#include "./backend/game.h"
+#include "./libs/rpi_display.h"
 #include "./libs/easy_timer.h"
 #include "./libs/joystick.h"
-#include "./backend/game.h"
-// #include "./libs/rpi_display.h"
+#include "./libs/matrix_handler.h"
 
-uint8_t press_count[DPAD_KEYS];
+void key_press_callback(uint8_t key);
+
+int run = 1;
+
+void update_display(void);
+
+void long_press(void){
+    game_move_down();
+    game_run();
+    update_display();
+}
+
+int main(void){
+
+    rpi_init_display();
+    rpi_run_display();
+
+    game_init();
+
+    dpad_init();
+    dpad_on_press(key_press_callback);
+
+    interval_t down_long_press = set_interval(long_press, 100);
+
+    while (run)
+    {
+        dpad_run();
+
+        if(dpad_is_longpressed(DPAD_BTN)){
+            run = 0;
+        }
+        if(dpad_is_longpressed(DPAD_DOWN)){
+            run_interval(&down_long_press);
+        }
+    }
+    
+    return 0;
+}
+
+void update_display(void){
+    matrix_hand_t mat_handler;
+    assert(mat_init(&mat_handler, HEIGHT, WIDTH));
+    MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, HEIGHT, WIDTH);
+
+    rpi_copyToDis(&mat_handler, 0, 0);
+    rpi_run_display();
+}
 
 void key_press_callback(uint8_t key){
-    press_count[key]++;
-    /* switch (key)
+    switch (key)
     {
         case DPAD_UP:
             printf("UP\n");
             break;
 
         case DPAD_DOWN:
+            if(game_block_data.id == 0)
+                game_insert_block(game_get_next_block());
+            else
+                game_move_down();
             printf("DOWN\n");
             break;
 
         case DPAD_LEFT:
+            game_move_horizontal(0);
             printf("LEFT\n");
             break;
 
         case DPAD_RIGHT:
+            game_move_horizontal(1);
             printf("RIGHT\n");
             break;
 
         case DPAD_UPRIGHT:
+            game_rotate(1);
             printf("UPRIGHT\n");
             break;
 
         case DPAD_UPLEFT:
+            game_rotate(0);
             printf("UPLEFT\n");
             break;
 
         case DPAD_BTN:
+            {
+            }
             printf("BTN\n");
             break;
 
         default:
             break;
-    } */
-}
-
-void update_display(void) {
-	// rpi_copyToDis((char**)&public_matrix[0][0], HEIGHT, WIDTH, 0,0);     //  SEGMENTATION FAULT
-	// rpi_run_display();
-}
-
-int main(void){
-
-    // rpi_init_display();
-    // init_game();
-    dpad_init();
-    dpad_on_press(key_press_callback);
-
-	// interval_t display_interval = set_interval(update_display, 200);
-
-    while (1)
-    {
-        int key;
-        for(key=0; key<DPAD_KEYS; key++){
-            if(dpad_is_longpressed(key)){
-                // printf("LONG Pressed %s\n", dpad_key_names[key]);
-            }
-        }
-		// run_interval(&display_interval);
-        dpad_run();
     }
-
-    return 0;
+    game_run();
+    update_display();
 }

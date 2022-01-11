@@ -7,8 +7,8 @@ back: main_back.o game.o easy_timer.o teclado_trucho.o
 linux: main_linux.o
 	gcc -Wall main_linux.o -o linux `pkg-config --libs allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5`
 
-rasp: main_rasp.o easy_timer.o joystick.o rpi_display.o game.o
-	gcc -Wall main_rasp.o joystick.o easy_timer.o rpi_display.o game.o ./libs/joydrv.o ./libs/disdrv.o -o rasp
+rasp: main_rasp.o easy_timer.o joystick.o rpi_display.o game.o matrix_handler.o
+	gcc -Wall main_rasp.o joystick.o easy_timer.o rpi_display.o game.o matrix_handler.o ./libs/joydrv.o ./libs/disdrv.o -o rasp
 
 
 #################
@@ -46,15 +46,13 @@ joystick.o: ./libs/joystick.c ./libs/joystick.h
 rpi_display.o: ./libs/rpi_display.c ./libs/rpi_display.h
 	gcc -c -Wall ./libs/rpi_display.c
 
+matrix_handler.o: ./libs/matrix_handler.c ./libs/matrix_handler.h
+	gcc -c -Wall ./libs/matrix_handler.c
+
 #################
 # TESTING LIBS 	#
 #################
 
-matrix_handler.o: ./testing/matrix_handler.c ./testing/matrix_handler.h
-	gcc -c -Wall ./testing/matrix_handler.c
-
-test_rpi_display.o: ./testing/rpi_display.c ./testing/rpi_display.h
-	gcc -c -Wall ./testing/rpi_display.c -o test_rpi_display.o
 
 dispEmu.o: ./testing/dispEmu.c ./testing/dispEmu.h
 	gcc -c -Wall ./testing/dispEmu.c

@@ -6,13 +6,15 @@
 #define RPI_HEIGHT 16
 
 #include <stdint.h>
+#include <stdbool.h>
 #include "matrix_handler.h"
 
 //   P R O T O T I P O S
 
-void rpi_set_display(uint8_t y, uint8_t x, uint8_t val);
-bool rpi_init_display (void); // inicializa el display de la RPI, retorna true si fue exitoso
+void rpi_set_display(uint8_t y, uint8_t x, char val);
+void rpi_clear_display(void);
+void rpi_init_display (void); // inicializa el display de la RPI, retorna true si fue exitoso
 void rpi_run_display (void); // analiza el valor de la matriz publica y prende el respectivo led sobre la RPI
-void rpi_copyToDis (matrix_hand_t fromMat, uint8_t y_offset, uint8_t x_offset); // copia la matriz "fromMat" en la matriz de la RPI
+void rpi_copyToDis (matrix_hand_t* pfromMat, uint8_t y_offset, uint8_t x_offset); // copia la matriz "fromMat" en la matriz de la RPI
 
 #endif //TETRIS_PROGRA_1_RPI_DISPLAY_H
