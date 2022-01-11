@@ -41,9 +41,9 @@ void rpi_copyToDis (matrix_hand_t* pfromMat, uint8_t y_offset, uint8_t x_offset)
 	assert(pfromMat->width+x_offset < RPI_WIDTH);
 
 	int x,y;
-	for(y=y_offset; y<pfromMat->height; y++){
-		for(x=x_offset; x<pfromMat->width; x++){
-			matrix[y][x] = mat_get_byte(pfromMat, y, x);
+	for(y=0; y<pfromMat->height; y++){
+		for(x=0; x<pfromMat->width; x++){
+			matrix[y+y_offset][x+x_offset] = mat_get_byte(pfromMat, y, x);
 		}
 	}
 }
