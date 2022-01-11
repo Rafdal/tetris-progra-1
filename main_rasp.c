@@ -84,8 +84,8 @@ void key_press_callback(uint8_t key){
         case DPAD_BTN:
             {
                 matrix_hand_t mat;
-                assert(mat_init(&mat, 3, 3))
-                MAT_COPY_FROM_2D_ARRAY(&mat, game_mat, 3, 3)
+                assert(mat_init(&mat, 3, 3));
+                MAT_COPY_FROM_2D_ARRAY(&mat, game_mat, 3, 3);
                 rpi_copyToDis(&mat, y-1, x-1);
                 mat_delete(&mat);
             }
