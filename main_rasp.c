@@ -14,7 +14,6 @@ int run = 1;
 int main(void){
 
     rpi_init_display();
-    rpi_set_display(y,x, 1);
     rpi_run_display();
 
     game_init();
