@@ -96,6 +96,7 @@ void update_display(void) { // TODO: Este codigo es ineficiente, habria que impl
 
     mat_print(&aux_mat);
     // rpi_copyToDis(&aux_mat, 0, 0);
+    printf("running display...\n");
 	rpi_run_display();
 
     mat_delete(&aux_mat);
