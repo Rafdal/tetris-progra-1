@@ -108,7 +108,7 @@ void _clear_matrix(void);
 
 // Inicia el juego con las matrices en blanco
 void game_init(void){
-    clear_matrix();
+    _clear_matrix();
     game_block_data.id = 0; // ningun bloque
     int i,j;
     for(i=0; i<HEIGHT; i++){
@@ -236,7 +236,7 @@ void game_run(void){
             }
         }
         game_insert_block(0); // Borramos el bloque
-        clear_matrix();
+        _clear_matrix();
         colision = false;
 		int streak = 0;
 
@@ -305,7 +305,7 @@ uint8_t _check_row_compleate (void)
 
 // Actualiza la matriz con los datos de coordenadas del bloque
 void _render(void){
-    clear_matrix();
+    _clear_matrix();
     uint8_t x,y;
     uint8_t size = blocks[game_block_data.id].size;
 //Analiza el valor de rotacion y gira la matriz del bloque en sentido horario para luego incluirla en la matriz general
