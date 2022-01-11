@@ -7,6 +7,28 @@
 #include "./libs/matrix_handler.h"
 #include "./libs/rpi_display.h"
 
+void update_display(void);
+void key_press_callback(uint8_t key);
+
+int main(void){
+
+    rpi_init_display();
+    game_init();
+
+    dpad_init();
+    dpad_on_press(key_press_callback);
+
+	// interval_t display_interval = set_interval(update_display, 200);
+
+    while (1)
+    {
+        dpad_run();
+    }
+    return 0;
+}
+
+
+
 void key_press_callback(uint8_t key){
     switch (key)
     {
@@ -62,21 +84,4 @@ void update_display(void) { // TODO: Este codigo es ineficiente, habria que impl
 	rpi_run_display();
 
     mat_delete(&aux_mat);
-}
-
-int main(void){
-
-    rpi_init_display();
-    game_init();
-
-    dpad_init();
-    dpad_on_press(key_press_callback);
-
-	// interval_t display_interval = set_interval(update_display, 200);
-
-    while (1)
-    {
-        dpad_run();
-    }
-    return 0;
 }
