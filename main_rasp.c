@@ -39,7 +39,7 @@ int main(void){
             run = 0;
         }
         if(dpad_is_longpressed(DPAD_DOWN)){
-
+            run_interval(&down_long_press);
         }
     }
     
