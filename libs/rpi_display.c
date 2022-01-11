@@ -37,8 +37,8 @@ void rpi_set_display(uint8_t y, uint8_t x, char val){
 
 void rpi_copyToDis (matrix_hand_t* pfromMat, uint8_t y_offset, uint8_t x_offset)
 {
-	assert(pfromMat->height+y_offset < RPI_HEIGHT);
-	assert(pfromMat->width+x_offset < RPI_WIDTH);
+	assert(pfromMat->height+y_offset <= RPI_HEIGHT);
+	assert(pfromMat->width+x_offset <= RPI_WIDTH);
 
 	int x,y;
 	for(y=0; y<pfromMat->height; y++){
