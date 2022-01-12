@@ -49,6 +49,10 @@ int main(void){
         if(dpad_is_longpressed(DPAD_BTN)){
             ;// ;
         }
+
+        if(game_data.state == GAME_LOSE){
+            printf("Perdiste! The Game\n");
+        }
     }
     
     return 0;
