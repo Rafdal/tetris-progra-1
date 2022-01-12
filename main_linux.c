@@ -30,6 +30,24 @@
     al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
 }
 */
+    char matriz [16][10]={
+        {0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,1,1,1,1,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,5,5,5,0,0,0},
+        {0,0,0,0,0,5,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0},
+    };
 
     pthread_t th1;
     bool close_display = false; 
@@ -70,13 +88,13 @@ int initialize_display(void) {
 
 
     if (!al_init()) {
-        fprintf(stderr, "failed to initialize allegro!\n");
+        printf( "failed to initialize allegro!\n");
         return -1;
     }
 
     event_queue = al_create_event_queue(); //creo cola de eventos
     if (!event_queue) {
-        fprintf(stderr, "failed to create event_queue!\n");
+        printf( "failed to create event_queue!\n");
         return -1;
     }
 
@@ -104,33 +122,40 @@ int initialize_display(void) {
     }*/
 
     if (!al_init_image_addon()) { // ADDON necesario para manejo(no olvidar el freno de mano) de imagenes 
-        fprintf(stderr, "failed to initialize image addon !\n");
+        printf("failed to initialize image addon !\n");
         return -1;
     }
 
     image = al_load_bitmap("./frontend/images/piezastetris.png");
     if (!image) {
-        fprintf(stderr, "failed to load image !\n");
+       printf( "failed to load image !\n");
         al_destroy_event_queue(event_queue);
-        return 0;
+        return -1;
     }
 
      muroH = al_load_bitmap("./frontend/images/muroH.jpg");
-    if (!image) {
-        fprintf(stderr, "failed to load image !\n");
-        return 0;
+    if (!muroH) {
+        printf( "failed to load image !\n");
+        al_destroy_bitmap(image);
+        al_destroy_event_queue(event_queue);
+        return -1;
     }
      muroV = al_load_bitmap("./frontend/images/muroV.jpg");
-    if (!image) {
-        fprintf(stderr, "failed to load image !\n");
-        return 0;
+    if (!muroV) {
+        printf(stderr,"failed to load image !\n");
+        al_destroy_bitmap(image);
+        al_destroy_bitmap(muroH);
+        al_destroy_event_queue(event_queue);
+        return -1;
     }
      
     display = al_create_display(((ANCHO+2)*BLOCKSZ), ((ALTO+1)*BLOCKSZ));
     if (!display) {
         al_destroy_bitmap(image);
+        al_destroy_bitmap(muroH);
+        al_destroy_bitmap(muroV);
         al_destroy_event_queue(event_queue);
-        fprintf(stderr, "failed to create display!\n");
+       fprintf(stderr,"failed to create display!\n");
         return -1;
     }
     al_register_event_source(event_queue, al_get_display_event_source(display));
@@ -163,6 +188,8 @@ int initialize_display(void) {
 void endgame (void){
     al_destroy_display(display);
     al_destroy_bitmap(image);
+    al_destroy_bitmap(muroH);
+    al_destroy_bitmap(muroV);
     al_destroy_event_queue(event_queue);
     //al_uninstall_audio(); // borrar audio
     //al_destroy_sample(sample);
@@ -175,7 +202,7 @@ void printer (void){
     {
         for(y=0; y<HEIGHT ; y++)
         {
-        al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * game_public_matrix[y][x], 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ + BLOCKSZ*x, BLOCKSZ*y, BLOCKSZ, BLOCKSZ, 0);\
+        al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * (matriz[y][x]), 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ + BLOCKSZ*x, BLOCKSZ*y, BLOCKSZ, BLOCKSZ, 0);
         }
     }
     al_flip_display(); //despues de esribir toda la matriz muestro lo que escribi
