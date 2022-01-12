@@ -4,8 +4,8 @@ test: main_test.o dispEmu.o t_rpi_display.o t_easy_timer.o t_matrix_handler.o te
 back: main_back.o game.o easy_timer.o teclado_trucho.o
 	gcc -Wall main_back.o game.o easy_timer.o teclado_trucho.o -o back `pkg-config --libs allegro-5`
 
-linux: main_linux.o game.o
-	gcc -Wall main_linux.o game.o -o linux `pkg-config --libs allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5` 
+linux: main_linux.o game.o l_easy_timer.o keyboard.o
+	gcc -Wall main_linux.o easy_timer.o keyboard.o game.o -o linux `pkg-config --libs allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5` 
 
 rasp: main_rasp.o easy_timer.o joystick.o rpi_display.o game.o matrix_handler.o
 	gcc -Wall main_rasp.o joystick.o easy_timer.o rpi_display.o game.o matrix_handler.o ./libs/joydrv.o ./libs/disdrv.o -o rasp
@@ -23,6 +23,7 @@ main_rasp.o: main_rasp.c
 
 main_linux.o: main_linux.c
 	gcc -c -Wall main_linux.c `pkg-config --cflags allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5` 
+
 main_back.o: main_back.c
 	gcc -c -Wall main_back.c
 
@@ -35,6 +36,12 @@ game.o: ./backend/game.c ./backend/game.h
 
 easy_timer.o: ./libs/easy_timer.c ./libs/easy_timer.h
 	gcc -c -Wall ./libs/easy_timer.c
+
+l_easy_timer.o: ./frontend/easy_timer.c ./frontend/easy_timer.h
+	gcc -c -Wall ./frontend/easy_timer.c
+
+keyboard.o: ./frontend/keyboard.c ./frontend/keyboard.h
+	gcc -c -Wall ./frontend/keyboard.c `pkg-config --cflags allegro-5`
 
 joystick.o: ./libs/joystick.c ./libs/joystick.h
 	gcc -c -Wall ./libs/joystick.c

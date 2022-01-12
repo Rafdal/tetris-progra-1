@@ -3,24 +3,24 @@
 
 #define LONG_PRESS_TIMEOUT  500
 
+#include <allegro5/allegro.h>
 #include <stdbool.h>
 #include <stdint.h>
 
-typedef void (*dpad_callback_t)(uint8_t);
+typedef void (*keyb_callback_t)(uint8_t);
 
-enum {DPAD_UP, DPAD_RIGHT, DPAD_DOWN, DPAD_LEFT, DPAD_UPLEFT, DPAD_UPRIGHT, DPAD_BTN};
+enum {KEYB_UP, KEYB_RIGHT, KEYB_DOWN, KEYB_LEFT, KEYB_UPLEFT, KEYB_UPRIGHT, KEYB_BTN};
 
-// extern const char dpad_key_names[][DPAD_NAMELEN];
 
-void dpad_init(void); // iniciar libreria
-void dpad_run(void);  // leer botones y ejecutar callbacks (debe llamarse en Tiempo Real)
+bool keyb_init(ALLEGRO_EVENT_QUEUE *queue); // iniciar libreria - true = OK | false = error
+bool keyb_run(ALLEGRO_EVENT* pev);  // leer botones y ejecutar callbacks (debe llamarse en Tiempo Real)
 
 // al llamarse habilita que durante un LongPress, se llame al callback "on_press" cada <interval> milisegundos
-void dpad_use_press_callback_for_longpress(uint8_t key); 
+void keyb_use_press_callback_for_longpress(uint8_t key); 
 
-bool dpad_is_pressed(uint8_t key); // devuelve true si el boton esta presionado
-bool dpad_is_longpressed(uint8_t key); // devuelve true si el boton fue presionado por DPAD_LONG_PRESS milisegundos
+bool keyb_is_pressed(uint8_t key); // devuelve true si el boton esta presionado
+bool keyb_is_longpressed(uint8_t key); // devuelve true si el boton fue presionado por KEYB_LONG_PRESS milisegundos
 
-void dpad_on_press(dpad_callback_t callback); // Setear callback click de tecla
+void keyb_on_press(keyb_callback_t callback); // Setear callback click de tecla
 
 #endif // TECLADO_TRUCHO_H

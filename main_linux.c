@@ -6,13 +6,15 @@
  * Created on June 4, 2016, 6:38 PM
  */
 #include "./backend/game.h"
-#include "./testing/easy_timer.h"
+#include "./frontend/easy_timer.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <allegro5/allegro.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
 #include <allegro5/allegro_image.h> //NO OLVIDAR INCLUIR ALLEGRO_IMAGE EN LINKER
 #include <allegro5/allegro_audio.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
 #include <allegro5/allegro_acodec.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
+#include "./frontend/keyboard.h"
 #include <stdbool.h>
 
 
@@ -56,6 +58,7 @@ int initialize_display(void);
 void endgame (void);
 void update_display(void);
 
+void keypress_callback(uint8_t key);
 
 
 int main (void){
@@ -68,6 +71,10 @@ int main (void){
         printf("Error al iniciar");
         return 0;   //si algo fallo termino el programa
     }
+    keyb_on_press(keypress_callback);
+    keyb_use_press_callback_for_longpress(KEYB_DOWN);
+    keyb_use_press_callback_for_longpress(KEYB_LEFT);
+    keyb_use_press_callback_for_longpress(KEYB_RIGHT);
 
     while (!close_display && game_get_data().state != GAME_QUIT) {
 
@@ -92,6 +99,9 @@ int main (void){
         ALLEGRO_EVENT ev;
         if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
         {
+            if(keyb_run(&ev)){
+                printf("ESCAPE fue presionado\n");
+            }
             if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
                 close_display = true;
         }
@@ -101,6 +111,53 @@ int main (void){
     return 0;
 
 }
+
+void keypress_callback(uint8_t key){
+    switch (key)
+    {
+        case KEYB_UP:
+            printf("UP\n");
+            break;
+
+        case KEYB_DOWN:
+            if(game_get_data().id == 0)
+                game_insert_block(id_next_block[0]);
+            else
+                game_move_down();
+            printf("DOWN\n");
+            break;
+
+        case KEYB_LEFT:
+            game_move_horizontal(0);
+            printf("LEFT\n");
+            break;
+
+        case KEYB_RIGHT:
+            game_move_horizontal(1);
+            printf("RIGHT\n");
+            break;
+
+        case KEYB_UPRIGHT:
+            game_rotate(1);
+            printf("UPRIGHT\n");
+            break;
+
+        case KEYB_UPLEFT:
+            game_rotate(0);
+            printf("UPLEFT\n");
+            break;
+
+        case KEYB_BTN:
+            printf("BTN\n");
+            break;
+
+        default:
+            break;
+    }
+    game_run();
+    update_display();
+}
+
 
 void update_display(void) {
 
@@ -130,6 +187,9 @@ int initialize_display(void) {
         printf( "failed to create event_queue!\n");
         return -1;
     }
+
+    assert(keyb_init(event_queue));
+
 
     /*if (!al_install_audio()) {
         fprintf(stderr, "failed to initialize audio!\n");
@@ -224,6 +284,7 @@ void endgame (void){
     al_destroy_bitmap(muroH);
     al_destroy_bitmap(muroV);
     al_destroy_event_queue(event_queue);
+    al_uninstall_keyboard();
     //al_uninstall_audio(); // borrar audio
     //al_destroy_sample(sample);
     //al_shutdown_image_addon(); VER DOCUMENTACION ES LLAMADO AUTOMATICAMENTE AL SALIR DEL PROGRAMA
