@@ -37,6 +37,7 @@
 int initialize_display(void);
 void printer (void);
 void endgame (void);
+void thread1 (void);
 
 int main (void){
     int ret= initialize_display();
@@ -51,7 +52,7 @@ int main (void){
 
 }
 
-void thread1 (){
+void thread1 (void){
     while (!close_display) {
         ALLEGRO_EVENT ev;
         if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
