@@ -62,6 +62,7 @@ void update_display(void){
     mat_print(&mat_handler);
     rpi_copyToDis(&mat_handler, 0, 0);
     rpi_run_display();
+    printf("SCORE:\n%u\n", game_get_data().score)
 }
 
 void key_press_callback(uint8_t key){
@@ -100,9 +101,6 @@ void key_press_callback(uint8_t key){
             break;
 
         case DPAD_BTN:
-            {
-                update_display();
-            }
             printf("BTN\n");
             break;
 

@@ -11,8 +11,9 @@ void key_press_callback(uint8_t key);
 
 void update_display(void);
 
-
 int main(void){
+
+    printf("Inicializando...\n");
 
     rpi_init_display();
     rpi_run_display();
@@ -20,18 +21,33 @@ int main(void){
     game_init();
 
     dpad_init();
-    dpad_use_press_callback_for_longpress(DPAD_DOWN);
-    dpad_use_press_callback_for_longpress(DPAD_RIGHT);
-    dpad_use_press_callback_for_longpress(DPAD_LEFT);
     dpad_on_press(key_press_callback);
+    dpad_use_press_callback_for_longpress(DPAD_DOWN);
+    dpad_use_press_callback_for_longpress(DPAD_LEFT);
+    dpad_use_press_callback_for_longpress(DPAD_RIGHT);
 
+    uint64_t lastMillis;
+    game_data_t game_data = game_get_data();
 
-    int run = 1;
-    while (run)
+    while (game_get_data().state != GAME_QUIT)
     {
         dpad_run();
+        
+        game_data = game_get_data();
 
-        uint8_t key;
+        if(game_data.state == GAME_RUN && get_millis()-lastMillis >= game_data.speed_interval){
+            if(game_data.id == 0)
+                game_insert_block(game_get_next_block());
+            else
+                game_move_down();
+            game_run();
+            update_display();
+            lastMillis = get_millis();
+        }
+
+        if(dpad_is_longpressed(DPAD_BTN)){
+            ;// ;
+        }
     }
     
     return 0;
@@ -42,8 +58,11 @@ void update_display(void){
     assert(mat_init(&mat_handler, HEIGHT, WIDTH));
     MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, HEIGHT, WIDTH);
 
+    printf("MAT_HANDLER:\n");
+    mat_print(&mat_handler);
     rpi_copyToDis(&mat_handler, 0, 0);
     rpi_run_display();
+    printf("SCORE:\n%u\n", game_get_data().score)
 }
 
 void key_press_callback(uint8_t key){
@@ -54,7 +73,7 @@ void key_press_callback(uint8_t key){
             break;
 
         case DPAD_DOWN:
-            if(game_data.id == 0)
+            if(game_get_data().id == 0)
                 game_insert_block(game_get_next_block());
             else
                 game_move_down();
@@ -82,9 +101,6 @@ void key_press_callback(uint8_t key){
             break;
 
         case DPAD_BTN:
-            {
-                update_display();
-            }
             printf("BTN\n");
             break;
 
