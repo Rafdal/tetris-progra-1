@@ -51,7 +51,7 @@ int main (void){
 
 }
 
-void thread1 (){
+void * thread1 (){
     while (!close_display) {
         ALLEGRO_EVENT ev;
         if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
