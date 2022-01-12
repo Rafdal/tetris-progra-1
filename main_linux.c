@@ -6,6 +6,7 @@
  * Created on June 4, 2016, 6:38 PM
  */
 #include "./backend/game.h"
+#include "./testing/easy_timer.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <allegro5/allegro.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
@@ -48,29 +49,52 @@
         {0,0,0,0,0,0,0,0,0,0},
     };
 
-   
-    bool close_display = false; 
+
+    bool close_display = false;
 
 int initialize_display(void);
-void printer (void);
 void endgame (void);
+void update_display(void);
+
 
 
 int main (void){
-    int ret= initialize_display();
+
+	game_init();
+	uint64_t lastMillis;
+	game_data_t game_data = game_get_data();
+	int ret= initialize_display();
     if(ret){
         printf("Error al iniciar");
         return 0;   //si algo fallo termino el programa
     }
 
-    while (!close_display) {
+    while (!close_display && game_get_data().state != GAME_QUIT) {
+
+
+		if(game_data.state == GAME_RUN && get_millis()-lastMillis >= game_data.speed_interval){
+			if(game_data.id == 0)
+				game_insert_block(id_next_block[0]);
+
+			else
+				game_move_down();
+			game_run();
+			update_display();
+			lastMillis = get_millis();
+		}
+
+
+		if(game_data.state == GAME_LOSE){
+			printf("Perdiste! The Game\n");
+			game_init();
+		}
+
         ALLEGRO_EVENT ev;
         if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
         {
             if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
                 close_display = true;
         }
-        printer();
     }
     endgame();//borro todo
 
@@ -78,11 +102,24 @@ int main (void){
 
 }
 
+void update_display(void) {
+
+	char x, y;
+	for(x=0; x<WIDTH ; x++)
+	{
+		for(y=0; y<HEIGHT ; y++)
+		{
+			float val = (float)matriz[y][x];
+			al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ + BLOCKSZ*x, BLOCKSZ*y, BLOCKSZ, BLOCKSZ, 0);
+		}
+	}
+	al_flip_display(); //despues de esribir toda la matriz muestro lo que escribi
+	printf("SCORE:\n%u\n", game_get_data().score);
+
+}
 
 
 int initialize_display(void) {
-
-
     if (!al_init()) {
         printf( "failed to initialize allegro!\n");
         return -1;
@@ -192,19 +229,6 @@ void endgame (void){
     //al_shutdown_image_addon(); VER DOCUMENTACION ES LLAMADO AUTOMATICAMENTE AL SALIR DEL PROGRAMA
 }
 
-void printer (void){
-    char x, y;
-    for(x=0; x<WIDTH ; x++)
-    {
-        for(y=0; y<HEIGHT ; y++)
-        {
-            float val = (float)matriz[y][x];
-            al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ + BLOCKSZ*x, BLOCKSZ*y, BLOCKSZ, BLOCKSZ, 0);
-        }
-    }
-    al_flip_display(); //despues de esribir toda la matriz muestro lo que escribi
-
-}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////AUDIO/////////////////////////////////////////////////////////////////
