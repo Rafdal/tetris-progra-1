@@ -30,12 +30,19 @@
     al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
 }
 */
+
     pthread_t th1;
     bool close_display = false; 
 
 int initialize_display(void);
 void printer (void);
 void endgame (void);
+
+int main (void){
+    pthread_create (&th1, NULL, thread1, NULL);
+    pthread_join (th1, NULL);
+
+}
 
 void thread1 (){
     while (!close_display) {
@@ -47,6 +54,7 @@ void thread1 (){
         }
         printer();
     }
+    endgame();//close display
 }
 
 int initialize_display(void) {
