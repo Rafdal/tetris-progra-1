@@ -67,6 +67,8 @@ void * thread1 (){
         printer();
     }
     endgame();//close display
+    return &thread1;    // TODO: ARREGLAR ESTO
+    #warning arreglar esto
 }
 
 int main (void){
@@ -142,7 +144,7 @@ int initialize_display(void) {
     }
      muroV = al_load_bitmap("./frontend/images/muroV.jpg");
     if (!muroV) {
-        printf(stderr,"failed to load image !\n");
+        printf("failed to load image !\n");
         al_destroy_bitmap(image);
         al_destroy_bitmap(muroH);
         al_destroy_event_queue(event_queue);
@@ -155,7 +157,7 @@ int initialize_display(void) {
         al_destroy_bitmap(muroH);
         al_destroy_bitmap(muroV);
         al_destroy_event_queue(event_queue);
-       fprintf(stderr,"failed to create display!\n");
+        fprintf(stderr,"failed to create display!\n");
         return -1;
     }
     al_register_event_source(event_queue, al_get_display_event_source(display));
@@ -166,17 +168,17 @@ int initialize_display(void) {
     al_draw_scaled_bitmap(muroV, 0, 0, al_get_bitmap_width(muroV), al_get_bitmap_height(muroV), 0, 0, BLOCKSZ, al_get_display_height(display)-BLOCKSZ, 0);
     al_draw_scaled_bitmap(muroV, 0, 0, al_get_bitmap_width(muroV), al_get_bitmap_height(muroV),al_get_display_width(display)-BLOCKSZ , 0, BLOCKSZ, al_get_display_height(display)-BLOCKSZ, 0);
     
-    /*al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8)*2, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ-5, 0, BLOCKSZ, BLOCKSZ, 0);
+    /* al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8)*2, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ-5, 0, BLOCKSZ, BLOCKSZ, 0);
         al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8), 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*2, 0, BLOCKSZ, BLOCKSZ, 0);
             al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8)*2, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*3-4, 0, BLOCKSZ, BLOCKSZ, 0);
 
 
     al_draw_tinted_scaled_bitmap(image, al_map_rgba_f(0.2, 0.2, 0.2, 0.2), (al_get_bitmap_width(image)/8)*2, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*2, BLOCKSZ, BLOCKSZ, BLOCKSZ, 0);
     //void al_draw_bitmap(ALLEGRO_BITMAP *bitmap, float dx, float dy, int flags) 
-    /*al_draw_scaled_bitmap(image,
+    al_draw_scaled_bitmap(image,
             0, 0, al_get_bitmap_width(image), al_get_bitmap_height(image), //imagen
             0, 0, al_get_display_width(display), al_get_display_height(display), //a que tamaño queres que se dibuje la imagen
-            0);*/ //SIn flags podrian usar ALLEGRO_FLIP_HORIZONTAL o ALLEGRO_FLIP_VERTICAL muy utiles
+            0); */ //SIn flags podrian usar ALLEGRO_FLIP_HORIZONTAL o ALLEGRO_FLIP_VERTICAL muy utiles
 
     al_flip_display();
     
@@ -202,7 +204,8 @@ void printer (void){
     {
         for(y=0; y<HEIGHT ; y++)
         {
-        al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * (matriz[y][x]), 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ + BLOCKSZ*x, BLOCKSZ*y, BLOCKSZ, BLOCKSZ, 0);
+            float val = (float)matriz[y][x];
+            al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ + BLOCKSZ*x, BLOCKSZ*y, BLOCKSZ, BLOCKSZ, 0);
         }
     }
     al_flip_display(); //despues de esribir toda la matriz muestro lo que escribi
