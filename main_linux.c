@@ -30,12 +30,26 @@
     al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
 }
 */
+
     pthread_t th1;
     bool close_display = false; 
 
 int initialize_display(void);
 void printer (void);
 void endgame (void);
+
+int main (void){
+    int ret= initialize_display();
+    if(ret){
+        printf("Error al iniciar");
+        return 0;   //si algo fallo termino el programa
+    }
+
+    pthread_create (&th1, NULL, thread1, NULL);
+    pthread_join (th1, NULL);
+    return 0;
+
+}
 
 void thread1 (){
     while (!close_display) {
@@ -47,6 +61,7 @@ void thread1 (){
         }
         printer();
     }
+    endgame();//close display
 }
 
 int initialize_display(void) {
@@ -94,6 +109,7 @@ int initialize_display(void) {
     image = al_load_bitmap("./frontend/images/piezastetris.png");
     if (!image) {
         fprintf(stderr, "failed to load image !\n");
+        al_destroy_event_queue(event_queue);
         return 0;
     }
 
@@ -111,6 +127,7 @@ int initialize_display(void) {
     display = al_create_display(((ANCHO+2)*BLOCKSZ), ((ALTO+1)*BLOCKSZ));
     if (!display) {
         al_destroy_bitmap(image);
+        al_destroy_event_queue(event_queue);
         fprintf(stderr, "failed to create display!\n");
         return -1;
     }
