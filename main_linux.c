@@ -37,7 +37,19 @@
 int initialize_display(void);
 void printer (void);
 void endgame (void);
-void thread1 (void);
+
+void * thread1 (){
+    while (!close_display) {
+        ALLEGRO_EVENT ev;
+        if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
+        {
+            if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+                close_display = true;
+        }
+        printer();
+    }
+    endgame();//close display
+}
 
 int main (void){
     int ret= initialize_display();
@@ -52,18 +64,7 @@ int main (void){
 
 }
 
-void thread1 (void){
-    while (!close_display) {
-        ALLEGRO_EVENT ev;
-        if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
-        {
-            if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
-                close_display = true;
-        }
-        printer();
-    }
-    endgame();//close display
-}
+
 
 int initialize_display(void) {
 
