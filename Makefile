@@ -1,5 +1,5 @@
-test: main_test.o rpi_display.o easy_timer.o dispEmu.o matrix_handler.o teclado_trucho.o game.o
-	gcc -Wall main_test.o rpi_display.o easy_timer.o dispEmu.o teclado_trucho.o game.o matrix_handler.o -o test `pkg-config --libs allegro-5`
+test: main_test.o dispEmu.o t_rpi_display.o t_easy_timer.o t_matrix_handler.o teclado_trucho.o game.o
+	gcc -Wall main_test.o dispEmu.o easy_timer.o rpi_display.o teclado_trucho.o game.o matrix_handler.o -o test `pkg-config --libs allegro-5`
 
 back: main_back.o game.o easy_timer.o teclado_trucho.o
 	gcc -Wall main_back.o game.o easy_timer.o teclado_trucho.o -o back `pkg-config --libs allegro-5`
@@ -50,12 +50,20 @@ matrix_handler.o: ./libs/matrix_handler.c ./libs/matrix_handler.h
 # TESTING LIBS 	#
 #################
 
+t_matrix_handler.o: ./testing/matrix_handler.c ./testing/matrix_handler.h
+	gcc -c -Wall ./testing/matrix_handler.c
 
-teclado_trucho.o: ./testing/teclado_trucho.c ./testing/teclado_trucho.h
-	gcc -Wall -c ./testing/teclado_trucho.c `pkg-config --cflags allegro-5`
+t_easy_timer.o: ./testing/easy_timer.c ./testing/easy_timer.h
+	gcc -c -Wall ./testing/easy_timer.c
 
-dispEmu.o: ./testing/dispEmu.c ./testing/dispEmu.h
-	gcc -c -Wall ./testing/dispEmu.c
+t_rpi_display.o: ./testing/rpi_display.c ./testing/rpi_display.h
+	gcc -c -Wall ./testing/rpi_display.c
+
+teclado_trucho.o: ./testing/joystick.c ./testing/joystick.h
+	gcc -Wall -c ./testing/joystick.c -o teclado_trucho.o `pkg-config --cflags allegro-5`
+
+dispEmu.o: ./testing/disdrv.c ./testing/disdrv.h
+	gcc -c -Wall ./testing/disdrv.c -o dispEmu.o
 
 clean:
 	rm *.o

@@ -54,7 +54,7 @@ void key_press_callback(uint8_t key){
             break;
 
         case DPAD_DOWN:
-            if(game_block_data.id == 0)
+            if(game_data.id == 0)
                 game_insert_block(game_get_next_block());
             else
                 game_move_down();

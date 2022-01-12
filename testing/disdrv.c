@@ -1,9 +1,12 @@
 #include <stdio.h>
-#include "dispEmu.h"
+#include "disdrv.h"
+
+#warning "OJO ESTAS LIBRERIAS VAN EN /TESTING"
 
 static char mat[16][16];
 
 void disp_init(void){
+    printf("OJO: ESTA LIBRERIA ES UN EMULADOR\n");
     disp_clear();
 }
 

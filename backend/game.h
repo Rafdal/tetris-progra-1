@@ -6,21 +6,25 @@
 #define HEIGHT  16
 #define WIDTH   10
 
+#define GAME_DEFAULT_SPEED_INTERVAL 2000  // milisegundos
+
 char game_public_matrix [HEIGHT][WIDTH];
+
+typedef enum {GAME_OFF, GAME_RUN, GAME_PAUSE, GAME_QUIT, GAME_LOSE} game_state_t;
 
 typedef struct {
     uint8_t x;
     uint8_t y;
     uint8_t id;
     uint8_t rot;
-}block_data_t;
-
-block_data_t game_block_data;
+    uint32_t score;
+    game_state_t state;
+    uint64_t speed_interval;
+}game_data_t;
 
 // Funciones del juego
 void game_init(void); // inicia el juego en blanco
 void game_run(void); // ejecuta el juego
-
 
 // Imprime la matriz en consola
 // void print_matrix(void);
@@ -40,8 +44,8 @@ void game_move_horizontal(int direction);
 //Devuelve un ID de bloque aleatorio
 uint8_t game_get_next_block (void);
 
-// Obtiene el score actual
-unsigned int game_get_score(void);
+// Obtiene todos los datos del juego
+game_data_t game_get_data(void);
 
 
 #endif // GAME_H
