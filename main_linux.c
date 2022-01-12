@@ -8,7 +8,6 @@
 #include "./backend/game.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
 #include <allegro5/allegro.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
 #include <allegro5/allegro_image.h> //NO OLVIDAR INCLUIR ALLEGRO_IMAGE EN LINKER
 #include <allegro5/allegro_audio.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
@@ -49,14 +48,21 @@
         {0,0,0,0,0,0,0,0,0,0},
     };
 
-    pthread_t th1;
+   
     bool close_display = false; 
 
 int initialize_display(void);
 void printer (void);
 void endgame (void);
 
-void * thread1 (){
+
+int main (void){
+    int ret= initialize_display();
+    if(ret){
+        printf("Error al iniciar");
+        return 0;   //si algo fallo termino el programa
+    }
+
     while (!close_display) {
         ALLEGRO_EVENT ev;
         if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
@@ -66,20 +72,8 @@ void * thread1 (){
         }
         printer();
     }
-    endgame();//close display
-    return &thread1;    // TODO: ARREGLAR ESTO
-    #warning arreglar esto
-}
+    endgame();//borro todo
 
-int main (void){
-    int ret= initialize_display();
-    if(ret){
-        printf("Error al iniciar");
-        return 0;   //si algo fallo termino el programa
-    }
-
-    pthread_create (&th1, NULL, thread1, NULL);
-    pthread_join (th1, NULL);
     return 0;
 
 }

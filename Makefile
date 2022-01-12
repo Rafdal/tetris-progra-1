@@ -5,7 +5,7 @@ back: main_back.o game.o easy_timer.o teclado_trucho.o
 	gcc -Wall main_back.o game.o easy_timer.o teclado_trucho.o -o back `pkg-config --libs allegro-5`
 
 linux: main_linux.o game.o
-	gcc -Wall main_linux.o game.o -o linux `pkg-config --libs allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5` -lpthread
+	gcc -Wall main_linux.o game.o -o linux `pkg-config --libs allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5` 
 
 rasp: main_rasp.o easy_timer.o joystick.o rpi_display.o game.o matrix_handler.o
 	gcc -Wall main_rasp.o joystick.o easy_timer.o rpi_display.o game.o matrix_handler.o ./libs/joydrv.o ./libs/disdrv.o -o rasp
@@ -22,8 +22,7 @@ main_rasp.o: main_rasp.c
 	gcc -c -Wall main_rasp.c
 
 main_linux.o: main_linux.c
-	gcc -c -Wall main_linux.c `pkg-config --cflags allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5` -lpthread
-
+	gcc -c -Wall main_linux.c `pkg-config --cflags allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5` 
 main_back.o: main_back.c
 	gcc -c -Wall main_back.c
 
