@@ -64,7 +64,7 @@ void update_display(void){
 	matrix_hand_t public_next_mat;
 	assert(mat_init(&public_next_mat, 12, 4));
 	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, next_block_public_matrix, 12,4);
-//	rpi_copyToDis(&public_next_mat, 0, 11);
+	rpi_copyToDis(&public_next_mat, 0, 11);
 	mat_print(&public_next_mat);
 
     rpi_run_display();

@@ -158,6 +158,13 @@ static void _update_next_block (void) //Actualiza el arreglo con las proximas pi
 	id_next_block[3] = game_get_next_block();
 	arr_next_block[3] = blocks[id_next_block[3]];
 
+	for(i=0 ; i < 12 ; i++)
+	{
+		for (j=0 ; j<4; j++)
+		{
+			next_block_public_matrix[i][j] = 0;
+		}
+	}
 
 	for (k = 1 ; k < 4 ; k++)
 	{
