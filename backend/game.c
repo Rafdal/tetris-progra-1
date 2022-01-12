@@ -105,11 +105,17 @@ static void _init_arr_next_block (void); //Inicializa el arreglo con los proximo
 static void _update_next_block (void); //Actualiza el arreglo con las proximas piezas una vez que la primera pieza de este arreglo ya fue impresa en el juego
 // F U N C I O N E S
 
+
 // Inicia el juego con las matrices en blanco
 void game_init(void){
+    game_data.state = GAME_IDLE;
+    game_data.id = 0; // Ningun bloque
+}
+
+
+void game_start(void){
     srand(time(NULL));
     _clear_matrix();
-    game_data.id = 0; // ningun bloque
     game_data.state = GAME_RUN;
     game_data.score = 0;
     game_data.speed_interval = GAME_DEFAULT_SPEED_INTERVAL;
@@ -123,7 +129,8 @@ void game_init(void){
 	_init_arr_next_block(); //Inicializa el arreglo con las proximas piezas
 }
 
-static void _init_arr_next_block (void) //Inicializa el arreglo con los proximos bloques
+
+void _init_arr_next_block (void) //Inicializa el arreglo con los proximos bloques
 {
 	int i, j, k;
 	for (i = 0 ; i < 4 ; i++)
@@ -147,7 +154,7 @@ static void _init_arr_next_block (void) //Inicializa el arreglo con los proximos
 }
 
 
-static void _update_next_block (void) //Actualiza el arreglo con las proximas piezas una vez que la primera pieza de este arreglo ya fue impresa en el juego
+void _update_next_block (void) //Actualiza el arreglo con las proximas piezas una vez que la primera pieza de este arreglo ya fue impresa en el juego
 {
 	int i,j,k;
 	for (i = 0 ; i < 3 ; i++)
@@ -374,91 +381,93 @@ uint8_t _check_row_complete (void)
 
 // Actualiza la matriz con los datos de coordenadas del bloque
 void _render(void){
-    _clear_matrix();
-    uint8_t x,y;
-    uint8_t size = blocks[game_data.id].size;
-//Analiza el valor de rotacion y gira la matriz del bloque en sentido horario para luego incluirla en la matriz general
-    switch (game_data.rot)
-    {
-        case 0: // Sin rotacion
-            for(y=0; y<blocks[game_data.id].size && !bad_movement; y++){
-                for(x=0; x<blocks[game_data.id].size && !bad_movement; x++){
-                    int i,j; // coordenadas de la matriz general
-                    i = game_data.y+y-size/2;
-                    j = game_data.x+x-size/2;
+    if(game_data.state == GAME_RUN){
+        _clear_matrix();
+        uint8_t x,y;
+        uint8_t size = blocks[game_data.id].size;
+    //Analiza el valor de rotacion y gira la matriz del bloque en sentido horario para luego incluirla en la matriz general
+        switch (game_data.rot)
+        {
+            case 0: // Sin rotacion
+                for(y=0; y<blocks[game_data.id].size && !bad_movement; y++){
+                    for(x=0; x<blocks[game_data.id].size && !bad_movement; x++){
+                        int i,j; // coordenadas de la matriz general
+                        i = game_data.y+y-size/2;
+                        j = game_data.x+x-size/2;
 
-                    char val = _block(x,y);
-                    if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
-                    {
-                        if (_can_write(i,j))
-                            matrix[i][j] = val;
-                        else
-                            bad_movement = true;
-                    }
+                        char val = _block(x,y);
+                        if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
+                        {
+                            if (_can_write(i,j))
+                                matrix[i][j] = val;
+                            else
+                                bad_movement = true;
+                        }
 
-                }
-            }
-            break;
-        case 1: // Rotacion de 90°
-            for(y=0; y<blocks[game_data.id].size && !bad_movement; y++){
-                for(x=0; x<blocks[game_data.id].size && !bad_movement; x++){
-                    int i,j; // coordenadas de la matriz general
-                    i = game_data.y+y-size/2;
-                    j = game_data.x+x-size/2;
-
-                    char val = _block(y, size-1-x);
-                    if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
-                    {
-                        if (_can_write(i,j))
-                            matrix[i][j] = val;
-                        else
-                            bad_movement = true;
                     }
                 }
-            }
-            break;
+                break;
+            case 1: // Rotacion de 90°
+                for(y=0; y<blocks[game_data.id].size && !bad_movement; y++){
+                    for(x=0; x<blocks[game_data.id].size && !bad_movement; x++){
+                        int i,j; // coordenadas de la matriz general
+                        i = game_data.y+y-size/2;
+                        j = game_data.x+x-size/2;
 
-        case 2: // Rotacion de 180°
-            for(y=0; y<blocks[game_data.id].size && !bad_movement; y++){
-                for(x=0; x<blocks[game_data.id].size && !bad_movement; x++){
-                    int i,j; // coordenadas de la matriz general
-                    i = game_data.y+y-size/2;
-                    j = game_data.x+x-size/2;
-
-                    char val = _block(size - x -1 , size -y-1);
-                    if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
-                    {
-                        if (_can_write(i,j))
-                            matrix[i][j] = val;
-                        else
-                            bad_movement = true;
+                        char val = _block(y, size-1-x);
+                        if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
+                        {
+                            if (_can_write(i,j))
+                                matrix[i][j] = val;
+                            else
+                                bad_movement = true;
+                        }
                     }
                 }
-            }
-            break;
+                break;
 
-        case 3: // Rotacion de 270°
-            for(y=0; y<blocks[game_data.id].size && !bad_movement; y++){
-                for(x=0; x<blocks[game_data.id].size && !bad_movement; x++){
-                    int i,j; // coordenadas de la matriz general
-                    i = game_data.y+y-size/2;
-                    j = game_data.x+x-size/2;
+            case 2: // Rotacion de 180°
+                for(y=0; y<blocks[game_data.id].size && !bad_movement; y++){
+                    for(x=0; x<blocks[game_data.id].size && !bad_movement; x++){
+                        int i,j; // coordenadas de la matriz general
+                        i = game_data.y+y-size/2;
+                        j = game_data.x+x-size/2;
 
-                    char val = _block(size-y-1, x);
-                    if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
-                    {
-                        if (_can_write(i,j))
-                            matrix[i][j] = val;
-                        else
-                            bad_movement = true;
+                        char val = _block(size - x -1 , size -y-1);
+                        if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
+                        {
+                            if (_can_write(i,j))
+                                matrix[i][j] = val;
+                            else
+                                bad_movement = true;
+                        }
                     }
                 }
-            }
-            break;
-        default:
-            printf("Error rotacion incorrecta\n");
-            break;
+                break;
 
+            case 3: // Rotacion de 270°
+                for(y=0; y<blocks[game_data.id].size && !bad_movement; y++){
+                    for(x=0; x<blocks[game_data.id].size && !bad_movement; x++){
+                        int i,j; // coordenadas de la matriz general
+                        i = game_data.y+y-size/2;
+                        j = game_data.x+x-size/2;
+
+                        char val = _block(size-y-1, x);
+                        if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
+                        {
+                            if (_can_write(i,j))
+                                matrix[i][j] = val;
+                            else
+                                bad_movement = true;
+                        }
+                    }
+                }
+                break;
+            default:
+                printf("Error rotacion incorrecta\n");
+                break;
+
+        }
     }
 }
 

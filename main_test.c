@@ -17,6 +17,7 @@ int main(void){
 
     rpi_init_display();
     rpi_run_display();
+    rpi_clear_display();
 
     game_init();
 
@@ -47,11 +48,14 @@ int main(void){
         }
 
         if(dpad_is_longpressed(DPAD_BTN)){
-            ;// ;
+            if(game_data.state == GAME_IDLE){
+                game_start();
+            }
         }
 
         if(game_data.state == GAME_LOSE){
             printf("Perdiste! The Game\n");
+            game_init();
         }
     }
     
