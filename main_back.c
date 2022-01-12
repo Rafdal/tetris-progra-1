@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "./backend/game.h"
-#include "./libs/easy_timer.h"
-#include "./libs/teclado_trucho.h"
+#include "./testing/easy_timer.h"
+#include "./testing/teclado_trucho.h"
 
 
 void key_up(void){

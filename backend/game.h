@@ -9,8 +9,14 @@
 #define GAME_DEFAULT_SPEED_INTERVAL 2000  // milisegundos
 
 char game_public_matrix [HEIGHT][WIDTH];
+char next_block_public_matrix[12][4];
 
 typedef enum {GAME_OFF, GAME_RUN, GAME_PAUSE, GAME_QUIT, GAME_LOSE} game_state_t;
+
+typedef struct{
+	const char *data;
+	uint8_t size;
+}BLOCK_t;
 
 typedef struct {
     uint8_t x;
@@ -21,6 +27,10 @@ typedef struct {
     game_state_t state;
     uint64_t speed_interval;
 }game_data_t;
+
+// Variable en donde se van a guardar las proximas piezas
+uint8_t id_next_block[4];
+BLOCK_t arr_next_block[4];
 
 // Funciones del juego
 void game_init(void); // inicia el juego en blanco

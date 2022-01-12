@@ -35,6 +35,9 @@ void mat_set_byte(matrix_hand_t *mat, uint8_t y, uint8_t x, uint8_t byte);
 
 void mat_copyFromTo(matrix_hand_t *fromMat, matrix_hand_t *toMat, uint8_t offsetY, uint8_t offsetX);
 
+void mat_clean (matrix_hand_t *mat);
+
+
 #endif // MATRIX_HANDLER_H
 
 

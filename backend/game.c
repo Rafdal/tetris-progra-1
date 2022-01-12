@@ -60,10 +60,6 @@ const char BLOCK_7[] = {
         7, 6, 5,
 }; */
 
-typedef struct{
-    const char *data;
-    uint8_t size;
-}BLOCK_t;
 
 BLOCK_t blocks[] = {
         { BLOCK_0, 1, },
@@ -105,7 +101,8 @@ static void _delete_row (uint8_t row); // elimina y desplaza la fila completa
 static void _update_game_public_matrix (void); // actualiza los valores de la matriz publica (la cual contiene la suma de la matriz estatic y dinamica)
 static void _clear_matrix(void);
 static void _update_score(int streak, char lvl);
-
+static void _init_arr_next_block (void); //Inicializa el arreglo con los proximos bloques
+static void _update_next_block (void); //Actualiza el arreglo con las proximas piezas una vez que la primera pieza de este arreglo ya fue impresa en el juego
 // F U N C I O N E S
 
 // Inicia el juego con las matrices en blanco
@@ -123,6 +120,65 @@ void game_init(void){
             game_public_matrix[i][j] = (char)0;
         }
     }
+	_init_arr_next_block(); //Inicializa el arreglo con las proximas piezas
+}
+
+static void _init_arr_next_block (void) //Inicializa el arreglo con los proximos bloques
+{
+	int i, j, k;
+	for (i = 0 ; i < 4 ; i++)
+	{
+		id_next_block[i] = game_get_next_block(); //Llena el arreglo con id´s de los proximos bloques
+		arr_next_block[i] = blocks[id_next_block[i]];
+
+	}
+
+	for (k = 1 ; k < 4 ; k++)
+	{
+		char size = arr_next_block[k].size;
+		for ( i = 0 ; i < size ; i++)
+		{
+			for (j = 0; j < size; j++)
+			{
+				next_block_public_matrix[i+4*(k-1)][j] = arr_next_block[k].data[i*size + j];
+			}
+		}
+	}
+}
+
+
+static void _update_next_block (void) //Actualiza el arreglo con las proximas piezas una vez que la primera pieza de este arreglo ya fue impresa en el juego
+{
+	int i,j,k;
+	for (i = 0 ; i < 3 ; i++)
+	{
+		id_next_block[i] = id_next_block[i+1];
+		arr_next_block[i] = arr_next_block[i+1];
+	}
+	id_next_block[3] = game_get_next_block();
+	arr_next_block[3] = blocks[id_next_block[3]];
+
+	for(i=0 ; i < 12 ; i++)
+	{
+		for (j=0 ; j<4; j++)
+		{
+			next_block_public_matrix[i][j] = 0;
+		}
+	}
+
+	for (k = 1 ; k < 4 ; k++)
+	{
+		char size = arr_next_block[k].size;
+
+		for ( i = 0 ; i < size ; i++)
+		{
+			for (j = 0; j < size; j++)
+			{
+				next_block_public_matrix[i+4*(k-1)][j] = arr_next_block[k].data[i*size + j];
+			}
+		}
+	}
+
 }
 
 game_data_t game_get_data(void){
@@ -260,6 +316,7 @@ void game_run(void){
 			_update_score(streak, game_level);
 			printf("score is: %d points\n", game_data.score);
 		}
+		_update_next_block(); //Una vez usado el primer bloque del arreglo, actualiza este arreglo colocando uno nuevo al final de este
    	 }
 	_update_game_public_matrix();
 }
