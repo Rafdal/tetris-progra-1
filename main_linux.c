@@ -99,7 +99,7 @@ int main (void){
         ALLEGRO_EVENT ev;
         if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
         {
-            if(keyb_run(&ev)){
+            if(!keyb_run(&ev)){
                 printf("ESCAPE fue presionado\n");
             }
             if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
@@ -148,6 +148,7 @@ void keypress_callback(uint8_t key){
             break;
 
         case KEYB_BTN:
+            game_start();
             printf("BTN\n");
             break;
 
