@@ -119,7 +119,7 @@ bool keyb_run(ALLEGRO_EVENT* pev){
 
 
             case ALLEGRO_KEY_ESCAPE:
-                return false;
+                return true;
                 break;
         }
     }
@@ -151,5 +151,5 @@ bool keyb_run(ALLEGRO_EVENT* pev){
         }
         lastMillis = get_millis();
     }
-    return true;
+    return false;
 }
