@@ -119,8 +119,6 @@ bool keyb_run(ALLEGRO_EVENT* pev){
 
 
             case ALLEGRO_KEY_ESCAPE:
-                // al_destroy_display(display);
-                al_destroy_event_queue(event_queue);
                 return false;
                 break;
         }
