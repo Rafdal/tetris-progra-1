@@ -148,6 +148,7 @@ void keypress_callback(uint8_t key){
             break;
 
         case KEYB_BTN:
+            game_start();
             printf("BTN\n");
             break;
 
