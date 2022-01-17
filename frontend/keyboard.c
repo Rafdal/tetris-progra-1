@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <assert.h>
-#include "easy_timer.h"
+#include "../testing/easy_timer.h"
 #include "keyboard.h"
 
 static ALLEGRO_EVENT_QUEUE *event_queue = NULL;

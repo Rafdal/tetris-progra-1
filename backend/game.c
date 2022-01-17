@@ -4,7 +4,6 @@
 #include <time.h>
 #include "game.h"
 
-#define game_level 1
 
 //   C O N S T A N T E S
 
@@ -100,9 +99,11 @@ static uint8_t _check_row_complete (void); // chequea si una fila se elimino y e
 static void _delete_row (uint8_t row); // elimina y desplaza la fila completa
 static void _update_game_public_matrix (void); // actualiza los valores de la matriz publica (la cual contiene la suma de la matriz estatic y dinamica)
 static void _clear_matrix(void);
-static void _update_score(int streak, char lvl);
+static void _update_score(int streak, uint8_t lvl);
 static void _init_arr_next_block (void); //Inicializa el arreglo con los proximos bloques
 static void _update_next_block (void); //Actualiza el arreglo con las proximas piezas una vez que la primera pieza de este arreglo ya fue impresa en el juego
+static void _update_level (void); //Actualiza el nivel del juego dependiendo del score obtenido
+
 // F U N C I O N E S
 
 
@@ -110,6 +111,7 @@ static void _update_next_block (void); //Actualiza el arreglo con las proximas p
 void game_init(void){
     game_data.state = GAME_IDLE;
     game_data.id = 0; // Ningun bloque
+	game_data.game_level = 1; //Inicializa el nivel del juego en 1
 }
 
 
@@ -324,8 +326,8 @@ void game_run(void){
 			_delete_row(row);
 
 			streak++;
-			_update_score(streak, game_level);
-			printf("score is: %d points\n", game_data.score);
+			_update_score(streak, game_data.game_level);
+			_update_level();
 		}
 		_update_next_block(); //Una vez usado el primer bloque del arreglo, actualiza este arreglo colocando uno nuevo al final de este
    	 }
@@ -529,7 +531,7 @@ void game_rotate(int direction){
 
 // _update_score actualiza el score segun el nivel en el que se encuentra
 
-void _update_score(int streak, char lvl){
+void _update_score(int streak, uint8_t lvl){
 	switch (streak) {
 		case 1:
 			game_data.score += 40*(lvl+1);
@@ -545,5 +547,37 @@ void _update_score(int streak, char lvl){
 			printf("TETRIS!!");
 			break;
 	}
-    game_data.speed_interval -= game_data.speed_interval/15;
+}
+
+void _update_level (void)
+{
+	if ( game_data.score >= 0 && game_data.score<= 250 )
+	{
+		game_data.game_level = 1;
+		game_data.speed_interval -= game_data.speed_interval/10;
+	}
+	else if( game_data.score >250 && game_data.score <= 1000)
+	{
+		game_data.game_level = 2;
+		game_data.speed_interval -= game_data.speed_interval/10;
+	}
+	else if( game_data.score >1000 && game_data.score <= 1500)
+	{
+		game_data.game_level = 3;
+		game_data.speed_interval -= game_data.speed_interval/10;
+	}
+	else if( game_data.score >1500 && game_data.score <= 2000)
+	{
+		game_data.game_level = 4;
+		game_data.speed_interval -= game_data.speed_interval/10;
+	}
+	else if( game_data.score >2000 && game_data.score <= 2500)
+	{
+		game_data.game_level = 5;
+		game_data.speed_interval -= game_data.speed_interval/10;
+	}
+	else if (game_data.score > 2500)
+	{
+		game_data.speed_interval -= game_data.speed_interval/10;
+	}
 }
