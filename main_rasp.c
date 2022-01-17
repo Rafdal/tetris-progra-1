@@ -31,7 +31,7 @@ int main(void){
 
     while (game_get_data().state != GAME_QUIT)
     {
-        dpad_run();
+        dpad_read();
         
         game_data = game_get_data();
 

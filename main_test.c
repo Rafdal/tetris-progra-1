@@ -2,23 +2,24 @@
 #include <assert.h>
 
 #include "./backend/game.h"
+#include "./backend/menu.h"
 #include "./testing/joystick.h"
 #include "./testing/easy_timer.h"
 #include "./testing/matrix_handler.h"
 #include "./testing/rpi_display.h"
 
 void key_press_callback(uint8_t key);
+void update_game_display(void);
+void main_game_start(void);
+uint8_t main_menu_event_listener(void);
 
-void update_display(void);
+menu_t *main_menu;
 
 int main(void){
 
     printf("Inicializando...\n");
 
     rpi_init_display();
-    rpi_run_display();
-    rpi_clear_display();
-
     game_init();
 
     dpad_init();
@@ -27,15 +28,32 @@ int main(void){
     dpad_use_press_callback_for_longpress(DPAD_LEFT);
     dpad_use_press_callback_for_longpress(DPAD_RIGHT);
 
+    main_menu = menu_init(3, main_menu_event_listener, "MENU");
+    assert(menu_initialized(main_menu));
+    menu_set_option(main_menu, 0, "JUGAR", main_game_start);
+    menu_set_option(main_menu, 1, "OPT1", NULL);
+
+    menu_run(main_menu);
+
+    menu_destroy(main_menu);
+    rpi_clear_display();
+
+    return 0;
+}
+
+uint8_t main_menu_event_listener(void){
+    dpad_read();
+}
+
+void main_game_start(void){
+
+    game_data_t game_data;
     uint64_t lastMillis;
-    game_data_t game_data = game_get_data();
 
-    while (game_get_data().state != GAME_QUIT)
+    while ((game_data = game_get_data()).state != GAME_QUIT)
     {
-        dpad_run();
+        dpad_read();
         
-        game_data = game_get_data();
-
         if(game_data.state == GAME_RUN && get_millis()-lastMillis >= game_data.speed_interval){
             if(game_data.id == 0)
                 game_insert_block(id_next_block[0]);
@@ -43,7 +61,7 @@ int main(void){
             else
                 game_move_down();
             game_run();
-            update_display();
+            update_game_display();
             lastMillis = get_millis();
         }
 
@@ -58,11 +76,10 @@ int main(void){
             game_init();
         }
     }
-    
-    return 0;
 }
 
-void update_display(void){
+
+void update_game_display(void){
     matrix_hand_t mat_handler;
     assert(mat_init(&mat_handler, HEIGHT, WIDTH));
     MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, HEIGHT, WIDTH);
@@ -80,6 +97,7 @@ void update_display(void){
 }
 
 void key_press_callback(uint8_t key){
+    menu_event(key);
     switch (key)
     {
         case DPAD_UP:
@@ -122,5 +140,5 @@ void key_press_callback(uint8_t key){
             break;
     }
     game_run();
-    update_display();
+    update_game_display();
 }

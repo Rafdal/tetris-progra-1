@@ -60,7 +60,7 @@ void dpad_on_press(dpad_callback_t c){
 
 
 
-void dpad_run(void){
+void dpad_read(void){
     joy_update();
     jcoord_t joy = joy_get_coord();
     jswitch_t btn = joy_get_switch();
