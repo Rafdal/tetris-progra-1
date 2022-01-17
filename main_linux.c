@@ -65,7 +65,6 @@ int main (void){
 
 	game_init();
 	uint64_t lastMillis;
-	game_data_t game_data = game_get_data();
 	int ret= initialize_display();
     if(ret){
         printf("Error al iniciar");
@@ -76,13 +75,24 @@ int main (void){
     keyb_use_press_callback_for_longpress(KEYB_LEFT);
     keyb_use_press_callback_for_longpress(KEYB_RIGHT);
 
-    while (!close_display && game_get_data().state != GAME_QUIT) {
+    game_data_t game_data;
+    while (!close_display && (game_data = game_get_data()).state != GAME_QUIT) {
 
+        ALLEGRO_EVENT ev;
+        if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
+        {
+            if(keyb_run(&ev)){
+                printf("ESCAPE fue presionado\n");
+            }
+
+            if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
+                close_display = true;
+            }
+        }
 
 		if(game_data.state == GAME_RUN && get_millis()-lastMillis >= game_data.speed_interval){
 			if(game_data.id == 0)
 				game_insert_block(id_next_block[0]);
-
 			else
 				game_move_down();
 			game_run();
@@ -95,16 +105,6 @@ int main (void){
 			printf("Perdiste! The Game\n");
 			game_init();
 		}
-
-        ALLEGRO_EVENT ev;
-        if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
-        {
-            if(keyb_run(&ev)){
-                printf("ESCAPE fue presionado\n");
-            }
-            if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
-                close_display = true;
-        }
     }
     endgame();//borro todo
 
