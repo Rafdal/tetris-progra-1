@@ -73,10 +73,10 @@ void update_display(void){
 	assert(mat_init(&public_next_mat, 12, 4));
 	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, next_block_public_matrix, 12,4);
 	rpi_copyToDis(&public_next_mat, 0, 11);
-	mat_print(&public_next_mat);
 
     rpi_run_display();
-    printf("SCORE:\n%u\n", game_get_data().score);
+    printf("SCORE: %u\n", game_get_data().score);
+	printf("LEVEL: %d\n", game_get_data().game_level );
 }
 
 void key_press_callback(uint8_t key){

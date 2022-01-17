@@ -26,6 +26,7 @@ typedef struct {
     uint32_t score;
     game_state_t state;
     uint64_t speed_interval;
+	uint8_t game_level;
 }game_data_t;
 
 // Variable en donde se van a guardar las proximas piezas
