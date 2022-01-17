@@ -6,7 +6,7 @@
  * Created on June 4, 2016, 6:38 PM
  */
 #include "./backend/game.h"
-#include "testing/easy_timer.h"
+#include "./frontend/easy_timer.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>

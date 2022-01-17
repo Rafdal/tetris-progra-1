@@ -37,7 +37,7 @@ game.o: ./backend/game.c ./backend/game.h
 easy_timer.o: ./libs/easy_timer.c ./libs/easy_timer.h
 	gcc -c -Wall ./libs/easy_timer.c
 
-l_easy_timer.o: testing/easy_timer.c testing/easy_timer.h
+l_easy_timer.o: ./frontend/easy_timer.c ./frontend/easy_timer.h
 	gcc -c -Wall ./frontend/easy_timer.c
 
 keyboard.o: ./frontend/keyboard.c ./frontend/keyboard.h
