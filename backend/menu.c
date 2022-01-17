@@ -46,6 +46,8 @@ void menu_destroy(menu_t *menu){
 }
 
 
+
+
 //  MENU CONTROL FUNCTIONS
 
 void menu_run(menu_t *menu){
@@ -58,9 +60,9 @@ void menu_run(menu_t *menu){
             real_time_loop();
 
         if(menu->listener != NULL){
-            menu_state_t ev = event_listener(); // get event
+            menu->state = event_listener(); // get event
 
-            switch (ev)
+            switch (menu->state)
             {
             case MENU_IDLE:
                 /* do nothing */
@@ -76,7 +78,7 @@ void menu_run(menu_t *menu){
                 break;
 
             case MENU_EXIT:
-                menu->active = false;
+                menu->state = MENU_INACTIVE; // cierro el menu
                 break;
 
             default:
@@ -86,7 +88,7 @@ void menu_run(menu_t *menu){
 
         }
         else{
-            menu->active = false;
+            menu->state = MENU_INACTIVE; // cierro el menu
             printf("Error event_listener == NULL\n");
         }
 
