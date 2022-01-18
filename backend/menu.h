@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef enum {MENU_INACTIVE, MENU_ACTIVE, MENU_UP, MENU_DOWN, MENU_EXIT, MENU_SELECT} menu_state_t;
+typedef enum {MENU_INACTIVE, MENU_IDLE, MENU_UP, MENU_DOWN, MENU_EXIT, MENU_SELECT} menu_state_t;
 
 typedef void (*menu_callback_t)(void);
 typedef menu_state_t (*ev_listener_t)(menu_state_t);
@@ -29,7 +29,7 @@ menu_t *menu_init(uint8_t options, char* title);
 // INICIALIZAR MENU: Se ejecuta una sola vez al principio
 // - Options: cantidad de opciones que tendra el menu
 // - title: titulo del menu
-void menu_set_event_listener(menu_callback_t ev_listener);
+void menu_set_event_listener_display(menu_callback_t ev_listener, menu_callback_t _update_display);
 bool menu_initialized(menu_t *menu);
 bool menu_set_option(menu_t *menu, uint8_t option_id, char* text, menu_callback_t callback);
 // void menu_set_event_listener(menu_t *menu, );

@@ -37,7 +37,7 @@ int main(void){
     menu_set_option(main_menu, 0, "JUGAR", main_game_start);
     menu_set_option(main_menu, 1, "OPT1", opt1);
 
-    menu_set_event_listener(dpad_read);
+    menu_set_event_listener_display(dpad_read, update_menu_display);
 
     menu_run(main_menu);
 
@@ -48,6 +48,7 @@ int main(void){
 }
 
 void update_menu_display(void){
+    printf("display:\n");
     printf(menu_current_menu->title);
     putchar('\n');
 
@@ -71,6 +72,7 @@ void main_game_start(void){
     game_data_t game_data;
     uint64_t lastMillis;
 
+    game_start();
     while ((game_data = game_get_data()).state != GAME_QUIT)
     {
         dpad_read();
@@ -94,7 +96,8 @@ void main_game_start(void){
 
         if(game_data.state == GAME_LOSE){
             printf("Perdiste! The Game\n");
-            game_init();
+            break;
+            #warning BREAK HARDCODEADO
         }
     }
 }
@@ -119,39 +122,38 @@ void update_game_display(void){
 void key_press_callback(uint8_t key){
     
     assert(menu_current_menu != NULL);
-    if(menu_current_menu->state == MENU_ACTIVE){
+    if(menu_current_menu->state == MENU_IDLE){
 
         switch (key)
         {
             case DPAD_UP:
                 menu_current_menu->state = MENU_UP;
-                printf("UP\n");
+                printf("menu UP\n");
                 break;
 
             case DPAD_DOWN:
                 menu_current_menu->state = MENU_DOWN;
-                printf("DOWN\n");
+                printf("menu DOWN\n");
                 break;
 
             case DPAD_LEFT:
                 menu_current_menu->state = MENU_EXIT;
-                printf("LEFT\n");
+                printf("menu LEFT\n");
                 break;
 
             case DPAD_RIGHT:
                 menu_current_menu->state = MENU_SELECT;
-                printf("RIGHT\n");
+                printf("menu RIGHT\n");
                 break;
 
             default:
                 break;
-            update_menu_display();
         }
     }else if(game_get_data().state == GAME_RUN){
         switch (key)
         {
             case DPAD_UP:
-                printf("UP\n");
+                printf("game UP\n");
                 break;
 
             case DPAD_DOWN:
@@ -159,31 +161,32 @@ void key_press_callback(uint8_t key){
                     game_insert_block(id_next_block[0]);
                 else
                     game_move_down();
-                printf("DOWN\n");
+                printf("game DOWN\n");
                 break;
 
             case DPAD_LEFT:
                 game_move_horizontal(0);
-                printf("LEFT\n");
+                printf("game LEFT\n");
                 break;
 
             case DPAD_RIGHT:
                 game_move_horizontal(1);
-                printf("RIGHT\n");
+                printf("game RIGHT\n");
                 break;
 
             case DPAD_UPRIGHT:
                 game_rotate(1);
-                printf("UPRIGHT\n");
+                printf("game UPRIGHT\n");
                 break;
 
             case DPAD_UPLEFT:
                 game_rotate(0);
-                printf("UPLEFT\n");
+                printf("game UPLEFT\n");
                 break;
 
             case DPAD_BTN:
-                printf("BTN\n");
+                // menu_run(&pause_menu);
+                printf("game BTN\n");
                 break;
 
             default:

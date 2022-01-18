@@ -19,7 +19,7 @@ void rpi_clear_display(void){
 // Funcion que inicializa el display de la RPI.
 void rpi_init_display (void)
 {
-	printf("Inicializando display");
+	printf("Inicializando display\n");
 	disp_init(); //Inicializa el display
 	disp_clear(); //Borra el buffer
 	int x,y;

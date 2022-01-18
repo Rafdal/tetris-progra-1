@@ -5,6 +5,7 @@
 
 static menu_callback_t real_time_loop;
 static menu_callback_t event_listener;
+static menu_callback_t update_display;
 
 menu_t* menu_init(uint8_t options, char* title){
     menu_t *menu = (menu_t*) calloc(1,sizeof(menu_t));
@@ -28,8 +29,9 @@ bool menu_initialized(menu_t *menu){
     return true; 
 }
 
-void menu_set_event_listener(menu_callback_t ev_listener){
+void menu_set_event_listener_display(menu_callback_t ev_listener, menu_callback_t _update_display){
     event_listener = ev_listener;
+    update_display = _update_display;
 }
 
 bool menu_set_option(menu_t *menu, uint8_t option_id, char* text, menu_callback_t callback){
@@ -59,20 +61,21 @@ void menu_run(menu_t *menu){
     assert(menu != NULL);
     assert(menu->option != NULL);
     assert(event_listener != NULL);
+    assert(update_display != NULL);
 
-    menu->state = MENU_ACTIVE;
+    menu->state = MENU_IDLE;
     menu_current_menu = menu;
     while (menu->state != MENU_INACTIVE)
     {
         if(real_time_loop != NULL)
             real_time_loop();
 
-        menu->state = MENU_ACTIVE;
+        menu->state = MENU_IDLE;
         event_listener(); // get event state
 
         switch (menu->state)
         {
-        case MENU_ACTIVE:
+        case MENU_IDLE:
             /* do nothing */
             break;
 
@@ -105,6 +108,9 @@ void menu_run(menu_t *menu){
             break;
         }
 
+        if(menu_current_menu->state != MENU_IDLE){
+            update_display();
+        }
         // }
         // else{
         //     menu->state = MENU_INACTIVE; // cierro el menu
