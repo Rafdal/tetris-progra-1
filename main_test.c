@@ -13,10 +13,19 @@ void update_game_display(void);
 void main_game_start(void);
 void update_menu_display(void);
 
-menu_t *main_menu;
+menu_t *main_menu = NULL;
+menu_t *pause_menu = NULL;
 
-void opt1(void){
-    printf("Option 1\n");
+void exit_game(void){
+    game_init();
+    main_menu->state = MENU_IDLE;
+    pause_menu->state = MENU_CLOSE;
+    menu_current_menu = main_menu;
+}
+
+void restart_game(void){
+    menu_close_current();
+    game_start();
 }
 
 int main(void){
@@ -32,23 +41,34 @@ int main(void){
     dpad_use_press_callback_for_longpress(DPAD_LEFT);
     dpad_use_press_callback_for_longpress(DPAD_RIGHT);
 
-    main_menu = menu_init(3, "MENU");
+    main_menu = menu_init(4, "MENU", NULL, MENU_ACTION_DO_NOTHING);
     assert(menu_initialized(main_menu));
     menu_set_option(main_menu, 0, "JUGAR", main_game_start);
-    menu_set_option(main_menu, 1, "OPT1", opt1);
+    menu_set_option(main_menu, 1, "CARGAR PARTIDA", NULL);
+    menu_set_option(main_menu, 2, "TOP SCORES", NULL);
+    menu_set_option(main_menu, 3, "SALIR", menu_close_current);
+
+    pause_menu = menu_init(4, "PAUSA", NULL, MENU_ACTION_EXIT);
+    assert(menu_initialized(pause_menu));
+    menu_set_option(pause_menu, 0, "REANUDAR", menu_close_current);
+    menu_set_option(pause_menu, 1, "GUARDAR", NULL);
+    menu_set_option(pause_menu, 2, "REINICIAR", restart_game);
+    menu_set_option(pause_menu, 3, "SALIR", exit_game);
+
 
     menu_set_event_listener_display(dpad_read, update_menu_display);
 
     menu_run(main_menu);
 
     menu_destroy(main_menu);
+    menu_destroy(pause_menu);
     rpi_clear_display();
 
     return 0;
 }
 
 void update_menu_display(void){
-    printf("display:\n");
+    printf("\n\n\n\n\n\n\n");
     printf(menu_current_menu->title);
     putchar('\n');
 
@@ -86,12 +106,6 @@ void main_game_start(void){
             game_run();
             update_game_display();
             lastMillis = get_millis();
-        }
-
-        if(dpad_is_longpressed(DPAD_BTN)){
-            if(game_data.state == GAME_IDLE){
-                game_start();
-            }
         }
 
         if(game_data.state == GAME_LOSE){
@@ -141,7 +155,7 @@ void key_press_callback(uint8_t key){
                 printf("menu LEFT\n");
                 break;
 
-            case DPAD_RIGHT:
+            case DPAD_BTN:
                 menu_current_menu->state = MENU_SELECT;
                 printf("menu RIGHT\n");
                 break;
@@ -185,7 +199,7 @@ void key_press_callback(uint8_t key){
                 break;
 
             case DPAD_BTN:
-                // menu_run(&pause_menu);
+                menu_run(pause_menu);
                 printf("game BTN\n");
                 break;
 
@@ -195,6 +209,6 @@ void key_press_callback(uint8_t key){
         game_run();
         update_game_display();
     }else{
-        printf("Error state. menu: %u, game: %u\n", menu_current_menu->state, game_get_data().state);
+        printf("Error state. title: %s, menu: %u, game: %u\n", menu_current_menu->title, menu_current_menu->state, game_get_data().state);
     }
 }

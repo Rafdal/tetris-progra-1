@@ -109,14 +109,16 @@ static void _update_next_block (void); //Actualiza el arreglo con las proximas p
 // Inicia el juego con las matrices en blanco
 void game_init(void){
     game_data.state = GAME_IDLE;
-    game_data.id = 0; // Ningun bloque
 }
 
 
 void game_start(void){
     srand(time(NULL));
     _clear_matrix();
+    colision = false;
+    bad_movement = false;
     game_data.state = GAME_RUN;
+    game_data.id = 0; // Ningun bloque
     game_data.score = 0;
     game_data.speed_interval = GAME_DEFAULT_SPEED_INTERVAL;
     int i,j;
