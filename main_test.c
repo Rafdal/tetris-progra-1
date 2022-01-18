@@ -11,9 +11,13 @@
 void key_press_callback(uint8_t key);
 void update_game_display(void);
 void main_game_start(void);
-uint8_t main_menu_event_listener(void);
+void update_menu_display(void);
 
 menu_t *main_menu;
+
+void opt1(void){
+    printf("Option 1\n");
+}
 
 int main(void){
 
@@ -28,10 +32,12 @@ int main(void){
     dpad_use_press_callback_for_longpress(DPAD_LEFT);
     dpad_use_press_callback_for_longpress(DPAD_RIGHT);
 
-    main_menu = menu_init(3, main_menu_event_listener, "MENU");
+    main_menu = menu_init(3, "MENU");
     assert(menu_initialized(main_menu));
     menu_set_option(main_menu, 0, "JUGAR", main_game_start);
-    menu_set_option(main_menu, 1, "OPT1", NULL);
+    menu_set_option(main_menu, 1, "OPT1", opt1);
+
+    menu_set_event_listener(dpad_read);
 
     menu_run(main_menu);
 
@@ -41,8 +47,23 @@ int main(void){
     return 0;
 }
 
-uint8_t main_menu_event_listener(void){
-    dpad_read();
+void update_menu_display(void){
+    printf(menu_current_menu->title);
+    putchar('\n');
+
+    uint8_t id;
+    for(id=0; id<menu_current_menu->n_options; id++){
+        if(menu_current_menu->current_option == id)
+            putchar('>');
+        else
+            putchar(' ');
+
+        if(menu_current_menu->option[id].text == NULL)
+            printf("null");
+        else
+            printf(menu_current_menu->option[id].text);
+        putchar('\n');
+    }
 }
 
 void main_game_start(void){
@@ -78,7 +99,6 @@ void main_game_start(void){
     }
 }
 
-
 void update_game_display(void){
     matrix_hand_t mat_handler;
     assert(mat_init(&mat_handler, HEIGHT, WIDTH));
@@ -97,48 +117,81 @@ void update_game_display(void){
 }
 
 void key_press_callback(uint8_t key){
-    menu_event(key);
-    switch (key)
-    {
-        case DPAD_UP:
-            printf("UP\n");
-            break;
+    
+    assert(menu_current_menu != NULL);
+    if(menu_current_menu->state == MENU_ACTIVE){
 
-        case DPAD_DOWN:
-            if(game_get_data().id == 0)
-                game_insert_block(id_next_block[0]);
-            else
-                game_move_down();
-            printf("DOWN\n");
-            break;
+        switch (key)
+        {
+            case DPAD_UP:
+                menu_current_menu->state = MENU_UP;
+                printf("UP\n");
+                break;
 
-        case DPAD_LEFT:
-            game_move_horizontal(0);
-            printf("LEFT\n");
-            break;
+            case DPAD_DOWN:
+                menu_current_menu->state = MENU_DOWN;
+                printf("DOWN\n");
+                break;
 
-        case DPAD_RIGHT:
-            game_move_horizontal(1);
-            printf("RIGHT\n");
-            break;
+            case DPAD_LEFT:
+                menu_current_menu->state = MENU_EXIT;
+                printf("LEFT\n");
+                break;
 
-        case DPAD_UPRIGHT:
-            game_rotate(1);
-            printf("UPRIGHT\n");
-            break;
+            case DPAD_RIGHT:
+                menu_current_menu->state = MENU_SELECT;
+                printf("RIGHT\n");
+                break;
 
-        case DPAD_UPLEFT:
-            game_rotate(0);
-            printf("UPLEFT\n");
-            break;
+            default:
+                break;
+            update_menu_display();
+        }
+    }else if(game_get_data().state == GAME_RUN){
+        switch (key)
+        {
+            case DPAD_UP:
+                printf("UP\n");
+                break;
 
-        case DPAD_BTN:
-            printf("BTN\n");
-            break;
+            case DPAD_DOWN:
+                if(game_get_data().id == 0)
+                    game_insert_block(id_next_block[0]);
+                else
+                    game_move_down();
+                printf("DOWN\n");
+                break;
 
-        default:
-            break;
+            case DPAD_LEFT:
+                game_move_horizontal(0);
+                printf("LEFT\n");
+                break;
+
+            case DPAD_RIGHT:
+                game_move_horizontal(1);
+                printf("RIGHT\n");
+                break;
+
+            case DPAD_UPRIGHT:
+                game_rotate(1);
+                printf("UPRIGHT\n");
+                break;
+
+            case DPAD_UPLEFT:
+                game_rotate(0);
+                printf("UPLEFT\n");
+                break;
+
+            case DPAD_BTN:
+                printf("BTN\n");
+                break;
+
+            default:
+                break;
+        }
+        game_run();
+        update_game_display();
+    }else{
+        printf("Error state. menu: %u, game: %u\n", menu_current_menu->state, game_get_data().state);
     }
-    game_run();
-    update_game_display();
 }

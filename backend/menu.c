@@ -1,11 +1,13 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include "menu.h"
 
 static menu_callback_t real_time_loop;
+static menu_callback_t event_listener;
 
-menu_t* menu_init(uint8_t options, ev_listener_t ev_listener, char* title){
-    menu_t *menu = (menu_t*) malloc(sizeof(menu_t));
+menu_t* menu_init(uint8_t options, char* title){
+    menu_t *menu = (menu_t*) calloc(1,sizeof(menu_t));
     assert(menu != NULL);
 
     menu->option = (menu_option_t*) calloc(options, sizeof(menu_option_t));
@@ -16,7 +18,6 @@ menu_t* menu_init(uint8_t options, ev_listener_t ev_listener, char* title){
 
     menu->title = title;
     menu->current_option = 0;
-    menu->listener = ev_listener;
     menu->n_options = options;
 
     return menu;
@@ -25,6 +26,10 @@ menu_t* menu_init(uint8_t options, ev_listener_t ev_listener, char* title){
 bool menu_initialized(menu_t *menu){ 
 #warning HARDCODED
     return true; 
+}
+
+void menu_set_event_listener(menu_callback_t ev_listener){
+    event_listener = ev_listener;
 }
 
 bool menu_set_option(menu_t *menu, uint8_t option_id, char* text, menu_callback_t callback){
@@ -52,45 +57,59 @@ void menu_destroy(menu_t *menu){
 
 void menu_run(menu_t *menu){
     assert(menu != NULL);
+    assert(menu->option != NULL);
+    assert(event_listener != NULL);
 
-    menu->state = MENU_IDLE;
+    menu->state = MENU_ACTIVE;
+    menu_current_menu = menu;
     while (menu->state != MENU_INACTIVE)
     {
         if(real_time_loop != NULL)
             real_time_loop();
 
-        if(menu->listener != NULL){
-            menu->state = event_listener(); // get event
+        menu->state = MENU_ACTIVE;
+        event_listener(); // get event state
 
-            switch (menu->state)
-            {
-            case MENU_IDLE:
-                /* do nothing */
-                break;
-            case MENU_DOWN:
-                if(menu->current_option < menu->n_options-1)
-                    menu->current_option++;
-                break;
+        switch (menu->state)
+        {
+        case MENU_ACTIVE:
+            /* do nothing */
+            break;
 
-            case MENU_UP:
-                if(menu->current_option >0)
-                    menu->current_option--;
-                break;
+        case MENU_DOWN:
+            if(menu->current_option < menu->n_options-1)
+                menu->current_option++;
+            break;
 
-            case MENU_EXIT:
-                menu->state = MENU_INACTIVE; // cierro el menu
-                break;
+        case MENU_UP:
+            if(menu->current_option >0)
+                menu->current_option--;
+            break;
 
-            default:
-                printf("Menu Event Error\n");
-                break;
+        case MENU_SELECT:
+            if(menu->option[menu->current_option].callback != NULL){
+                menu->option[menu->current_option].callback();
+                menu_current_menu = menu; // retomo el control (en caso de que se haya perdido)
             }
+            else{
+                printf("null Callback!\n");
+            }
+            break;
 
-        }
-        else{
+        case MENU_EXIT:
             menu->state = MENU_INACTIVE; // cierro el menu
-            printf("Error event_listener == NULL\n");
+            break;
+
+        default:
+            printf("Menu Event Error\n");
+            break;
         }
+
+        // }
+        // else{
+        //     menu->state = MENU_INACTIVE; // cierro el menu
+        //     printf("Error event_listener == NULL\n");
+        // }
 
     }
 }
