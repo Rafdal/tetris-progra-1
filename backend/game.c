@@ -131,6 +131,19 @@ void game_start(void){
 	_init_arr_next_block(); //Inicializa el arreglo con las proximas piezas
 }
 
+// sale del juego
+void game_quit(void){
+    game_data.state = GAME_QUIT;
+    _clear_matrix();
+    int i,j;
+    for(i=0; i<HEIGHT; i++){
+        for(j=0; j<WIDTH; j++){
+            static_matrix[i][j] = (char)0; // inicio la matriz en cero
+            game_public_matrix[i][j] = (char)0;
+        }
+    }
+}
+
 
 void _init_arr_next_block (void) //Inicializa el arreglo con los proximos bloques
 {
@@ -296,42 +309,44 @@ int _can_write(uint8_t y, uint8_t x){
 }
 
 void game_run(void){
-    _render();
-    // TODO: capaz seria mejor poner un switch case
-    if(bad_movement){
-        bad_movement = false;
-        _undo_movement(); // Si dio mal, corregimos la posicion
+    if(game_data.state == GAME_RUN){
         _render();
-    }
-    
-    if(colision){
-        int i,j;
-        for(i=0; i<HEIGHT; i++){
-            for(j=0; j<WIDTH; j++){
-                if(matrix[i][j] > 0)
-                    static_matrix[i][j] = matrix[i][j]; // Copiamos el bloque
-            }
+        // TODO: capaz seria mejor poner un switch case
+        if(bad_movement){
+            bad_movement = false;
+            _undo_movement(); // Si dio mal, corregimos la posicion
+            _render();
         }
-        game_insert_block(0); // Borramos el bloque
-        _clear_matrix();
+        
+        if(colision){
+            int i,j;
+            for(i=0; i<HEIGHT; i++){
+                for(j=0; j<WIDTH; j++){
+                    if(matrix[i][j] > 0)
+                        static_matrix[i][j] = matrix[i][j]; // Copiamos el bloque
+                }
+            }
+            game_insert_block(0); // Borramos el bloque
+            _clear_matrix();
 
-        colision = false;
-		int streak = 0;
+            colision = false;
+            int streak = 0;
 
-		while (_check_row_complete())
-		{
-			int row = _check_row_complete();
+            while (_check_row_complete())
+            {
+                int row = _check_row_complete();
 
-			printf("Compleate Row: %d\n", row);
-			_delete_row(row);
+                printf("Compleate Row: %d\n", row);
+                _delete_row(row);
 
-			streak++;
-			_update_score(streak, game_level);
-			printf("score is: %d points\n", game_data.score);
-		}
-		_update_next_block(); //Una vez usado el primer bloque del arreglo, actualiza este arreglo colocando uno nuevo al final de este
-   	 }
-	_update_game_public_matrix();
+                streak++;
+                _update_score(streak, game_level);
+                printf("score is: %d points\n", game_data.score);
+            }
+            _update_next_block(); //Una vez usado el primer bloque del arreglo, actualiza este arreglo colocando uno nuevo al final de este
+        }
+        _update_game_public_matrix();
+    }
 }
 
 void _update_game_public_matrix (void)
@@ -485,9 +500,14 @@ void game_insert_block(uint8_t id){
 
 // Mueve la pieza hacia abajo
 void game_move_down (void){
+    if(game_data.id == 0){
+        game_insert_block(id_next_block[0]);
+    }
+    else{
+        game_data.y++;
+        last_movement = DOWN;
+    }
     printf("descend\n");
-    game_data.y++;
-    last_movement = DOWN;
 }
 
 // Mueve la pieza horizontalmente (1 = DERECHA | 0 = IZQUIERDA)

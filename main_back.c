@@ -95,7 +95,7 @@ int main(void) {
     print_matrix();
 
     // Seteo los callbacks de cada tecla
-    set_on_exit(finish);
+    set_exit_action(finish);
     set_on_pressed(key_up, KEY_UP);
     set_on_pressed(key_down, KEY_DOWN);
     set_on_pressed(key_left, KEY_LEFT);
