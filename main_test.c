@@ -77,7 +77,7 @@ void update_menu_display(void){
 
     menu_t menu_data = menu_get_current_menu_data();
 
-    printf(menu_data.title);
+    printf("%s",menu_data.title);
     putchar('\n');
 
     uint8_t id;
@@ -90,7 +90,7 @@ void update_menu_display(void){
         if(menu_data.option_titles[id] == NULL)
             printf("null");
         else
-            printf(menu_data.option_titles[id]);
+            printf("%s",menu_data.option_titles[id]);
         putchar('\n');
     }
 }
