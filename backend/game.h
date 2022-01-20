@@ -37,6 +37,8 @@ BLOCK_t arr_next_block[4];
 void game_init(void);   // inicia la libreria
 void game_start(void);  // inicia el juego en blanco
 void game_run(void);    // ejecuta el juego
+void game_restart(void);// reinicia el juego
+void game_quit(void);   // sale del juego
 
 // Imprime la matriz en consola
 // void print_matrix(void);

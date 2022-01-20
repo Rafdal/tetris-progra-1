@@ -87,7 +87,7 @@ void dpad_init(void){
     return;
 }
 
-void dpad_run(void){
+void dpad_read(void){
     ALLEGRO_EVENT ev;
 
 
