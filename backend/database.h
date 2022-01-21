@@ -1,6 +1,17 @@
 #ifndef _DATABASE_H_
 #define _DATABASE_H_
 
+/*
+       LIBRERIA DATABASE
+Esta libreria permite crear tablas de datos
+y guardarlas como archivos CSV (valores separados por comas),
+que serian en si, archivos de texto plano.
+
+Va a permitir funciones basicas de bases de datos
+(altas, bajas y modificaciones) y además una funcion
+de busqueda basica
+*/
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <varargs.h>
