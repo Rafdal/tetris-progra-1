@@ -183,6 +183,8 @@ void _update_next_block (void) //Actualiza el arreglo con las proximas piezas un
 	id_next_block[3] = game_get_next_block();
 	arr_next_block[3] = blocks[id_next_block[3]];
 
+
+	//Antes de cargar la matriz nueva la limpio asi se carga correctamente con nuevas piezas
 	for(i=0 ; i < 12 ; i++)
 	{
 		for (j=0 ; j<4; j++)
