@@ -57,7 +57,7 @@
 int initialize_display(void);
 void endgame (void);
 void update_display(void);
-
+void deleteline (int numfil);
 void keypress_callback(uint8_t key);
 
 
@@ -242,7 +242,7 @@ int initialize_display(void) {
         al_destroy_event_queue(event_queue);
         return -1;
     }
-     
+
     display = al_create_display(((ANCHO+2)*BLOCKSZ), ((ALTO+1)*BLOCKSZ));
     if (!display) {
         al_destroy_bitmap(image);
@@ -274,6 +274,8 @@ int initialize_display(void) {
     
 
     al_flip_display();
+    al_rest(2);
+    deleteline(4);
     
     //playAudio();
 
@@ -292,7 +294,20 @@ void endgame (void){
     //al_shutdown_image_addon(); VER DOCUMENTACION ES LLAMADO AUTOMATICAMENTE AL SALIR DEL PROGRAMA
     printf("Game Ended\n");
 }
-
+void deleteline (int numfil){
+    int x;
+    int reductor;
+    float angulo;
+        for(x=1; x<=WIDTH; x++){
+            al_draw_scaled_bitmap(image,(al_get_bitmap_width(image)/8), 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*x, BLOCKSZ*numfil, BLOCKSZ, BLOCKSZ, 0);
+        }  //pongo el fondo en negro
+        for(reductor=1, angulo=(3,1415/8); reductor<10; reductor++, angulo+=(3,1415/8)){
+            for(x=1; x<=WIDTH; x++){
+                al_draw_tinted_scaled_rotated_bitmap_region(whitepiece, 0, 0, al_get_bitmap_width(whitepiece), al_get_bitmap_height(whitepiece), al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(whitepiece)/2,al_get_bitmap_height(whitepiece), (BLOCKSZ/2 +BLOCKSZ*x), (BLOCKSZ/2 +BLOCKSZ*numfil),1/reductor, 1/reductor, angulo, 0);
+                //se va haciendo mas chia a medida que rota
+            }
+        }
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////AUDIO/////////////////////////////////////////////////////////////////
