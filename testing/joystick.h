@@ -13,7 +13,7 @@ enum {DPAD_UP, DPAD_RIGHT, DPAD_DOWN, DPAD_LEFT, DPAD_UPLEFT, DPAD_UPRIGHT, DPAD
 // extern const char dpad_key_names[][DPAD_NAMELEN];
 
 void dpad_init(void); // iniciar libreria
-void dpad_run(void);  // leer botones y ejecutar callbacks (debe llamarse en Tiempo Real)
+void dpad_read(void);  // leer botones y ejecutar callbacks (debe llamarse en Tiempo Real)
 
 // al llamarse habilita que durante un LongPress, se llame al callback "on_press" cada <interval> milisegundos
 void dpad_use_press_callback_for_longpress(uint8_t key); 

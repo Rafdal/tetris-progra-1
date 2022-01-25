@@ -1,5 +1,5 @@
-test: main_test.o dispEmu.o t_rpi_display.o t_easy_timer.o t_matrix_handler.o teclado_trucho.o game.o
-	gcc -Wall main_test.o dispEmu.o easy_timer.o rpi_display.o teclado_trucho.o game.o matrix_handler.o -o test `pkg-config --libs allegro-5`
+test: main_test.o menu.o dispEmu.o t_rpi_display.o t_easy_timer.o t_matrix_handler.o teclado_trucho.o game.o
+	gcc -Wall main_test.o menu.o dispEmu.o easy_timer.o rpi_display.o teclado_trucho.o game.o matrix_handler.o -o test `pkg-config --libs allegro-5`
 
 back: main_back.o game.o easy_timer.o teclado_trucho.o
 	gcc -Wall main_back.o game.o easy_timer.o teclado_trucho.o -o back `pkg-config --libs allegro-5`
@@ -33,6 +33,10 @@ main_back.o: main_back.c
 
 game.o: ./backend/game.c ./backend/game.h
 	gcc -c -Wall ./backend/game.c
+
+menu.o:	./backend/menu.c ./backend/menu.h
+	gcc -c -Wall ./backend/menu.c
+
 
 easy_timer.o: ./libs/easy_timer.c ./libs/easy_timer.h
 	gcc -c -Wall ./libs/easy_timer.c
