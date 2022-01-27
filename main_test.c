@@ -23,6 +23,7 @@ void exit_game(void){
 
 void restart_game(void){
     menu_force_close(pause_menu); // Cerrar menu pausa
+	game_init();
     game_start();
 }
 
