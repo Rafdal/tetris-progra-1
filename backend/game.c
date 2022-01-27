@@ -150,7 +150,16 @@ void game_quit(void){
 
 void _init_arr_next_block (void) //Inicializa el arreglo con los proximos bloques
 {
-	int i, j, k;
+	//Antes de cargar la matriz nueva la limpio asi se carga correctamente con nuevas piezas
+	int i, j,k;
+	for(i=0 ; i < 12 ; i++)
+	{
+		for (j=0 ; j<4; j++)
+		{
+			next_block_public_matrix[i][j] = 0;
+		}
+	}
+
 	for (i = 0 ; i < 4 ; i++)
 	{
 		id_next_block[i] = game_get_next_block(); //Llena el arreglo con id´s de los proximos bloques
@@ -366,12 +375,17 @@ void _update_game_public_matrix(void)
 	}
 }
 
+void _delete_pixel (uint8_t row, uint8_t px)
+{
+	static_matrix[row][px] = 0;
+}
+
 void _delete_row (uint8_t row)
 {
 	int i,j;
 	for (j= 0; j< WIDTH ; j++)
 	{
-		static_matrix[row][j] = 0;
+		_delete_pixel(row,j);
 	}
 
 	printf("TEST\n");
