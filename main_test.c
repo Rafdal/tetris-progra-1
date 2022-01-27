@@ -26,6 +26,12 @@ void restart_game(void){
     game_start();
 }
 
+void resume_game(void)
+{
+	menu_force_close_current();
+	game_run();
+}
+
 
 int main(void){
     printf("Inicializando...\n");
@@ -52,7 +58,7 @@ int main(void){
     menu_set_option(main_menu, 3, "CONFIGURACION", NULL);
     menu_set_option(main_menu, 4, "SALIR", menu_force_close_current);
 
-    menu_set_option(pause_menu, 0, "REANUDAR", menu_force_close_current);
+    menu_set_option(pause_menu, 0, "REANUDAR", resume_game);
     menu_set_option(pause_menu, 1, "GUARDAR", NULL);
     menu_set_option(pause_menu, 2, "REINICIAR", restart_game);
     menu_set_option(pause_menu, 3, "SALIR", exit_game);
