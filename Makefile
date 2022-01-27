@@ -10,6 +10,8 @@ linux: main_linux.o game.o l_easy_timer.o keyboard.o
 rasp: main_rasp.o easy_timer.o joystick.o rpi_display.o game.o matrix_handler.o
 	gcc -Wall main_rasp.o joystick.o easy_timer.o rpi_display.o game.o matrix_handler.o ./libs/joydrv.o ./libs/disdrv.o -o rasp
 
+db: main_db.o
+	gcc -Wall main_db.o -o db
 
 #################
 # 	   MAINs	#
@@ -26,6 +28,9 @@ main_linux.o: main_linux.c
 
 main_back.o: main_back.c
 	gcc -c -Wall main_back.c
+
+main_db.o: main_db.c
+	gcc -c -Wall main_db.c
 
 #################
 # 	LIBRERIAS 	#
