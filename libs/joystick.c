@@ -3,28 +3,64 @@
 #include "joystick.h"
 #include "joydrv.h"
 
-bool key_state[DPAD_KEYS];
-bool last_key_state[DPAD_KEYS];
+// const char dpad_key_names[][DPAD_NAMELEN] = {"UP", "RIGHT", "DOWN", "LEFT", "UPLEFT", "UPRIGHT", "BTN"};
 
-uint64_t btn_timestamp; // last press para debouncear el boton
+//  #############################
+//  #     PRIVATE VARIABLES     #
+//  #############################
 
-dpad_callback_t press_cback;
-dpad_callback_t long_cback;
+// bool idle_flag;
+static bool key_state[DPAD_KEYS];
+static bool last_key_state[DPAD_KEYS];
 
-bool dpad_is_pressed(uint8_t key){
-    return key_state[key];
+static bool use_press_callback_for_longpress[DPAD_KEYS];
+
+static uint64_t key_timestamp[DPAD_KEYS]; // last press para debouncear el boton
+
+static dpad_callback_t on_press;
+
+static uint64_t lastMillis;
+
+//  #############################
+//  #      PUBLIC FUNCTIONS     #
+//  #############################
+
+void dpad_init(void){
+
+    joy_init();
+    int id;
+    // idle_flag = false;
+    for(id=0; id<DPAD_KEYS; id++){
+        key_state[id] = false;
+        last_key_state[id] = false;
+        use_press_callback_for_longpress[id] = false;
+    }
 }
 
+void dpad_use_press_callback_for_longpress(uint8_t key){
+    use_press_callback_for_longpress[key] = true;
+}
+
+bool dpad_is_pressed(uint8_t id){
+    if(id >= DPAD_KEYS)
+        return false;
+    return key_state[id];
+}
+
+bool dpad_is_longpressed(uint8_t id){
+    if(id >= DPAD_KEYS)
+        return false;
+    return key_state[id] && get_millis()-key_timestamp[id] >= DPAD_LONG_PRESS;
+}
+
+
 void dpad_on_press(dpad_callback_t c){
-    press_cback = c;
+    on_press = c;
 } // Setear callback click de tecla (joystick)
 
-void dpad_on_longpress(dpad_callback_t c){
-    long_cback = c;
-} // Setear callback para Long Press
 
 
-void dpad_run(void){
+void dpad_read(void){
     joy_update();
     jcoord_t joy = joy_get_coord();
     jswitch_t btn = joy_get_switch();
@@ -53,46 +89,65 @@ void dpad_run(void){
     else if(joy.y > -DPAD_DEBOUNCE)
         key_state[DPAD_DOWN] = false;
 
-
     // UPLEFT KEY
-    if(joy.y > DPAD_UMBRAL && joy.x > DPAD_UMBRAL/8)
+    if(joy.y > DPAD_UMBRAL && joy.x < -DPAD_UMBRAL/8)
         key_state[DPAD_UPLEFT] = true;
     else if(joy.y < DPAD_DEBOUNCE)
         key_state[DPAD_UPLEFT] = false;
 
     // UPRIGHT ARROW
-    if(joy.y > DPAD_UMBRAL && joy.x < -DPAD_UMBRAL/8)
+    if(joy.y > DPAD_UMBRAL && joy.x > DPAD_UMBRAL/8)
         key_state[DPAD_UPRIGHT] = true;
     else if(joy.y < DPAD_DEBOUNCE)
         key_state[DPAD_UPRIGHT] = false;
 
 
-    // ########## TO-DO #########
-    /* // Joystick button - Flanco ascendente
-    if(!key_state[DPAD_BTN] && btn == J_PRESS &&  (get_millis() - btn_timestamp) >= DPAD_BTN_DEBOUNCE_TIME ){
-        key_state[DPAD_BTN] = true;
-        btn_timestamp = get_millis();
+    // boton del joystick (no tuve problemas con el debounceo, asi que lo mando directo)
+    if(btn == J_PRESS){
+        key_state[DPAD_BTN] = true; //  ### SIN DEBOUNCE
+    }
+    else if(btn == J_NOPRESS){
+        key_state[DPAD_BTN] = false;
     }
 
-    if(key_state[DPAD_BTN] && btn == J_NOPRESS && (get_millis() - btn_timestamp) >= DPAD_BTN_DEBOUNCE_TIME){
-        key_state = false;
-    } */
-
     int id;
-    for(id=0; id<DPAD_KEYS; id++){
+    for(id=0; id<DPAD_KEYS; id++){ // analizo todos los botones
         if(key_state[id] != last_key_state[id]){      // Si cambio el estado
             if(key_state[id] && !last_key_state[id]){ // Si fue un flanco ascendente
+                // idle_flag = false;
+                key_timestamp[id] = get_millis();
 
-                if(press_cback != NULL)        // Si el callback no es un puntero nulo
-                    press_cback(id);
+                if(on_press != NULL)        // Si el callback esta seteado
+                    on_press(id);
 
             }
+            // actualizo el estado anterior
             last_key_state[id] = key_state[id];
         }
     }
-}
 
-void dpad_init(void){
-    joy_init();
+    if(get_millis()-lastMillis >= DPAD_LONGPRESS_PRESS_CALLBACK_INTERVAL){
+        for(id=0; id< DPAD_KEYS; id++){
+            if(use_press_callback_for_longpress[id] && dpad_is_longpressed(id)){
+                if(on_press != NULL)        // Si el callback esta seteado
+                    on_press(id);
+                
+            }
+        }
+        lastMillis = get_millis();
+    }
+
+    /* if(!idle_flag){ // si antes se habia presionado alguna tecla
+        idle_flag = true;
+        for(id=0; id<DPAD_KEYS && idle_flag; id++){
+            idle_flag &= !key_state[id]; // reviso si no hay ninguna presionada (button release, flanco descendente)
+        }
+
+        if(idle_flag){  // si efectivamente no habia ninguna
+            if(on_press != NULL)
+                on_press(DPAD_idle);  // marco que el joystick esta suelto
+        }
+    } */
+        
 }
 

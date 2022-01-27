@@ -4,7 +4,6 @@
 #include <time.h>
 #include "game.h"
 
-#define game_level 1
 
 //   C O N S T A N T E S
 
@@ -60,10 +59,6 @@ const char BLOCK_7[] = {
         7, 6, 5,
 }; */
 
-typedef struct{
-    const char *data;
-    uint8_t size;
-}BLOCK_t;
 
 BLOCK_t blocks[] = {
         { BLOCK_0, 1, },
@@ -77,50 +72,148 @@ BLOCK_t blocks[] = {
         // { TEST_BLOCK, 3},
 };
 
-// V A R I A B L E S
 
-char matrix[HEIGHT][WIDTH]; // Privada
-char static_matrix[HEIGHT][WIDTH]; // Privada
-//char public_matrix [HEIGHT][WIDTH]; //Publica (definida en el .h)
+// V A R I A B L E S   Y   C O N S T A N T E S
 
-// datos del bloque (coordenadas x,y, rotacion, etc del centro del bloque)
+static char matrix[HEIGHT][WIDTH]; // Privada
+static char static_matrix[HEIGHT][WIDTH]; // Privada
+//char game_public_matrix [HEIGHT][WIDTH]; //Publica (definida en el .h)
+
+// datos del juego (coordenadas x,y, rotacion, estado del juego, etc)
+static game_data_t game_data;
 
 // Variables para el manejo de colisiones
-bool colision = false; // true si hubo colision (con piso o pieza)
+static bool colision = false; // true si hubo colision (con piso o pieza)
 
-// Variables para la correccion de la posicion de la pieza (se usa para los limites de la matriz)
+// Variables y constantes para la correccion de la posicion de la pieza (se usa para los limites de la matriz)
 enum {LEFT, RIGHT, R_LEFT, R_RIGHT, DOWN};
-uint8_t last_movement; // Ultimo movimiento efectuado (se usa para FSM de correccion de posicion)
-bool bad_movement = false; // true si hay que corregir el movimiento
+static uint8_t last_movement; // Ultimo movimiento efectuado (se usa para FSM de correccion de posicion)
+static bool bad_movement = false; // true si hay que corregir el movimiento
 
 // P R O T O T I P O S    P R I V A D O S
-void _render(void); // Renderiza el bloque en la matriz
-char _block(uint8_t x, uint8_t y); // Accede a los datos del bloque con coordenadas cartesianas
-int _can_write(uint8_t x, uint8_t y); // devuelve 1 si se puede escribir, si no se puede, corrige la posicion del bloque
-void _undo_movement(void); // deshace el movimiento anterior
-void _delete_compleate_row (uint8_t row); // elimina la fila completa
-uint8_t _check_row_compleate (void); // chequea si una fila se elimino y en caso de serlo devuelve en numero de fila
-void _delete_row (uint8_t row); // elimina y desplaza la fila completa
-void _update_public_matrix (void); // actualiza los valores de la matriz publica (la cual contiene la suma de la matriz estatic y dinamica)
-
+static void _render(void); // Renderiza el bloque en la matriz
+static char _block(uint8_t x, uint8_t y); // Accede a los datos del bloque con coordenadas cartesianas
+static int _can_write(uint8_t x, uint8_t y); // devuelve 1 si se puede escribir, si no se puede, corrige la posicion del bloque
+static void _undo_movement(void); // deshace el movimiento anterior
+static uint8_t _check_row_complete (void); // chequea si una fila se elimino y en caso de serlo devuelve en numero de fila
+static void _delete_row (uint8_t row); // elimina y desplaza la fila completa
+static void _update_game_public_matrix (void); // actualiza los valores de la matriz publica (la cual contiene la suma de la matriz estatic y dinamica)
+static void _clear_matrix(void);
+static void _update_score(int streak, uint8_t lvl);
+static void _init_arr_next_block (void); //Inicializa el arreglo con los proximos bloques
+static void _update_next_block (void); //Actualiza el arreglo con las proximas piezas una vez que la primera pieza de este arreglo ya fue impresa en el juego
+static void _update_level (void); //Actualiza el nivel del juego dependiendo del score obtenido
 
 // F U N C I O N E S
 
+
 // Inicia el juego con las matrices en blanco
-void init_game(void){
-    clear_matrix();
-    block_data.id = 0; // ningun bloque
+void game_init(void){
+    game_data.state = GAME_IDLE;
+    game_data.id = 0; // Ningun bloque
+	game_data.game_level = 1; //Inicializa el nivel del juego en 1
+}
+
+
+void game_start(void){
+    srand(time(NULL));
+    _clear_matrix();
+    colision = false;
+    bad_movement = false;
+    game_data.state = GAME_RUN;
+    game_data.id = 0; // Ningun bloque
+    game_data.score = 0;
+    game_data.speed_interval = GAME_DEFAULT_SPEED_INTERVAL;
     int i,j;
     for(i=0; i<HEIGHT; i++){
         for(j=0; j<WIDTH; j++){
             static_matrix[i][j] = (char)0; // inicio la matriz en cero
+            game_public_matrix[i][j] = (char)0;
+        }
+    }
+	_init_arr_next_block(); //Inicializa el arreglo con las proximas piezas
+}
+
+// sale del juego
+void game_quit(void){
+    game_data.state = GAME_QUIT;
+    _clear_matrix();
+    int i,j;
+    for(i=0; i<HEIGHT; i++){
+        for(j=0; j<WIDTH; j++){
+            static_matrix[i][j] = (char)0; // inicio la matriz en cero
+            game_public_matrix[i][j] = (char)0;
         }
     }
 }
 
 
+void _init_arr_next_block (void) //Inicializa el arreglo con los proximos bloques
+{
+	int i, j, k;
+	for (i = 0 ; i < 4 ; i++)
+	{
+		id_next_block[i] = game_get_next_block(); //Llena el arreglo con id´s de los proximos bloques
+		arr_next_block[i] = blocks[id_next_block[i]];
+
+	}
+
+	for (k = 1 ; k < 4 ; k++)
+	{
+		char size = arr_next_block[k].size;
+		for ( i = 0 ; i < size ; i++)
+		{
+			for (j = 0; j < size; j++)
+			{
+				next_block_public_matrix[i+4*(k-1)][j] = arr_next_block[k].data[i*size + j];
+			}
+		}
+	}
+}
+
+
+void _update_next_block (void) //Actualiza el arreglo con las proximas piezas una vez que la primera pieza de este arreglo ya fue impresa en el juego
+{
+	int i,j,k;
+	for (i = 0 ; i < 3 ; i++)
+	{
+		id_next_block[i] = id_next_block[i+1];
+		arr_next_block[i] = arr_next_block[i+1];
+	}
+	id_next_block[3] = game_get_next_block();
+	arr_next_block[3] = blocks[id_next_block[3]];
+
+
+	//Antes de cargar la matriz nueva la limpio asi se carga correctamente con nuevas piezas
+	for(i=0 ; i < 12 ; i++)
+	{
+		for (j=0 ; j<4; j++)
+		{
+			next_block_public_matrix[i][j] = 0;
+		}
+	}
+
+	for (k = 1 ; k < 4 ; k++)
+	{
+		char size = arr_next_block[k].size;
+
+		for ( i = 0 ; i < size ; i++)
+		{
+			for (j = 0; j < size; j++)
+			{
+				next_block_public_matrix[i+4*(k-1)][j] = arr_next_block[k].data[i*size + j];
+			}
+		}
+	}
+
+}
+
+game_data_t game_get_data(void){
+    return game_data;
+}
+
 // Borra la matriz del bloque
-void clear_matrix(void){
+void _clear_matrix(void){
     int i,j;
     for(i=0; i<HEIGHT; i++){
         for(j=0; j<WIDTH; j++){
@@ -130,9 +223,9 @@ void clear_matrix(void){
 }
 
 
-// Funcion AUXILIAR que imprime la matriz gral en la terminal
+/* // Funcion AUXILIAR que imprime la matriz gral en la terminal
 void print_matrix(void){
-    printf("Rotation: %u\nx,y: %u, %u\n", block_data.rot, block_data.x, block_data.y);
+    printf("Rotation: %u\nx,y: %u, %u\n", game_data.rot, game_data.x, game_data.y);
     for (int i = 0; i < 32; i++)        //34 es lo que queda bien jajaj
         putchar('_');
     putchar('\n');
@@ -155,17 +248,17 @@ void print_matrix(void){
     for (int i = 0; i < 32; i++)
         putchar('_');
     putchar('\n');
-}
+} */
+
 
 // Funcion auxiliar para manejar un arreglo unidimensional (de una matriz) con coordenadas cartesianas
 char _block(uint8_t x, uint8_t y){
-    return blocks[block_data.id].data[x+y*blocks[block_data.id].size];
+    return blocks[game_data.id].data[x+y*blocks[game_data.id].size];
 }
 
 // Funcion que devuelve un ID de un bloque de manera aleatoria
-uint8_t next_block (void)
+uint8_t game_get_next_block (void)
 {
-    srand(time(NULL));
     return rand() % 7 + 1;
 }
 
@@ -173,28 +266,28 @@ void _undo_movement(void){
     switch (last_movement) { // Realizamos el movimiento contrario para corregir la posicion de la pieza
         case RIGHT:
             colision = false;
-            move_block(0); // La movemos a la izquierda
+            game_move_horizontal(0); // La movemos a la izquierda
             break;
 
         case LEFT:
             colision = false;
-            move_block(1); // La movemos a la derecha
+            game_move_horizontal(1); // La movemos a la derecha
             break;
 
         case R_RIGHT:
             colision = false;
-            rotate_block(0);
+            game_rotate(0);
             break;
 
         case R_LEFT:
             colision = false;
-            rotate_block(1);
+            game_rotate(1);
             break;
 
         case DOWN: // Choque con el piso
             colision = true;
 
-            block_data.y--;
+            game_data.y--;
             break;
     }
 }
@@ -211,65 +304,64 @@ int _can_write(uint8_t y, uint8_t x){
         }
 
         return 1;
+    }else{
+        if(y==255){
+            game_data.state = GAME_LOSE;
+        }
+        printf("Error! se intento escribir matriz[%u][%u]\n", y, x);
+        return 0;
     }
-	else {
-		if (y == 255) {                                          // deteccion fin de juego
-			printf("Perdiste bro sos nefastex\n");        // mensaje fin de juego
-			// insertar funcion a llamar cuando termina el juego para cada plataforma
-			return 0;
-		}
-
-		printf("Error! se intento escribir matriz[%u][%u]\n", y, x);
-		return 0;
-	}
 }
 
-void run_game(void){
-    _render();
-	static int score;
-    // TODO: capaz seria mejor poner un switch case
-    if(bad_movement){
-        bad_movement = false;
-        _undo_movement(); // Si dio mal, corregimos la posicion
+void game_run(void){
+    if(game_data.state == GAME_RUN){
         _render();
-    }
-    if(colision){
-        int i,j;
-        for(i=0; i<HEIGHT; i++){
-            for(j=0; j<WIDTH; j++){
-                if(matrix[i][j] > 0)
-                    static_matrix[i][j] = matrix[i][j];
-            }
+        // TODO: capaz seria mejor poner un switch case
+        if(bad_movement){
+            bad_movement = false;
+            _undo_movement(); // Si dio mal, corregimos la posicion
+            _render();
         }
-        insert_block(0); // Borramos el bloque
-        clear_matrix();
-        colision = false;
-		int streak = 0;
+        
+        if(colision){
+            int i,j;
+            for(i=0; i<HEIGHT; i++){
+                for(j=0; j<WIDTH; j++){
+                    if(matrix[i][j] > 0)
+                        static_matrix[i][j] = matrix[i][j]; // Copiamos el bloque
+                }
+            }
+            game_insert_block(0); // Borramos el bloque
+            _clear_matrix();
 
-		while (_check_row_compleate())
-		{
-			int row = _check_row_compleate();
+            colision = false;
+            int streak = 0;
 
-			printf("Compleate Row: %d\n", row);
-			_delete_row(row);
+            while (_check_row_complete())
+            {
+                int row = _check_row_complete();
+
+                printf("Compleate Row: %d\n", row);
+                _delete_row(row);
 
 			streak++;
-			score = update_score(score, streak, game_level);
-			printf("score is: %d points\n", score);
+			_update_score(streak, game_data.game_level);
+			_update_level();
 		}
+		_update_next_block(); //Una vez usado el primer bloque del arreglo, actualiza este arreglo colocando uno nuevo al final de este
    	 }
-	_update_public_matrix();
-
+	_update_game_public_matrix();
+    }
 }
 
-void _update_public_matrix (void)
+void _update_game_public_matrix(void)
 {
 	int i, j;
 	for (i=0 ; i < HEIGHT; i ++)
 	{
 		for (j=0 ; j < WIDTH;  j++)
 		{
-			public_matrix[i][j] = matrix[i][j] + static_matrix[i][j];
+			game_public_matrix[i][j] = matrix[i][j] + static_matrix[i][j];
 		}
 	}
 }
@@ -283,7 +375,6 @@ void _delete_row (uint8_t row)
 	}
 
 	printf("TEST\n");
-	int i, j;
 	for ( i = row ; i > 0 ; i--)
 	{
 		for( j = 0 ; j < WIDTH; j++)
@@ -294,7 +385,7 @@ void _delete_row (uint8_t row)
 	}
 }
 
-uint8_t _check_row_compleate (void)
+uint8_t _check_row_complete (void)
 {
 	int i , j;
 	for (i = 0 ; i< HEIGHT ; i++)
@@ -312,167 +403,206 @@ uint8_t _check_row_compleate (void)
 
 // Actualiza la matriz con los datos de coordenadas del bloque
 void _render(void){
-    clear_matrix();
-    uint8_t x,y;
-    uint8_t size = blocks[block_data.id].size;
-//Analiza el valor de rotacion y gira la matriz del bloque en sentido horario para luego incluirla en la matriz general
-    switch (block_data.rot)
-    {
-        case 0: // Sin rotacion
-            for(y=0; y<blocks[block_data.id].size && !bad_movement; y++){
-                for(x=0; x<blocks[block_data.id].size && !bad_movement; x++){
-                    int i,j; // coordenadas de la matriz general
-                    i = block_data.y+y-size/2;
-                    j = block_data.x+x-size/2;
+    if(game_data.state == GAME_RUN){
+        _clear_matrix();
+        uint8_t x,y;
+        uint8_t size = blocks[game_data.id].size;
+    //Analiza el valor de rotacion y gira la matriz del bloque en sentido horario para luego incluirla en la matriz general
+        switch (game_data.rot)
+        {
+            case 0: // Sin rotacion
+                for(y=0; y<blocks[game_data.id].size && !bad_movement; y++){
+                    for(x=0; x<blocks[game_data.id].size && !bad_movement; x++){
+                        int i,j; // coordenadas de la matriz general
+                        i = game_data.y+y-size/2;
+                        j = game_data.x+x-size/2;
 
-                    char val = _block(x,y);
-                    if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
-                    {
-                        if (_can_write(i,j))
-                            matrix[i][j] = val;
-                        else
-                            bad_movement = true;
-                    }
+                        char val = _block(x,y);
+                        if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
+                        {
+                            if (_can_write(i,j))
+                                matrix[i][j] = val;
+                            else
+                                bad_movement = true;
+                        }
 
-                }
-            }
-            break;
-        case 1: // Rotacion de 90°
-            for(y=0; y<blocks[block_data.id].size && !bad_movement; y++){
-                for(x=0; x<blocks[block_data.id].size && !bad_movement; x++){
-                    int i,j; // coordenadas de la matriz general
-                    i = block_data.y+y-size/2;
-                    j = block_data.x+x-size/2;
-
-                    char val = _block(y, size-1-x);
-                    if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
-                    {
-                        if (_can_write(i,j))
-                            matrix[i][j] = val;
-                        else
-                            bad_movement = true;
                     }
                 }
-            }
-            break;
+                break;
+            case 1: // Rotacion de 90°
+                for(y=0; y<blocks[game_data.id].size && !bad_movement; y++){
+                    for(x=0; x<blocks[game_data.id].size && !bad_movement; x++){
+                        int i,j; // coordenadas de la matriz general
+                        i = game_data.y+y-size/2;
+                        j = game_data.x+x-size/2;
 
-        case 2: // Rotacion de 180°
-            for(y=0; y<blocks[block_data.id].size && !bad_movement; y++){
-                for(x=0; x<blocks[block_data.id].size && !bad_movement; x++){
-                    int i,j; // coordenadas de la matriz general
-                    i = block_data.y+y-size/2;
-                    j = block_data.x+x-size/2;
-
-                    char val = _block(size - x -1 , size -y-1);
-                    if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
-                    {
-                        if (_can_write(i,j))
-                            matrix[i][j] = val;
-                        else
-                            bad_movement = true;
+                        char val = _block(y, size-1-x);
+                        if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
+                        {
+                            if (_can_write(i,j))
+                                matrix[i][j] = val;
+                            else
+                                bad_movement = true;
+                        }
                     }
                 }
-            }
-            break;
+                break;
 
-        case 3: // Rotacion de 270°
-            for(y=0; y<blocks[block_data.id].size && !bad_movement; y++){
-                for(x=0; x<blocks[block_data.id].size && !bad_movement; x++){
-                    int i,j; // coordenadas de la matriz general
-                    i = block_data.y+y-size/2;
-                    j = block_data.x+x-size/2;
+            case 2: // Rotacion de 180°
+                for(y=0; y<blocks[game_data.id].size && !bad_movement; y++){
+                    for(x=0; x<blocks[game_data.id].size && !bad_movement; x++){
+                        int i,j; // coordenadas de la matriz general
+                        i = game_data.y+y-size/2;
+                        j = game_data.x+x-size/2;
 
-                    char val = _block(size-y-1, x);
-                    if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
-                    {
-                        if (_can_write(i,j))
-                            matrix[i][j] = val;
-                        else
-                            bad_movement = true;
+                        char val = _block(size - x -1 , size -y-1);
+                        if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
+                        {
+                            if (_can_write(i,j))
+                                matrix[i][j] = val;
+                            else
+                                bad_movement = true;
+                        }
                     }
                 }
-            }
-            break;
-        default:
-            printf("Error rotacion incorrecta\n");
-            break;
+                break;
 
+            case 3: // Rotacion de 270°
+                for(y=0; y<blocks[game_data.id].size && !bad_movement; y++){
+                    for(x=0; x<blocks[game_data.id].size && !bad_movement; x++){
+                        int i,j; // coordenadas de la matriz general
+                        i = game_data.y+y-size/2;
+                        j = game_data.x+x-size/2;
+
+                        char val = _block(size-y-1, x);
+                        if(val > 0)  //Evitamos escribir los ceros para evitar que se escriban fuera de la matriz y evitar seg fault
+                        {
+                            if (_can_write(i,j))
+                                matrix[i][j] = val;
+                            else
+                                bad_movement = true;
+                        }
+                    }
+                }
+                break;
+            default:
+                printf("Error rotacion incorrecta\n");
+                break;
+
+        }
     }
 }
 
 // Se ejecuta una sola vez al principio
 // Para insertar un bloque arriba por primera vez
-void insert_block(uint8_t id){
+void game_insert_block(uint8_t id){
     // posiciones iniciales (arriba al centro)
-    block_data.x = WIDTH/2;
-    block_data.y = blocks[id].size/2;
-    block_data.rot = 0; // 0 es la orientacion por defecto
-    block_data.id = id;
+    game_data.x = WIDTH/2;
+    game_data.y = blocks[id].size/2;
+    game_data.rot = 0; // 0 es la orientacion por defecto
+    game_data.id = id;
 }
 
-
-void descend_block (void){
+// Mueve la pieza hacia abajo
+void game_move_down (void){
+    if(game_data.id == 0){
+        game_insert_block(id_next_block[0]);
+    }
+    else{
+        game_data.y++;
+        last_movement = DOWN;
+    }
     printf("descend\n");
-    block_data.y++;
-    last_movement = DOWN;
 }
 
-void move_block (int direction){
+// Mueve la pieza horizontalmente (1 = DERECHA | 0 = IZQUIERDA)
+void game_move_horizontal (int direction){
     printf("move %u\n", direction);
     if (direction)  //Mueve a Derecha
     {
-        block_data.x++;
+        game_data.x++;
         last_movement = RIGHT;
     }else //Mueve a izquierda
     {
-        block_data.x--;
+        game_data.x--;
         last_movement = LEFT;
     }
 }
+
 // Maquina de estado para el control del sentido de rotacion de la pieza
 // direction = 1  GIRA A LA DERECHA
 // direction = 0  GIRA A LA IZQUIERDA
-void rotate_block(int direction){
+void game_rotate(int direction){
     printf("rotate %u\n", direction);
     if (direction) //Sentido horario
     {
-        if (block_data.rot == 3){
-            block_data.rot = 0;
+        if (game_data.rot == 3){
+            game_data.rot = 0;
         }
         else
-            block_data.rot++;
+            game_data.rot++;
         last_movement = R_RIGHT;
     }
     else    //Sentido anti-horario
     {
-        if (block_data.rot == 0){
-            block_data.rot = 3;
+        if (game_data.rot == 0){
+            game_data.rot = 3;
         }
         else
-            block_data.rot--;
+            game_data.rot--;
         last_movement = R_LEFT;
     }
 }
 
-// update_score actualiza el score segun el nivel en el que se encuentra
+// _update_score actualiza el score segun el nivel en el que se encuentra
 
-int update_score(int score, int streak, char lvl){
-	int result = score;
+void _update_score(int streak, uint8_t lvl){
 	switch (streak) {
 		case 1:
-			result += 40*(lvl+1);
+			game_data.score += 40*(lvl+1);
 			break;
 		case 2:
-			result += 100*(lvl+1);
+			game_data.score += 100*(lvl+1);
 			break;
 		case 3:
-			result += 300*(lvl+1);
+			game_data.score += 300*(lvl+1);
 			break;
 		case 4:
-			result += 1200*(lvl+1);
+			game_data.score += 1200*(lvl+1);
 			printf("TETRIS!!");
 			break;
 	}
-	return result;
+}
 
+void _update_level (void)
+{
+	if ( game_data.score >= 0 && game_data.score<= 250 )
+	{
+		game_data.game_level = 1;
+		game_data.speed_interval -= game_data.speed_interval/10;
+	}
+	else if( game_data.score >250 && game_data.score <= 1000)
+	{
+		game_data.game_level = 2;
+		game_data.speed_interval -= game_data.speed_interval/10;
+	}
+	else if( game_data.score >1000 && game_data.score <= 1500)
+	{
+		game_data.game_level = 3;
+		game_data.speed_interval -= game_data.speed_interval/10;
+	}
+	else if( game_data.score >1500 && game_data.score <= 2000)
+	{
+		game_data.game_level = 4;
+		game_data.speed_interval -= game_data.speed_interval/10;
+	}
+	else if( game_data.score >2000 && game_data.score <= 2500)
+	{
+		game_data.game_level = 5;
+		game_data.speed_interval -= game_data.speed_interval/10;
+	}
+	else if (game_data.score > 2500)
+	{
+		game_data.speed_interval -= game_data.speed_interval/10;
+	}
 }
