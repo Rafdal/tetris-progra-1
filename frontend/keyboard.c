@@ -8,10 +8,10 @@
 
 static ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 
-static bool key_state[7];
-static bool last_keystate[7]; //Estado de teclas, true cuando esta apretada
-static uint64_t key_press_timestamp[7]; // timestamp de cuando se presiono la tecla
-static bool use_press_callback_for_longpress[7];
+static bool key_state[KEYB_KEYS];
+static bool last_keystate[KEYB_KEYS]; //Estado de teclas, true cuando esta apretada
+static uint64_t key_press_timestamp[KEYB_KEYS]; // timestamp de cuando se presiono la tecla
+static bool use_press_callback_for_longpress[KEYB_KEYS];
 
 static keyb_callback_t on_press;
 static uint64_t lastMillis;
@@ -39,7 +39,7 @@ bool keyb_init(ALLEGRO_EVENT_QUEUE *queue){
     assert(al_install_keyboard());
 
     int i;
-    for(i=0; i<7; i++){
+    for(i=0; i<KEYB_KEYS; i++){
         key_state[i] = false;
         last_keystate[i] = false; //Estado de teclas, true cuando esta apretada
         key_press_timestamp[i] = 0; // timestamp de cuando se presiono la tecla
@@ -55,7 +55,7 @@ bool keyb_init(ALLEGRO_EVENT_QUEUE *queue){
 }
 
 // Va dentro de if(al_get_next_event(event_queue, pev) ) { ACA }
-bool keyb_run(ALLEGRO_EVENT* pev){
+void keyb_run(ALLEGRO_EVENT* pev){
     if (pev->type == ALLEGRO_EVENT_KEY_DOWN) {
         switch (pev->keyboard.keycode) {
             case ALLEGRO_KEY_UP:
@@ -80,6 +80,10 @@ bool keyb_run(ALLEGRO_EVENT* pev){
 
             case ALLEGRO_KEY_Q:
                 key_state[KEYB_UPLEFT] = true;
+                break;
+
+            case ALLEGRO_KEY_ESCAPE:
+                key_state[KEYB_ESC] = true;
                 break;
 
             case ALLEGRO_KEY_SPACE:
@@ -117,15 +121,14 @@ bool keyb_run(ALLEGRO_EVENT* pev){
                 key_state[KEYB_BTN] = false;
                 break;
 
-
             case ALLEGRO_KEY_ESCAPE:
-                return true;
+                key_state[KEYB_ESC] = false;
                 break;
         }
     }
     int i;
     if(pev->type == ALLEGRO_EVENT_KEY_DOWN || pev->type == ALLEGRO_EVENT_KEY_UP){
-        for(i=0; i<7; i++){
+        for(i=0; i<KEYB_KEYS; i++){
 
             if(key_state[i] != last_keystate[i]){
                 if(key_state[i] & !last_keystate[i]){
@@ -141,8 +144,8 @@ bool keyb_run(ALLEGRO_EVENT* pev){
         }
     }
     int id;
-    if(get_millis()-lastMillis >= 100){
-        for(id=0; id< 7; id++){
+    if(get_millis()-lastMillis >= KEYB_LONGPRESS_DELAY){
+        for(id=0; id< KEYB_KEYS; id++){
             if(use_press_callback_for_longpress[id] && keyb_is_longpressed(id)){
                 if(on_press != NULL)        // Si el callback esta seteado
                     on_press(id);
