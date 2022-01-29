@@ -344,19 +344,14 @@ void game_run(void){
             _clear_matrix();
 
             colision = false;
-            int streak = 0;
+            uint8_t streak = _check_row_complete();
 
-            while (_check_row_complete())
-            {
-                int row = _check_row_complete();
+			//_delete_row(row);
 
-                printf("Compleate Row: %d\n", row);
-                _delete_row(row);
-
-			streak++;
+			printf("STREAK : %d\n", streak );
 			_update_score(streak, game_data.game_level);
 			_update_level();
-		}
+
 		_update_next_block(); //Una vez usado el primer bloque del arreglo, actualiza este arreglo colocando uno nuevo al final de este
    	 }
 	_update_game_public_matrix();
@@ -375,20 +370,22 @@ void _update_game_public_matrix(void)
 	}
 }
 
-void _delete_pixel (uint8_t row, uint8_t px)
+void delete_pixel (uint8_t row, uint8_t px)
 {
 	static_matrix[row][px] = 0;
+	game_public_matrix[row][px]=0;
 }
 
-void _delete_row (uint8_t row)
+void delete_row (uint8_t row)
 {
 	int i,j;
+	/*
 	for (j= 0; j< WIDTH ; j++)
 	{
-		_delete_pixel(row,j);
+		delete_pixel(row,j);
 	}
-
 	printf("TEST\n");
+	 */
 	for ( i = row ; i > 0 ; i--)
 	{
 		for( j = 0 ; j < WIDTH; j++)
@@ -401,7 +398,7 @@ void _delete_row (uint8_t row)
 
 uint8_t _check_row_complete (void)
 {
-	int i , j;
+	int i , j, k = 0;
 	for (i = 0 ; i< HEIGHT ; i++)
 	{
 		for (j= 0 ; (j<WIDTH) && (static_matrix[i][j] != 0); j++)
@@ -409,9 +406,12 @@ uint8_t _check_row_complete (void)
 			//Do nothing
 		}
 		if (j == WIDTH)	//Si el for recorrio todas las columnas de esa fila y su contenido fue diferente a cero
-			return i;	//Devuelvo la fila completa
+		{
+			row_compleate[k] = i;	//Si existe una fila completa, completa un arreglo publico el cual contiene el numero de fila compleata
+			k++;
+		}
 	}
-	return 0; //Devuelve cero si no existe fila completa
+	return k;
 }
 
 
