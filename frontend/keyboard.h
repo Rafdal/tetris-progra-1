@@ -9,11 +9,13 @@
 
 typedef void (*keyb_callback_t)(uint8_t);
 
-enum {KEYB_UP, KEYB_RIGHT, KEYB_DOWN, KEYB_LEFT, KEYB_UPLEFT, KEYB_UPRIGHT, KEYB_BTN};
+#define KEYB_KEYS 8
+#define KEYB_LONGPRESS_DELAY 100
+enum {KEYB_UP, KEYB_RIGHT, KEYB_DOWN, KEYB_LEFT, KEYB_UPLEFT, KEYB_UPRIGHT, KEYB_BTN, KEYB_ESC};
 
 
 bool keyb_init(ALLEGRO_EVENT_QUEUE *queue); // iniciar libreria - true = OK | false = error
-bool keyb_run(ALLEGRO_EVENT* pev);  // leer botones y ejecutar callbacks (debe llamarse en Tiempo Real)
+void keyb_run(ALLEGRO_EVENT* pev);  // leer botones y ejecutar callbacks (debe llamarse en Tiempo Real)
 
 // al llamarse habilita que durante un LongPress, se llame al callback "on_press" cada <interval> milisegundos
 void keyb_use_press_callback_for_longpress(uint8_t key); 

@@ -6,7 +6,7 @@
  * Created on June 4, 2016, 6:38 PM
  */
 #include "./backend/game.h"
-#include "./frontend/easy_timer.h"
+#include "./testing/easy_timer.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,33 +32,36 @@
     al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
 }
 */
-    char matriz [16][10]={
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,1,1,1,1,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,5,5,5,0,0,0},
-        {0,0,0,0,0,5,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-    };
+char matriz [16][10]={
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,1,1,1,1,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,5,5,5,0,0,0},
+    {0,0,0,0,0,5,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+};
 
 
-    bool close_display = false;
+bool close_display = false;
 
+// P R O T O T I P O S
 int initialize_display(void);
-void endgame (void);
+void end_program (void);
 void update_display(void);
-
 void keypress_callback(uint8_t key);
+void read_events(void);
+void update_menu_display(void);
+void animation_row_compleate(void);
 
 
 int main (void){
@@ -75,42 +78,55 @@ int main (void){
     keyb_use_press_callback_for_longpress(KEYB_LEFT);
     keyb_use_press_callback_for_longpress(KEYB_RIGHT);
 
-    game_data_t game_data;
-    while (!close_display && (game_data = game_get_data()).state != GAME_QUIT) {
-
-        ALLEGRO_EVENT ev;
-        if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
-        {
-            if(keyb_run(&ev)){
-                printf("ESCAPE fue presionado\n");
-            }
-
-            if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
-                close_display = true;
-            }
-        }
-
-		if(game_data.state == GAME_RUN && get_millis()-lastMillis >= game_data.speed_interval){
-			if(game_data.id == 0)
-				game_insert_block(id_next_block[0]);
-			else
-				game_move_down();
-			game_run();
-			update_display();
-			lastMillis = get_millis();
-		}
-
-
-		if(game_data.state == GAME_LOSE){
-			printf("Perdiste! The Game\n");
-			game_init();
-		}
-    }
-    endgame();//borro todo
+    // 
+    menu_run(main_menu);
+    
+    end_program();//borro todo
 
     return 0;
 
 }
+
+void animation_row_compleate(void)
+{
+	int i, j;
+	for( i=0; row_compleate[i] != 0 && i< WIDTH ; i++)
+	{
+		for(j=0; j < WIDTH; j++)
+		{
+			delete_pixel(row_compleate[i], j);
+			delay(50);
+			update_display();
+		}
+
+		delete_row(row_compleate[i]);
+		row_compleate[i]= 0;
+
+	}
+}
+
+#warning ESTO NO ANDA, ES UN EJEMPLO
+void update_menu_display(void){
+
+    text_t* titulo_txt = text_init("TETRIS JAJA", 14, NEGRO, ROJO);
+    text_display(titulo_txt, x, y);
+    text_set(titulo_txt, )
+}
+
+
+void read_events(void){
+    ALLEGRO_EVENT ev;
+    if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
+    {
+        keyb_run(&ev);
+
+        if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
+            close_display = true;
+        }
+    }
+}
+
+
 
 void keypress_callback(uint8_t key){
     switch (key)
@@ -156,6 +172,7 @@ void keypress_callback(uint8_t key){
             break;
     }
     game_run();
+	animation_row_compleate();
     update_display();
 }
 
@@ -279,7 +296,7 @@ int initialize_display(void) {
     return 0;
 }
 
-void endgame (void){
+void end_program (void){
     al_destroy_display(display);
     al_destroy_bitmap(image);
     al_destroy_bitmap(muroH);

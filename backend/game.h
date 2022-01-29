@@ -11,6 +11,8 @@
 char game_public_matrix [HEIGHT][WIDTH];
 char next_block_public_matrix[12][4];
 
+uint8_t row_compleate[16];
+
 typedef enum {GAME_IDLE, GAME_RUN, GAME_PAUSE, GAME_QUIT, GAME_LOSE} game_state_t;
 
 typedef struct{
@@ -61,9 +63,9 @@ uint8_t game_get_next_block (void);
 // Obtiene todos los datos del juego
 game_data_t game_get_data(void);
 
-// Chequea el fin de juego
+void delete_pixel (uint8_t row, uint8_t px);
 
-char _check_you_lose(void);
+void delete_row (uint8_t row);
 
 
 #endif // GAME_H
