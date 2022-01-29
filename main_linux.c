@@ -62,6 +62,8 @@ void keypress_callback(uint8_t key);
 
 void read_events(void);
 
+void update_menu_display(void);
+
 int main (void){
 
 	game_init();
@@ -77,9 +79,7 @@ int main (void){
     keyb_use_press_callback_for_longpress(KEYB_RIGHT);
 
     // 
-    
     menu_run(main_menu);
-    
     
     end_program();//borro todo
 
@@ -87,6 +87,13 @@ int main (void){
 
 }
 
+#warning ESTO NO ANDA, ES UN EJEMPLO
+void update_menu_display(void){
+
+    text_t* titulo_txt = text_init("TETRIS JAJA", 14, NEGRO, ROJO);
+    text_display(titulo_txt, x, y);
+    text_set(titulo_txt, )
+}
 
 
 void read_events(void){
