@@ -10,7 +10,7 @@ typedef uint8_t rpi_char_t[8]; // 8 byte array
 void rpi_putchar(char c, uint8_t y, uint8_t x);
 
 
-const rpi_char_t UNKNOWN_ = {
+static const rpi_char_t UNKNOWN_ = {
     0x1F,
     0x1F,
     0x1F,
@@ -21,7 +21,7 @@ const rpi_char_t UNKNOWN_ = {
     0x1F
 };
 
-const rpi_char_t unknown_ = {
+static const rpi_char_t unknown_ = {
     0x1C,
     0x1C,
     0x1C,
@@ -34,7 +34,7 @@ const rpi_char_t unknown_ = {
 
 // 5 x 3
 
-const rpi_char_t ascii_0_z[] = {
+static const rpi_char_t ascii_0_z[] = {
     {
         0x08,
         0x14,
@@ -469,7 +469,7 @@ const rpi_char_t ascii_0_z[] = {
 
 // 8 x 5
 
-/* const rpi_char_t ASCII_0_Z[] = {
+/* static const rpi_char_t ASCII_0_Z[] = {
     {
         0x0C,
         0x12,
