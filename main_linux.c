@@ -56,15 +56,19 @@ char matriz [16][10]={
 
 bool close_display = false;
 
+// P R O T O T I P O S
 int initialize_display(void);
 void end_program (void);
 void update_display(void);
+<<<<<<< HEAD
 void deleteline (int numfil);
+=======
+>>>>>>> 1bc6ed61796a32e73a62b945bc8620e1de2c5f97
 void keypress_callback(uint8_t key);
-
 void read_events(void);
-
 void update_menu_display(void);
+void animation_row_compleate(void);
+
 
 int main (void){
 
@@ -87,6 +91,24 @@ int main (void){
 
     return 0;
 
+}
+
+void animation_row_compleate(void)
+{
+	int i, j;
+	for( i=0; row_compleate[i] != 0 && i< WIDTH ; i++)
+	{
+		for(j=0; j < WIDTH; j++)
+		{
+			delete_pixel(row_compleate[i], j);
+			delay(50);
+			update_display();
+		}
+
+		delete_row(row_compleate[i]);
+		row_compleate[i]= 0;
+
+	}
 }
 
 #warning ESTO NO ANDA, ES UN EJEMPLO
@@ -156,6 +178,7 @@ void keypress_callback(uint8_t key){
             break;
     }
     game_run();
+	animation_row_compleate();
     update_display();
 }
 

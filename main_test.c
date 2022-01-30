@@ -12,6 +12,8 @@ void key_press_callback(uint8_t key);
 void update_game_display(void);
 void main_game_start(void);
 void update_menu_display(void);
+void animation_row_compleate (void);
+
 
 menu_t *main_menu = NULL;
 menu_t *pause_menu = NULL;
@@ -104,6 +106,8 @@ void update_menu_display(void){
 
 void main_game_start(void){
 
+	game_init();
+
     game_data_t game_data;
     uint64_t lastMillis;
 
@@ -116,6 +120,7 @@ void main_game_start(void){
         if(game_data.state == GAME_RUN && get_millis()-lastMillis >= game_data.speed_interval){
             game_move_down();
             game_run();
+			animation_row_compleate();
             update_game_display();
             lastMillis = get_millis();
         }
@@ -127,6 +132,25 @@ void main_game_start(void){
         }
     }
     printf("Leaving game...\n");
+}
+
+void animation_row_compleate (void)
+{
+	//PAUSO EL JUEGO
+	int i, j;
+	for( i=0; row_compleate[i] != 0 && i< WIDTH ; i++)
+	{
+		for(j=0; j < WIDTH; j++)
+		{
+				delete_pixel(row_compleate[i], j);
+				delay(50);
+				update_game_display();
+		}
+
+		delete_row(row_compleate[i]);
+		row_compleate[i]= 0;
+
+	}
 }
 
 void update_game_display(void){
@@ -215,7 +239,8 @@ void key_press_callback(uint8_t key){
                 break;
         }
         game_run();
-        update_game_display();
+		animation_row_compleate();
+		update_game_display();
     }else{
         printf("Error state.\n");
     }
