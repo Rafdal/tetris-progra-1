@@ -41,8 +41,8 @@ menu.o:	./backend/menu.c ./backend/menu.h
 easy_timer.o: ./testing/easy_timer.c ./testing/easy_timer.h
 	gcc -c -Wall ./testing/easy_timer.c
 
-l_easy_timer.o: ./testing/easy_timer.c ./testing/easy_timer.h
-	gcc -c -Wall ./testing/easy_timer.c
+l_easy_timer.o: ./frontend/easy_timer.c ./frontend/easy_timer.h
+	gcc -c -Wall ./frontend/easy_timer.c
 
 keyboard.o: ./frontend/keyboard.c ./frontend/keyboard.h
 	gcc -c -Wall ./frontend/keyboard.c `pkg-config --cflags allegro-5`
