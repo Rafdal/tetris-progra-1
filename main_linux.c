@@ -153,8 +153,8 @@ void animation_row_compleate(void)
                 al_flip_display();
            } //pongo el fondo en negro de nuevo
 
-		row_compleate[i]= 0;
 		delete_row(row_compleate[i]);
+		row_compleate[i]= 0;
 
 	}
 }
