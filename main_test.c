@@ -54,6 +54,14 @@ void prueba_agus(void){
     // AGUS
 }
 
+void prueba1_santi(void){
+
+}
+
+void prueba2_santi(void){
+
+}
+
 
 int main(void){
     printf("Inicializando...\n");
@@ -80,8 +88,8 @@ int main(void){
     }
     menu_set_option(main_menu, 0, "JUGAR", main_game_start);
     menu_set_option(main_menu, 1, "PRUEBA AGUS", prueba_agus);
-    menu_set_option(main_menu, 2, "TOP SCORES", NULL);
-    menu_set_option(main_menu, 3, "CONFIGURACION", NULL);
+    menu_set_option(main_menu, 2, "Prueba1 SANTI", prueba1_santi);
+    menu_set_option(main_menu, 3, "Prueba2 SANTI", prueba2_santi);
     menu_set_option(main_menu, 4, "SALIR", menu_force_close_current);
 
     menu_set_option(pause_menu, 0, "REANUDAR", resume_game);
