@@ -60,10 +60,6 @@ bool close_display = false;
 int initialize_display(void);
 void end_program (void);
 void update_display(void);
-<<<<<<< HEAD
-void deleteline (int numfil);
-=======
->>>>>>> 1bc6ed61796a32e73a62b945bc8620e1de2c5f97
 void keypress_callback(uint8_t key);
 void read_events(void);
 void update_menu_display(void);
@@ -96,14 +92,32 @@ int main (void){
 void animation_row_compleate(void)
 {
 	int i, j;
+    int z;
+    float reductor;
+    float angulo;
+    float decremento= 0.1;
 	for( i=0; row_compleate[i] != 0 && i< WIDTH ; i++)
 	{
-		for(j=0; j < WIDTH; j++)
-		{
-			delete_pixel(row_compleate[i], j);
-			delay(50);
-			update_display();
-		}
+
+    
+        
+        for(reductor=2.1, angulo=0; reductor>=0; angulo+=(3.1415/8)){
+ 
+            for(z=1; z<=ANCHO; z++){
+                al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(row_compleate[i]), BLOCKSZ, BLOCKSZ, 0);
+              //pongo el fondo en negro
+                al_draw_tinted_scaled_rotated_bitmap_region(image, 0, 0, al_get_bitmap_width(image)/8, al_get_bitmap_height(image), al_map_rgba_f(1, 1, 1, 1),(al_get_bitmap_width(image)/8)/2,al_get_bitmap_height(image)/2, (BLOCKSZ/2 +BLOCKSZ*z), (BLOCKSZ/2 +BLOCKSZ*(row_compleate[i])),reductor, reductor, angulo, 0);
+                //se va haciendo mas chia a medida que rota
+                al_flip_display();
+                al_rest(0.007);
+                
+            }
+            reductor-=decremento;
+        }
+           for(z=1; z<=ANCHO; z++){
+                al_draw_scaled_bitmap(image,(al_get_bitmap_width(image)/8), 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*5, BLOCKSZ, BLOCKSZ, 0);
+                al_flip_display();
+           } //pongo el fondo en negro de nuevo
 
 		delete_row(row_compleate[i]);
 		row_compleate[i]= 0;
@@ -298,7 +312,7 @@ int initialize_display(void) {
     
     al_flip_display();
     al_rest(2);
-    deleteline(4);
+    
     
     //playAudio();
 

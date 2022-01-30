@@ -96,7 +96,6 @@ static char _block(uint8_t x, uint8_t y); // Accede a los datos del bloque con c
 static int _can_write(uint8_t x, uint8_t y); // devuelve 1 si se puede escribir, si no se puede, corrige la posicion del bloque
 static void _undo_movement(void); // deshace el movimiento anterior
 static uint8_t _check_row_complete (void); // chequea si una fila se elimino y en caso de serlo devuelve en numero de fila
-static void _delete_row (uint8_t row); // elimina y desplaza la fila completa
 static void _update_game_public_matrix (void); // actualiza los valores de la matriz publica (la cual contiene la suma de la matriz estatic y dinamica)
 static void _clear_matrix(void);
 static void _update_score(int streak, uint8_t lvl);
