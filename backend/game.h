@@ -11,7 +11,7 @@
 char game_public_matrix [HEIGHT][WIDTH];
 char next_block_public_matrix[12][4];
 
-uint8_t row_compleate[16];
+uint8_t row_compleate[4];
 
 typedef enum {GAME_IDLE, GAME_RUN, GAME_PAUSE, GAME_QUIT, GAME_LOSE} game_state_t;
 
@@ -65,6 +65,7 @@ game_data_t game_get_data(void);
 
 void delete_pixel (uint8_t row, uint8_t px);
 
+// Elimina y desplaza la fila completa
 void delete_row (uint8_t row);
 
 
