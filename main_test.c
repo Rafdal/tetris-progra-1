@@ -7,6 +7,7 @@
 #include "./testing/easy_timer.h"
 #include "./testing/matrix_handler.h"
 #include "./testing/rpi_display.h"
+#include "./testing/rpi_text.h"
 
 ///////////////////////LIBRERIAS DE SANTI's SANDBOX//////////////////////
 #include <allegro5/allegro.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
@@ -60,6 +61,15 @@ int main(void){
 
     main_menu = menu_init(5, "MENU", NULL, MENU_ACTION_DO_NOTHING);
     pause_menu = menu_init(4, "PAUSA", NULL, MENU_ACTION_JUST_EXIT);
+
+	 //PRUEBA AGUS
+	rpi_text_block_t text = rpi_text_create("Agus");
+	rpi_text_print(text, 0,2);
+	rpi_run_display();
+
+	rpi_text_destroy(text);
+
+	return 0;
 
     if(main_menu == NULL || pause_menu == NULL){
         printf("Error NULL menu!\n");
@@ -168,7 +178,6 @@ void update_game_display(void){
     matrix_hand_t mat_handler;
     assert(mat_init(&mat_handler, HEIGHT, WIDTH));
     MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, HEIGHT, WIDTH);
-    // printf("MAT_HANDLER:\n");
     rpi_copyToDis(&mat_handler, 0, 0);
 
 	matrix_hand_t public_next_mat;
