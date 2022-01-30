@@ -234,7 +234,7 @@ void keypress_callback(uint8_t key){
     }
     game_run();
 	animation_row_compleate();
-    update_display();
+    //update_display(); estamos viendo si esto buguea la eliminacion de filas
 }
 
 
