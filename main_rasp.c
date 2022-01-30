@@ -35,7 +35,7 @@ int main(void){
         
         game_data = game_get_data();
 
-        if(game_data.state == GAME_RUN && get_millis()-lastMillis >= game_data.speed_interval){
+        if(game_data.state == GAME_RUN && easytimer_get_millis()-lastMillis >= game_data.speed_interval){
             if(game_data.id == 0)
                 game_insert_block(id_next_block[0]);
 
@@ -43,7 +43,7 @@ int main(void){
                 game_move_down();
             game_run();
             update_display();
-            lastMillis = get_millis();
+            lastMillis = easytimer_get_millis();
         }
 
         if(dpad_is_longpressed(DPAD_BTN)){

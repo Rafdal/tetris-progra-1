@@ -128,12 +128,12 @@ void main_game_start(void){
     {
         dpad_read();
         
-        if(game_data.state == GAME_RUN && get_millis()-lastMillis >= game_data.speed_interval){
+        if(game_data.state == GAME_RUN && easytimer_get_millis()-lastMillis >= game_data.speed_interval){
             game_move_down();
             game_run();
 			animation_row_compleate();
             update_game_display();
-            lastMillis = get_millis();
+            lastMillis = easytimer_get_millis();
         }
 
         if(game_data.state == GAME_LOSE){
@@ -154,7 +154,7 @@ void animation_row_compleate (void)
 		for(j=0; j < WIDTH; j++)
 		{
 				delete_pixel(row_compleate[i], j);
-				delay(50);
+				easytimer_delay(50);
 				update_game_display();
 		}
 

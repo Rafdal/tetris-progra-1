@@ -106,22 +106,21 @@ static void _update_level (void); //Actualiza el nivel del juego dependiendo del
 // F U N C I O N E S
 
 
-// Inicia el juego con las matrices en blanco
+// Inicia la libreria
 void game_init(void){
+    srand(time(NULL));
     game_data.state = GAME_IDLE;
-    game_data.id = 0; // Ningun bloque
-	game_data.game_level = 1; //Inicializa el nivel del juego en 1
 }
 
 
 void game_start(void){
-    srand(time(NULL));
     _clear_matrix();
     colision = false;
     bad_movement = false;
     game_data.state = GAME_RUN;
     game_data.id = 0; // Ningun bloque
     game_data.score = 0;
+	game_data.game_level = 1; // Inicializa el nivel del juego en 1
     game_data.speed_interval = GAME_DEFAULT_SPEED_INTERVAL;
     int i,j;
     for(i=0; i<HEIGHT; i++){

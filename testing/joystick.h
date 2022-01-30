@@ -1,7 +1,7 @@
 #ifndef TECLADO_TRUCHO_H
 #define TECLADO_TRUCHO_H
 
-#define LONG_PRESS_TIMEOUT  500
+#define LONG_PRESS_INTERVAL  500
 
 #include <stdbool.h>
 #include <stdint.h>

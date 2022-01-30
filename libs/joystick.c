@@ -50,7 +50,7 @@ bool dpad_is_pressed(uint8_t id){
 bool dpad_is_longpressed(uint8_t id){
     if(id >= DPAD_KEYS)
         return false;
-    return key_state[id] && get_millis()-key_timestamp[id] >= DPAD_LONG_PRESS;
+    return key_state[id] && easytimer_get_millis()-key_timestamp[id] >= DPAD_LONG_PRESS;
 }
 
 
@@ -115,7 +115,7 @@ void dpad_read(void){
         if(key_state[id] != last_key_state[id]){      // Si cambio el estado
             if(key_state[id] && !last_key_state[id]){ // Si fue un flanco ascendente
                 // idle_flag = false;
-                key_timestamp[id] = get_millis();
+                key_timestamp[id] = easytimer_get_millis();
 
                 if(on_press != NULL)        // Si el callback esta seteado
                     on_press(id);
@@ -126,7 +126,7 @@ void dpad_read(void){
         }
     }
 
-    if(get_millis()-lastMillis >= DPAD_LONGPRESS_PRESS_CALLBACK_INTERVAL){
+    if(easytimer_get_millis()-lastMillis >= DPAD_LONGPRESS_PRESS_CALLBACK_INTERVAL){
         for(id=0; id< DPAD_KEYS; id++){
             if(use_press_callback_for_longpress[id] && dpad_is_longpressed(id)){
                 if(on_press != NULL)        // Si el callback esta seteado
@@ -134,7 +134,7 @@ void dpad_read(void){
                 
             }
         }
-        lastMillis = get_millis();
+        lastMillis = easytimer_get_millis();
     }
 
     /* if(!idle_flag){ // si antes se habia presionado alguna tecla

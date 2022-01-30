@@ -88,7 +88,7 @@ void finish(void){
 //  ##############################
 int main(void) {
 
-    interval_t longpress_int = set_interval(long_press, 150);
+    interval_t longpress_int = easytimer_set_interval(long_press, 150);
 
     teclado_begin();
     game_run();
@@ -105,7 +105,7 @@ int main(void) {
     while (run)
     {
         if(is_long_pressed(KEY_DOWN) || is_long_pressed(KEY_LEFT) || is_long_pressed(KEY_RIGHT)){
-            run_interval(&longpress_int);
+            easytimer_run_interval(&longpress_int);
         }
         teclado_run(); // lee las teclas (No bloqueante)
     }

@@ -2,7 +2,7 @@
 #define SCREEN_H  480
 
 #include <stdio.h>
-#include <assert.h>
+// #include <assert.h>
 #include "easy_timer.h"
 #include "keyboard.h"
 
@@ -26,17 +26,20 @@ bool keyb_is_pressed(uint8_t key_id){
 }
 
 bool keyb_is_longpressed(uint8_t key_id){
-    return (get_millis()-key_press_timestamp[key_id] >= LONG_PRESS_TIMEOUT) && key_state[key_id];
+    return (easytimer_get_millis()-key_press_timestamp[key_id] >= LONG_PRESS_INTERVAL) && key_state[key_id];
 }
 
 void keyb_use_press_callback_for_longpress(uint8_t key){
     use_press_callback_for_longpress[key] = true;
 }
 
-
+// Inicializar el teclado
 bool keyb_init(ALLEGRO_EVENT_QUEUE *queue){
 
-    assert(al_install_keyboard());
+    if(!al_install_keyboard() || queue == NULL)
+        return false; // error
+
+    event_queue = queue;
 
     int i;
     for(i=0; i<KEYB_KEYS; i++){
@@ -45,10 +48,6 @@ bool keyb_init(ALLEGRO_EVENT_QUEUE *queue){
         key_press_timestamp[i] = 0; // timestamp de cuando se presiono la tecla
         use_press_callback_for_longpress[i] = false;
     }
-
-    event_queue = queue;
-
-    assert(event_queue);
 
     al_register_event_source(event_queue, al_get_keyboard_event_source()); //REGISTRAMOS EL TECLADO
     return true;
@@ -75,11 +74,11 @@ void keyb_run(ALLEGRO_EVENT* pev){
                 break;
 
             case ALLEGRO_KEY_E:
-                key_state[KEYB_UPRIGHT] = true;
+                key_state[KEYB_E] = true;
                 break;
 
             case ALLEGRO_KEY_Q:
-                key_state[KEYB_UPLEFT] = true;
+                key_state[KEYB_Q] = true;
                 break;
 
             case ALLEGRO_KEY_ESCAPE:
@@ -87,7 +86,7 @@ void keyb_run(ALLEGRO_EVENT* pev){
                 break;
 
             case ALLEGRO_KEY_SPACE:
-                key_state[KEYB_BTN] = true;
+                key_state[KEYB_SPACE] = true;
                 break;
         }
     }
@@ -110,15 +109,15 @@ void keyb_run(ALLEGRO_EVENT* pev){
                 break;
 
             case ALLEGRO_KEY_E:
-                key_state[KEYB_UPRIGHT] = false;
+                key_state[KEYB_E] = false;
                 break;
 
             case ALLEGRO_KEY_Q:
-                key_state[KEYB_UPLEFT] = false;
+                key_state[KEYB_Q] = false;
                 break;
 
             case ALLEGRO_KEY_SPACE:
-                key_state[KEYB_BTN] = false;
+                key_state[KEYB_SPACE] = false;
                 break;
 
             case ALLEGRO_KEY_ESCAPE:
@@ -132,7 +131,7 @@ void keyb_run(ALLEGRO_EVENT* pev){
 
             if(key_state[i] != last_keystate[i]){
                 if(key_state[i] & !last_keystate[i]){
-                    key_press_timestamp[i] = get_millis();
+                    key_press_timestamp[i] = easytimer_get_millis();
                     // printf("Presionada la tecla %u\n", i);
                     if (on_press != NULL){
                         on_press(i);
@@ -144,7 +143,7 @@ void keyb_run(ALLEGRO_EVENT* pev){
         }
     }
     int id;
-    if(get_millis()-lastMillis >= KEYB_LONGPRESS_DELAY){
+    if(easytimer_get_millis()-lastMillis >= KEYB_LONGPRESS_DELAY){
         for(id=0; id< KEYB_KEYS; id++){
             if(use_press_callback_for_longpress[id] && keyb_is_longpressed(id)){
                 if(on_press != NULL)        // Si el callback esta seteado
@@ -152,7 +151,7 @@ void keyb_run(ALLEGRO_EVENT* pev){
                 
             }
         }
-        lastMillis = get_millis();
+        lastMillis = easytimer_get_millis();
     }
     return false;
 }

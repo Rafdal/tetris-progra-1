@@ -29,7 +29,7 @@ bool dpad_is_pressed(uint8_t key_id){
 }
 
 bool dpad_is_longpressed(uint8_t key_id){
-    return (get_millis()-key_press_timestamp[key_id] >= LONG_PRESS_TIMEOUT) && key_state[key_id];
+    return (easytimer_get_millis()-key_press_timestamp[key_id] >= LONG_PRESS_INTERVAL) && key_state[key_id];
 }
 
 void dpad_use_press_callback_for_longpress(uint8_t key){
@@ -171,7 +171,7 @@ void dpad_read(void){
 
                 if(key_state[i] != last_keystate[i]){
                     if(key_state[i] & !last_keystate[i]){
-                        key_press_timestamp[i] = get_millis();
+                        key_press_timestamp[i] = easytimer_get_millis();
                         // printf("Presionada la tecla %u\n", i);
                         if (on_press != NULL){
                             on_press(i);
@@ -185,7 +185,7 @@ void dpad_read(void){
     }
 
     int id;
-    if(get_millis()-lastMillis >= 100){
+    if(easytimer_get_millis()-lastMillis >= 100){
         for(id=0; id< 7; id++){
             if(use_press_callback_for_longpress[id] && dpad_is_longpressed(id)){
                 if(on_press != NULL)        // Si el callback esta seteado
@@ -193,7 +193,7 @@ void dpad_read(void){
                 
             }
         }
-        lastMillis = get_millis();
+        lastMillis = easytimer_get_millis();
     }
 
 }

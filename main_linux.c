@@ -34,7 +34,9 @@
     al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
 }
 */
-char matriz [16][10]={
+
+
+/* char matriz [16][10]={      // Esto no lo estas usando
     {0,0,0,0,0,0,0,0,0,0},
     {0,0,0,0,0,0,0,0,0,0},
     {0,0,0,0,0,0,0,0,0,0},
@@ -51,10 +53,8 @@ char matriz [16][10]={
     {0,0,0,0,0,0,0,0,0,0},
     {0,0,0,0,0,0,0,0,0,0},
     {0,0,0,0,0,0,0,0,0,0},
-};
+}; */
 
-
-bool close_display = false;
 
 // P R O T O T I P O S
 int initialize_display(void);
@@ -70,10 +70,10 @@ void main_game_start(void);
 
 int main (void){
 
-	game_init();
-	int ret= initialize_display();
+	game_init(); // inicializar la libreria del juego
+	int error = initialize_display();
 //	int init_audio();
-    if(ret){
+    if(error){
         printf("Error al iniciar");
         return 0;   //si algo fallo termino el programa
     }
@@ -82,7 +82,8 @@ int main (void){
     keyb_use_press_callback_for_longpress(KEYB_LEFT);
     keyb_use_press_callback_for_longpress(KEYB_RIGHT);
 
-    // 
+    // menu_set_event_listener_display(read_events, update_menu_display);
+   
    // menu_run(main_menu);
    main_game_start();
     
@@ -91,36 +92,35 @@ int main (void){
     return 0;
 
 }
-void main_game_start(void){
 
-	game_init();
+void main_game_start(void){
 
     game_data_t game_data;
     uint64_t lastMillis;
 
-    game_start();
+    game_start(); // iniciar el juego
 
     while ((game_data = game_get_data()).state != GAME_QUIT)
     {
-        read_events();
+        read_events(); // Leer teclado y eventos (Allegro)
         
-        
-        if(game_data.state == GAME_RUN && get_millis()-lastMillis >= game_data.speed_interval){
+        if(game_data.state == GAME_RUN && easytimer_get_millis()-lastMillis >= game_data.speed_interval){
             game_move_down();
             game_run();
 			animation_row_compleate();
             update_display();
-            lastMillis = get_millis();
+            lastMillis = easytimer_get_millis();
         }
 
         if(game_data.state == GAME_LOSE){
             printf("Perdiste! The Game\n");
             break;
             #warning BREAK HARDCODEADO
+            // Aca deberia ir alguna funcion de mostrar score o guardarlo, etc (MAS ADELANTE LO VEMOS)
         }
     }
     printf("Leaving game...\n");
-}
+} // main_game_start
 
 
 void animation_row_compleate(void)
@@ -133,8 +133,6 @@ void animation_row_compleate(void)
 	for( i=0; row_compleate[i] != 0 && i< WIDTH ; i++)
 	{
 
-    
-        
         for(reductor=2.1, angulo=0; reductor>=0; angulo+=(3.1415/8)){
  
             for(z=1; z<=ANCHO; z++){
@@ -159,7 +157,7 @@ void animation_row_compleate(void)
 	}
 }
 
-#warning ESTO NO ANDA, ES UN EJEMPLO
+// HACER !
 void update_menu_display(void){
 
    // text_t* titulo_txt = text_init("TETRIS JAJA", 14, NEGRO, ROJO);
@@ -167,16 +165,15 @@ void update_menu_display(void){
    // text_set(titulo_txt, );
 }
 
-
+// Leer los eventos de Allegro (teclado, display, etc)
 void read_events(void){
     ALLEGRO_EVENT ev;
-    if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
+    if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola
     {
-        keyb_run(&ev);
+        keyb_run(&ev); // paso como parametro a
 
         if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
             game_quit();
-           
         }
     }
 }
@@ -208,17 +205,17 @@ void keypress_callback(uint8_t key){
             printf("RIGHT\n");
             break;
 
-        case KEYB_UPRIGHT:
+        case KEYB_E:
             game_rotate(1);
             printf("UPRIGHT\n");
             break;
 
-        case KEYB_UPLEFT:
+        case KEYB_Q:
             game_rotate(0);
             printf("UPLEFT\n");
             break;
 
-        case KEYB_BTN:
+        case KEYB_SPACE:
             game_start();
             printf("BTN\n");
             break;
@@ -267,13 +264,13 @@ int initialize_display(void) {
         return -1;
     }
 
-    assert(keyb_init(event_queue));
-
+    if(!keyb_init(event_queue)){
+        printf("No se pudo inicializar el teclado!\n");
+        return -1;
+    }
 
      ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
    /////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
     if (!al_init_image_addon()) { // ADDON necesario para manejo(no olvidar el freno de mano) de imagenes 
         printf("failed to initialize image addon !\n");
@@ -287,14 +284,14 @@ int initialize_display(void) {
         return -1;
     }
 
-     muroH = al_load_bitmap("./frontend/images/muroH.jpg");
+    muroH = al_load_bitmap("./frontend/images/muroH.jpg");
     if (!muroH) {
         printf( "failed to load muroH !\n");
         al_destroy_bitmap(image);
         al_destroy_event_queue(event_queue);
         return -1;
     }
-     muroV = al_load_bitmap("./frontend/images/muroV.jpg");
+    muroV = al_load_bitmap("./frontend/images/muroV.jpg");
     if (!muroV) {
         printf("failed to load muroV !\n");
         al_destroy_bitmap(image);
@@ -302,7 +299,7 @@ int initialize_display(void) {
         al_destroy_event_queue(event_queue);
         return -1;
     }
-     pieza_blanca = al_load_bitmap("./frontend/images/white_tile.png");
+    pieza_blanca = al_load_bitmap("./frontend/images/white_tile.png");
     if (!pieza_blanca) {
         printf("failed to load pieza_blanca !\n");
         al_destroy_bitmap(image);
@@ -328,29 +325,16 @@ int initialize_display(void) {
     //dibujo las paredes
     al_draw_scaled_bitmap(muroV, 0, 0, al_get_bitmap_width(muroV), al_get_bitmap_height(muroV), 0, 0, BLOCKSZ, al_get_display_height(display)-BLOCKSZ, 0);
     al_draw_scaled_bitmap(muroV, 0, 0, al_get_bitmap_width(muroV), al_get_bitmap_height(muroV),al_get_display_width(display)-BLOCKSZ , 0, BLOCKSZ, al_get_display_height(display)-BLOCKSZ, 0);
-    
-    /* al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8)*2, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ-5, 0, BLOCKSZ, BLOCKSZ, 0);
-        al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8), 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*2, 0, BLOCKSZ, BLOCKSZ, 0);
-            al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8)*2, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*3-4, 0, BLOCKSZ, BLOCKSZ, 0);
-
-
-    al_draw_tinted_scaled_bitmap(image, al_map_rgba_f(0.2, 0.2, 0.2, 0.2), (al_get_bitmap_width(image)/8)*2, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*2, BLOCKSZ, BLOCKSZ, BLOCKSZ, 0);
-    //void al_draw_bitmap(ALLEGRO_BITMAP *bitmap, float dx, float dy, int flags) 
-    al_draw_scaled_bitmap(image,
-            0, 0, al_get_bitmap_width(image), al_get_bitmap_height(image), //imagen
-            0, 0, al_get_display_width(display), al_get_display_height(display), //a que tamaño queres que se dibuje la imagen
-            0); */ //SIn flags podrian usar ALLEGRO_FLIP_HORIZONTAL o ALLEGRO_FLIP_VERTICAL muy utiles
-    
+        
     
     al_flip_display();
-    al_rest(2);
-    
     
     //playAudio();
 
     return 0;
 }
-     int init_audio(void) {
+
+int init_audio(void) {
     ALLEGRO_DISPLAY *display = NULL;
     ALLEGRO_SAMPLE *sample = NULL;
 	//ALLEGRO_SAMPLE *sample1 = NULL;
@@ -405,6 +389,7 @@ int initialize_display(void) {
     return 0;
 }
 
+
 void end_program (void){
     al_destroy_display(display);
     al_destroy_bitmap(image);
@@ -417,6 +402,7 @@ void end_program (void){
     //al_shutdown_image_addon(); VER DOCUMENTACION ES LLAMADO AUTOMATICAMENTE AL SALIR DEL PROGRAMA
     printf("Game Ended\n");
 }
+
 /*void deleteline (int numfil){
     int x;
     int reductor;
