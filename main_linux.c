@@ -19,17 +19,18 @@
 #include "./frontend/keyboard.h"
 #include <stdbool.h>
 
-
 #define BLOCKSZ 50
 #define ANCHO   10
 #define ALTO    16
-    ALLEGRO_DISPLAY *display = NULL;
-    ALLEGRO_BITMAP *image = NULL;
-    ALLEGRO_BITMAP *muroH = NULL;
-    ALLEGRO_BITMAP *muroV = NULL;
-    ALLEGRO_SAMPLE *sample = NULL;
-    ALLEGRO_EVENT_QUEUE * event_queue = NULL;
-    ALLEGRO_BITMAP *pieza_blanca = NULL;
+
+ALLEGRO_DISPLAY *display = NULL;
+ALLEGRO_BITMAP *image = NULL;
+ALLEGRO_BITMAP *muroH = NULL;
+ALLEGRO_BITMAP *muroV = NULL;
+ALLEGRO_SAMPLE *sample = NULL;
+ALLEGRO_EVENT_QUEUE * event_queue = NULL;
+ALLEGRO_BITMAP *pieza_blanca = NULL;
+
 /*void playAudio(void){
     al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
 }
@@ -125,7 +126,7 @@ void main_game_start(void){
 
 void animation_row_compleate(void)
 {
-	int i, j;
+	int i;
     int z;
     float reductor;
     float angulo;
@@ -153,8 +154,8 @@ void animation_row_compleate(void)
 
 		delete_row(row_compleate[i]);
 		row_compleate[i]= 0;
-
 	}
+    al_flush_event_queue(event_queue); // no bajar la pieza despues de la animacion
 }
 
 // HACER !
@@ -231,13 +232,13 @@ void keypress_callback(uint8_t key){
     }
     game_run();
 	animation_row_compleate();
-    //update_display(); estamos viendo si esto buguea la eliminacion de filas
+    update_display(); // estamos viendo si esto buguea la eliminacion de filas
 }
 
 
 void update_display(void) {
 
-	char x, y;
+	uint8_t x, y;
 	for(x=0; x<WIDTH ; x++)
 	{
 		for(y=0; y<HEIGHT ; y++)
@@ -339,8 +340,6 @@ int init_audio(void) {
     ALLEGRO_SAMPLE *sample = NULL;
 	//ALLEGRO_SAMPLE *sample1 = NULL;
     ALLEGRO_EVENT_QUEUE *event_queue = NULL;
-    bool display_close = false;
-
 
     if (!al_install_audio()) {
         fprintf(stderr, "failed to initialize audio!\n");

@@ -153,5 +153,4 @@ void keyb_run(ALLEGRO_EVENT* pev){
         }
         lastMillis = easytimer_get_millis();
     }
-    return false;
 }
