@@ -39,12 +39,12 @@ typedef void (*menu_callback_t)(void); // Void Callback
 
 // Estructura de datos del menu
 typedef struct {
-    uint8_t state;          // evento (estado) actual
-    char *title;            // Titulo del menu
     char **option_titles;   // titulos de cada opcion
     menu_callback_t *option_callbacks; // callbacks de cada opcion
-    uint8_t n_options;      // cantidad de opciones
     uint8_t current_option; // opcion actual
+    uint8_t state;          // evento (estado) actual
+    char *title;            // Titulo del menu
+    uint8_t n_options;      // cantidad de opciones
     menu_action_t exit_action;  // accion de salida
     void (*on_exit)(void); // callback de salida
 } menu_t; // Objeto Menu

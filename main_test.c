@@ -8,10 +8,20 @@
 #include "./testing/matrix_handler.h"
 #include "./testing/rpi_display.h"
 
+///////////////////////LIBRERIAS DE SANTI's SANDBOX//////////////////////
+#include <allegro5/allegro.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
+#include <allegro5/allegro_image.h> //NO OLVIDAR INCLUIR ALLEGRO_IMAGE EN LINKER
+#include <allegro5/allegro_audio.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
+#include <allegro5/allegro_acodec.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
+#include "./frontend/keyboard.h"
+//////////////////////////////////////////////////////////////////////////
+
 void key_press_callback(uint8_t key);
 void update_game_display(void);
 void main_game_start(void);
 void update_menu_display(void);
+void animation_row_compleate (void);
+int init_audio(char); //FUNCION PERTENECIENTE A SANTI's SANDBOX
 
 menu_t *main_menu = NULL;
 menu_t *pause_menu = NULL;
@@ -23,6 +33,7 @@ void exit_game(void){
 
 void restart_game(void){
     menu_force_close(pause_menu); // Cerrar menu pausa
+	game_init();
     game_start();
 }
 
@@ -38,6 +49,8 @@ int main(void){
 
     rpi_init_display();
     game_init();
+
+	init_audio(1);  // FUNCION PERTENECIENTE A SANTI's SANDBOX
 
     dpad_init();
     dpad_on_press(key_press_callback);
@@ -72,6 +85,7 @@ int main(void){
     // Liberar memoria usada por los menues
     menu_destroy(main_menu);
     menu_destroy(pause_menu);
+	init_audio(0);
 
     rpi_clear_display();
 
@@ -103,6 +117,8 @@ void update_menu_display(void){
 
 void main_game_start(void){
 
+	game_init();
+
     game_data_t game_data;
     uint64_t lastMillis;
 
@@ -115,6 +131,7 @@ void main_game_start(void){
         if(game_data.state == GAME_RUN && get_millis()-lastMillis >= game_data.speed_interval){
             game_move_down();
             game_run();
+			animation_row_compleate();
             update_game_display();
             lastMillis = get_millis();
         }
@@ -126,6 +143,25 @@ void main_game_start(void){
         }
     }
     printf("Leaving game...\n");
+}
+
+void animation_row_compleate (void)
+{
+	//PAUSO EL JUEGO
+	int i, j;
+	for( i=0; row_compleate[i] != 0 && i< WIDTH ; i++)
+	{
+		for(j=0; j < WIDTH; j++)
+		{
+				delete_pixel(row_compleate[i], j);
+				delay(50);
+				update_game_display();
+		}
+
+		delete_row(row_compleate[i]);
+		row_compleate[i]= 0;
+
+	}
 }
 
 void update_game_display(void){
@@ -214,8 +250,71 @@ void key_press_callback(uint8_t key){
                 break;
         }
         game_run();
-        update_game_display();
+		animation_row_compleate();
+		update_game_display();
     }else{
         printf("Error state.\n");
     }
 }
+
+/////////////SANTI's SANDBOX////////////////////////
+int init_audio(char destroy) {
+	ALLEGRO_DISPLAY *display = NULL;
+	ALLEGRO_SAMPLE *sample = NULL;
+	//ALLEGRO_SAMPLE *sample1 = NULL;
+	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
+	bool display_close = false;
+
+
+	if (!al_install_audio()) {
+		fprintf(stderr, "failed to initialize audio!\n");
+		return -1;
+	}
+
+	if (!al_init_acodec_addon()) {
+		fprintf(stderr, "failed to initialize audio codecs!\n");
+		return -1;
+	}
+
+	if (!al_reserve_samples(1)) {
+		fprintf(stderr, "failed to reserve samples!\n");
+		return -1;
+	}
+
+	sample = al_load_sample("audio.wav");
+	//sample1 = al_load_sample("audio2.wav");
+
+	if (!sample) {
+		printf("Audio clip sample not loaded!\n");
+		return -1;
+	}
+
+
+
+	//Loop the sample until the display closes.
+	al_play_sample(sample, 1.0, -1.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
+
+//	al_play_sample(sample1, 1.0, 1.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
+
+	/*   while (!display_close) {
+		 ALLEGRO_EVENT ev;
+		 if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
+		 {
+			 if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+				 display_close = true;
+		 }
+
+	 }
+	*/
+
+	if(!destroy) {
+
+		al_uninstall_audio();
+		al_destroy_display(display);
+		al_destroy_event_queue(event_queue);
+		al_destroy_sample(sample);
+	}
+	return 0;
+}
+
+////////////END OF SANDBOX//////////////////////////

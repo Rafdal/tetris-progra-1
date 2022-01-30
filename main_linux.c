@@ -14,6 +14,8 @@
 #include <allegro5/allegro_image.h> //NO OLVIDAR INCLUIR ALLEGRO_IMAGE EN LINKER
 #include <allegro5/allegro_audio.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
 #include <allegro5/allegro_acodec.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
+#include <allegro5/allegro_ttf.h>
+#include <allegro5/allegro_font.h>
 #include "./frontend/keyboard.h"
 #include <stdbool.h>
 
@@ -27,45 +29,50 @@
     ALLEGRO_BITMAP *muroV = NULL;
     ALLEGRO_SAMPLE *sample = NULL;
     ALLEGRO_EVENT_QUEUE * event_queue = NULL;
-
+    ALLEGRO_BITMAP *pieza_blanca = NULL;
 /*void playAudio(void){
     al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
 }
 */
-    char matriz [16][10]={
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,1,1,1,1,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,5,5,5,0,0,0},
-        {0,0,0,0,0,5,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0},
-    };
+char matriz [16][10]={
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,1,1,1,1,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,5,5,5,0,0,0},
+    {0,0,0,0,0,5,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+};
 
 
-    bool close_display = false;
+bool close_display = false;
 
+// P R O T O T I P O S
 int initialize_display(void);
-void endgame (void);
+void end_program (void);
 void update_display(void);
-
 void keypress_callback(uint8_t key);
+void read_events(void);
+void update_menu_display(void);
+void animation_row_compleate(void);
+void main_game_start(void);
+//int init_audio(void);
 
 
 int main (void){
 
 	game_init();
-	uint64_t lastMillis;
 	int ret= initialize_display();
+//	int init_audio();
     if(ret){
         printf("Error al iniciar");
         return 0;   //si algo fallo termino el programa
@@ -75,42 +82,106 @@ int main (void){
     keyb_use_press_callback_for_longpress(KEYB_LEFT);
     keyb_use_press_callback_for_longpress(KEYB_RIGHT);
 
-    game_data_t game_data;
-    while (!close_display && (game_data = game_get_data()).state != GAME_QUIT) {
-
-        ALLEGRO_EVENT ev;
-        if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
-        {
-            if(keyb_run(&ev)){
-                printf("ESCAPE fue presionado\n");
-            }
-
-            if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
-                close_display = true;
-            }
-        }
-
-		if(game_data.state == GAME_RUN && get_millis()-lastMillis >= game_data.speed_interval){
-			if(game_data.id == 0)
-				game_insert_block(id_next_block[0]);
-			else
-				game_move_down();
-			game_run();
-			update_display();
-			lastMillis = get_millis();
-		}
-
-
-		if(game_data.state == GAME_LOSE){
-			printf("Perdiste! The Game\n");
-			game_init();
-		}
-    }
-    endgame();//borro todo
+    // 
+   // menu_run(main_menu);
+   main_game_start();
+    
+    end_program();//borro todo
 
     return 0;
 
 }
+void main_game_start(void){
+
+	game_init();
+
+    game_data_t game_data;
+    uint64_t lastMillis;
+
+    game_start();
+
+    while ((game_data = game_get_data()).state != GAME_QUIT)
+    {
+        read_events();
+        
+        
+        if(game_data.state == GAME_RUN && get_millis()-lastMillis >= game_data.speed_interval){
+            game_move_down();
+            game_run();
+			animation_row_compleate();
+            update_display();
+            lastMillis = get_millis();
+        }
+
+        if(game_data.state == GAME_LOSE){
+            printf("Perdiste! The Game\n");
+            break;
+            #warning BREAK HARDCODEADO
+        }
+    }
+    printf("Leaving game...\n");
+}
+
+
+void animation_row_compleate(void)
+{
+	int i, j;
+    int z;
+    float reductor;
+    float angulo;
+    float decremento= 0.1;
+	for( i=0; row_compleate[i] != 0 && i< WIDTH ; i++)
+	{
+
+    
+        
+        for(reductor=2.1, angulo=0; reductor>=0; angulo+=(3.1415/8)){
+ 
+            for(z=1; z<=ANCHO; z++){
+                al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(row_compleate[i]), BLOCKSZ, BLOCKSZ, 0);
+              //pongo el fondo en negro
+                al_draw_tinted_scaled_rotated_bitmap(pieza_blanca,  al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(pieza_blanca)/2, al_get_bitmap_height(pieza_blanca)/2, (BLOCKSZ/2 +BLOCKSZ*z), (BLOCKSZ/2 +BLOCKSZ*(row_compleate[i])),reductor, reductor, angulo, 0);
+                //se va haciendo mas chia a medida que rota
+                al_flip_display();
+                al_rest(0.003);
+                
+            }
+            reductor-=decremento;
+        }
+           for(z=1; z<=ANCHO; z++){
+                al_draw_scaled_bitmap(image,(al_get_bitmap_width(image)/8), 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(row_compleate[i]), BLOCKSZ, BLOCKSZ, 0);
+                al_flip_display();
+           } //pongo el fondo en negro de nuevo
+
+		delete_row(row_compleate[i]);
+		row_compleate[i]= 0;
+
+	}
+}
+
+#warning ESTO NO ANDA, ES UN EJEMPLO
+void update_menu_display(void){
+
+   // text_t* titulo_txt = text_init("TETRIS JAJA", 14, NEGRO, ROJO);
+   // text_display(titulo_txt, x, y);
+   // text_set(titulo_txt, );
+}
+
+
+void read_events(void){
+    ALLEGRO_EVENT ev;
+    if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
+    {
+        keyb_run(&ev);
+
+        if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
+            game_quit();
+           
+        }
+    }
+}
+
+
 
 void keypress_callback(uint8_t key){
     switch (key)
@@ -152,11 +223,18 @@ void keypress_callback(uint8_t key){
             printf("BTN\n");
             break;
 
+        case KEYB_ESC:
+            game_quit();
+            printf("Game quit\n");
+            break;
+            
+
         default:
             break;
     }
     game_run();
-    update_display();
+	animation_row_compleate();
+    //update_display(); estamos viendo si esto buguea la eliminacion de filas
 }
 
 
@@ -192,28 +270,10 @@ int initialize_display(void) {
     assert(keyb_init(event_queue));
 
 
-    /*if (!al_install_audio()) {
-        fprintf(stderr, "failed to initialize audio!\n");
-        return -1;
-    }
+     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    if (!al_init_acodec_addon()) {
-        fprintf(stderr, "failed to initialize audio codecs!\n");
-        return -1;
-    }
+   /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    if (!al_reserve_samples(1)) {
-        fprintf(stderr, "failed to reserve samples!\n");
-        return -1;
-    }
-
-    const char* path = "tetris.wav";
-    sample = al_load_sample(path);
-
-    if (!sample) {
-        printf("Audio clip sample \"%s\" not loaded!\n", path);
-        return -1;
-    }*/
 
     if (!al_init_image_addon()) { // ADDON necesario para manejo(no olvidar el freno de mano) de imagenes 
         printf("failed to initialize image addon !\n");
@@ -229,20 +289,29 @@ int initialize_display(void) {
 
      muroH = al_load_bitmap("./frontend/images/muroH.jpg");
     if (!muroH) {
-        printf( "failed to load image !\n");
+        printf( "failed to load muroH !\n");
         al_destroy_bitmap(image);
         al_destroy_event_queue(event_queue);
         return -1;
     }
      muroV = al_load_bitmap("./frontend/images/muroV.jpg");
     if (!muroV) {
-        printf("failed to load image !\n");
+        printf("failed to load muroV !\n");
         al_destroy_bitmap(image);
         al_destroy_bitmap(muroH);
         al_destroy_event_queue(event_queue);
         return -1;
     }
-     
+     pieza_blanca = al_load_bitmap("./frontend/images/white_tile.png");
+    if (!pieza_blanca) {
+        printf("failed to load pieza_blanca !\n");
+        al_destroy_bitmap(image);
+        al_destroy_bitmap(muroH);
+        al_destroy_bitmap(muroV);
+        al_destroy_event_queue(event_queue);
+        return -1;
+    }
+
     display = al_create_display(((ANCHO+2)*BLOCKSZ), ((ALTO+1)*BLOCKSZ));
     if (!display) {
         al_destroy_bitmap(image);
@@ -271,15 +340,72 @@ int initialize_display(void) {
             0, 0, al_get_bitmap_width(image), al_get_bitmap_height(image), //imagen
             0, 0, al_get_display_width(display), al_get_display_height(display), //a que tamaño queres que se dibuje la imagen
             0); */ //SIn flags podrian usar ALLEGRO_FLIP_HORIZONTAL o ALLEGRO_FLIP_VERTICAL muy utiles
-
+    
+    
     al_flip_display();
+    al_rest(2);
+    
     
     //playAudio();
 
     return 0;
 }
+     int init_audio(void) {
+    ALLEGRO_DISPLAY *display = NULL;
+    ALLEGRO_SAMPLE *sample = NULL;
+	//ALLEGRO_SAMPLE *sample1 = NULL;
+    ALLEGRO_EVENT_QUEUE *event_queue = NULL;
+    bool display_close = false;
 
-void endgame (void){
+
+    if (!al_install_audio()) {
+        fprintf(stderr, "failed to initialize audio!\n");
+        return -1;
+    }
+
+    if (!al_init_acodec_addon()) {
+        fprintf(stderr, "failed to initialize audio codecs!\n");
+        return -1;
+    }
+
+    if (!al_reserve_samples(1)) {
+        fprintf(stderr, "failed to reserve samples!\n");
+        return -1;
+    }
+
+    sample = al_load_sample("audio.wav");
+	//sample1 = al_load_sample("audio2.wav");
+
+    if (!sample) {
+        printf("Audio clip sample not loaded!\n");
+        return -1;
+    }
+
+
+
+    //Loop the sample until the display closes.
+    al_play_sample(sample, 1.0, -1.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
+
+//	al_play_sample(sample1, 1.0, 1.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
+
+   /*   while (!display_close) {
+        ALLEGRO_EVENT ev;
+        if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
+        {
+            if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+                display_close = true;
+        }
+
+    }
+   */
+    al_uninstall_audio();
+    al_destroy_display(display);
+    al_destroy_event_queue(event_queue);
+    al_destroy_sample(sample);
+    return 0;
+}
+
+void end_program (void){
     al_destroy_display(display);
     al_destroy_bitmap(image);
     al_destroy_bitmap(muroH);
@@ -289,8 +415,23 @@ void endgame (void){
     //al_uninstall_audio(); // borrar audio
     //al_destroy_sample(sample);
     //al_shutdown_image_addon(); VER DOCUMENTACION ES LLAMADO AUTOMATICAMENTE AL SALIR DEL PROGRAMA
+    printf("Game Ended\n");
 }
-
+/*void deleteline (int numfil){
+    int x;
+    int reductor;
+    float angulo;
+        for(x=1; x<=WIDTH; x++){
+            al_draw_scaled_bitmap(image,(al_get_bitmap_width(image)/8), 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*x, BLOCKSZ*numfil, BLOCKSZ, BLOCKSZ, 0);
+        }  //pongo el fondo en negro
+        for(reductor=1, angulo=(3,1415/8); reductor<10; reductor++, angulo+=(3,1415/8)){
+            for(x=1; x<=WIDTH; x++){
+                al_draw_tinted_scaled_rotated_bitmap_region(whitepiece, 0, 0, al_get_bitmap_width(whitepiece), al_get_bitmap_height(whitepiece), al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(whitepiece)/2,al_get_bitmap_height(whitepiece), (BLOCKSZ/2 +BLOCKSZ*x), (BLOCKSZ/2 +BLOCKSZ*numfil),1/reductor, 1/reductor, angulo, 0);
+                //se va haciendo mas chia a medida que rota
+            }
+        }
+}
+*/
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////AUDIO/////////////////////////////////////////////////////////////////

@@ -96,7 +96,6 @@ static char _block(uint8_t x, uint8_t y); // Accede a los datos del bloque con c
 static int _can_write(uint8_t x, uint8_t y); // devuelve 1 si se puede escribir, si no se puede, corrige la posicion del bloque
 static void _undo_movement(void); // deshace el movimiento anterior
 static uint8_t _check_row_complete (void); // chequea si una fila se elimino y en caso de serlo devuelve en numero de fila
-static void _delete_row (uint8_t row); // elimina y desplaza la fila completa
 static void _update_game_public_matrix (void); // actualiza los valores de la matriz publica (la cual contiene la suma de la matriz estatic y dinamica)
 static void _clear_matrix(void);
 static void _update_score(int streak, uint8_t lvl);
@@ -150,7 +149,16 @@ void game_quit(void){
 
 void _init_arr_next_block (void) //Inicializa el arreglo con los proximos bloques
 {
-	int i, j, k;
+	//Antes de cargar la matriz nueva la limpio asi se carga correctamente con nuevas piezas
+	int i, j,k;
+	for(i=0 ; i < 12 ; i++)
+	{
+		for (j=0 ; j<4; j++)
+		{
+			next_block_public_matrix[i][j] = 0;
+		}
+	}
+
 	for (i = 0 ; i < 4 ; i++)
 	{
 		id_next_block[i] = game_get_next_block(); //Llena el arreglo con id´s de los proximos bloques
@@ -335,20 +343,13 @@ void game_run(void){
             _clear_matrix();
 
             colision = false;
-            int streak = 0;
+            uint8_t streak = _check_row_complete();
 
-            while (_check_row_complete())
-            {
-                int row = _check_row_complete();
-
-                printf("Compleate Row: %d\n", row);
-                _delete_row(row);
-
-			streak++;
+			printf("STREAK : %d\n", streak );
 			_update_score(streak, game_data.game_level);
 			_update_level();
-		}
-		_update_next_block(); //Una vez usado el primer bloque del arreglo, actualiza este arreglo colocando uno nuevo al final de este
+
+			_update_next_block(); //Una vez usado el primer bloque del arreglo, actualiza este arreglo colocando uno nuevo al final de este
    	 }
 	_update_game_public_matrix();
     }
@@ -366,15 +367,22 @@ void _update_game_public_matrix(void)
 	}
 }
 
-void _delete_row (uint8_t row)
+void delete_pixel (uint8_t row, uint8_t px)
+{
+	static_matrix[row][px] = 0;
+	game_public_matrix[row][px]=0;
+}
+
+void delete_row (uint8_t row)
 {
 	int i,j;
+	/*
 	for (j= 0; j< WIDTH ; j++)
 	{
-		static_matrix[row][j] = 0;
+		delete_pixel(row,j);
 	}
-
 	printf("TEST\n");
+	 */
 	for ( i = row ; i > 0 ; i--)
 	{
 		for( j = 0 ; j < WIDTH; j++)
@@ -387,7 +395,7 @@ void _delete_row (uint8_t row)
 
 uint8_t _check_row_complete (void)
 {
-	int i , j;
+	int i , j, k = 0;
 	for (i = 0 ; i< HEIGHT ; i++)
 	{
 		for (j= 0 ; (j<WIDTH) && (static_matrix[i][j] != 0); j++)
@@ -395,9 +403,12 @@ uint8_t _check_row_complete (void)
 			//Do nothing
 		}
 		if (j == WIDTH)	//Si el for recorrio todas las columnas de esa fila y su contenido fue diferente a cero
-			return i;	//Devuelvo la fila completa
+		{
+			row_compleate[k] = i;	//Si existe una fila completa, completa un arreglo publico el cual contiene el numero de fila compleata
+			k++;
+		}
 	}
-	return 0; //Devuelve cero si no existe fila completa
+	return k;
 }
 
 
@@ -579,30 +590,30 @@ void _update_level (void)
 	if ( game_data.score >= 0 && game_data.score<= 250 )
 	{
 		game_data.game_level = 1;
-		game_data.speed_interval -= game_data.speed_interval/10;
 	}
 	else if( game_data.score >250 && game_data.score <= 1000)
 	{
 		game_data.game_level = 2;
-		game_data.speed_interval -= game_data.speed_interval/10;
+		game_data.speed_interval = 1600;
 	}
 	else if( game_data.score >1000 && game_data.score <= 1500)
 	{
 		game_data.game_level = 3;
-		game_data.speed_interval -= game_data.speed_interval/10;
+		game_data.speed_interval = 1400;
 	}
 	else if( game_data.score >1500 && game_data.score <= 2000)
 	{
 		game_data.game_level = 4;
-		game_data.speed_interval -= game_data.speed_interval/10;
+		game_data.speed_interval = 1200;
 	}
 	else if( game_data.score >2000 && game_data.score <= 2500)
 	{
 		game_data.game_level = 5;
-		game_data.speed_interval -= game_data.speed_interval/10;
+		game_data.speed_interval = 1000;
 	}
 	else if (game_data.score > 2500)
 	{
-		game_data.speed_interval -= game_data.speed_interval/10;
+		game_data.game_level = 6;
+		game_data.speed_interval = 800;
 	}
 }
