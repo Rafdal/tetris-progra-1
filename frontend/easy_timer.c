@@ -2,6 +2,20 @@
 #include <sys/time.h>
 #include "easy_timer.h"
 
+static void (*rtl_loop)(void);
+static bool delay_active = false;
+
+// Setear una funcion que se ejecuta durante los delays
+void easytimer_set_realTimeLoop(void (*loop)(void)){
+    rtl_loop = loop;
+}
+
+// retorna true si hay un delay activo
+bool easytimer_delay_active(void){
+    return delay_active;
+}
+
+
 uint64_t easytimer_get_millis(void){
     uint64_t millis;
 
@@ -29,10 +43,14 @@ void easytimer_run_interval(interval_t* interval){
 }
 
 void easytimer_delay(uint64_t ms){
+    delay_active = true;
     uint64_t last_ms = easytimer_get_millis();
     while (easytimer_get_millis() - last_ms <= ms)
     {
-        ;/* DO NOTHING */
+        if(rtl_loop != NULL){
+            rtl_loop();
+        }
     }
+    delay_active = false;
 }
 

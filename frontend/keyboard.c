@@ -53,6 +53,15 @@ bool keyb_init(ALLEGRO_EVENT_QUEUE *queue){
     return true;
 }
 
+#ifdef DEBUG
+void keyb_debug(void){
+    uint8_t i;
+    for(i=0; i< KEYB_KEYS; i++){
+        
+    }
+}
+#endif 
+
 // Va dentro de if(al_get_next_event(event_queue, pev) ) { ACA }
 void keyb_run(ALLEGRO_EVENT* pev){
     if (pev->type == ALLEGRO_EVENT_KEY_DOWN) {

@@ -72,6 +72,9 @@ void main_game_start(void);
 int main (void){
 
 	game_init(); // inicializar la libreria del juego
+
+    easytimer_set_realTimeLoop(read_events); // Leer eventos durante delays
+
 	int error = initialize_display();
 //	int init_audio();
     if(error){
@@ -142,7 +145,7 @@ void animation_row_compleate(void)
                 al_draw_tinted_scaled_rotated_bitmap(pieza_blanca,  al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(pieza_blanca)/2, al_get_bitmap_height(pieza_blanca)/2, (BLOCKSZ/2 +BLOCKSZ*z), (BLOCKSZ/2 +BLOCKSZ*(row_compleate[i])),reductor, reductor, angulo, 0);
                 //se va haciendo mas chia a medida que rota
                 al_flip_display();
-                al_rest(0.003);
+                easytimer_delay(2);
                 
             }
             reductor-=decremento;
@@ -155,7 +158,6 @@ void animation_row_compleate(void)
 		delete_row(row_compleate[i]);
 		row_compleate[i]= 0;
 	}
-    al_flush_event_queue(event_queue); // no bajar la pieza despues de la animacion
 }
 
 // HACER !
@@ -182,6 +184,11 @@ void read_events(void){
 
 
 void keypress_callback(uint8_t key){
+
+    if(easytimer_delay_active()){ // si hay un delay activo no hago nada
+        return;
+    }
+
     switch (key)
     {
         case KEYB_UP:
