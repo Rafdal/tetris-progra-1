@@ -23,6 +23,13 @@ void rpi_text_print(rpi_text_block_t text, uint8_t y, uint8_t x){
         }
     }
 }
+/*
+void rpi_slide(rpi_text_block_t text, uint8_t y, uint8_t x, uint64_t speed_interval);
+{
+	int i, j;
+	for ( i = y; i < )
+}
+ */
 
 // Crea un bloque de texto (funciona, probado en otro lugar)
 rpi_text_block_t rpi_text_create(const char* str){

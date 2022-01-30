@@ -1,5 +1,5 @@
-test: main_test.o menu.o dispEmu.o t_rpi_display.o t_easy_timer.o t_matrix_handler.o teclado_trucho.o game.o
-	gcc -Wall main_test.o menu.o dispEmu.o easy_timer.o rpi_display.o teclado_trucho.o game.o matrix_handler.o -o test `pkg-config --libs allegro-5 allegro_audio-5 allegro_acodec-5`
+test: main_test.o menu.o dispEmu.o t_rpi_display.o t_easy_timer.o t_matrix_handler.o teclado_trucho.o game.o rpi_text.o
+	gcc -Wall main_test.o menu.o dispEmu.o easy_timer.o rpi_display.o teclado_trucho.o game.o matrix_handler.o rpi_text.o -o test `pkg-config --libs allegro-5 allegro_audio-5 allegro_acodec-5`
 
 back: main_back.o game.o easy_timer.o teclado_trucho.o
 	gcc -Wall main_back.o game.o easy_timer.o teclado_trucho.o -o back `pkg-config --libs allegro-5`
@@ -10,6 +10,8 @@ linux: main_linux.o game.o l_easy_timer.o keyboard.o
 rasp: main_rasp.o easy_timer.o joystick.o rpi_display.o game.o matrix_handler.o
 	gcc -Wall main_rasp.o joystick.o easy_timer.o rpi_display.o game.o matrix_handler.o ./libs/joydrv.o ./libs/disdrv.o -o rasp
 
+db: main_db.o
+	gcc -Wall main_db.o -o db
 
 #################
 # 	   MAINs	#
@@ -26,6 +28,9 @@ main_linux.o: main_linux.c
 
 main_back.o: main_back.c
 	gcc -c -Wall main_back.c
+
+main_db.o: main_db.c
+	gcc -c -Wall main_db.c
 
 #################
 # 	LIBRERIAS 	#
@@ -75,6 +80,8 @@ teclado_trucho.o: ./testing/joystick.c ./testing/joystick.h
 dispEmu.o: ./testing/disdrv.c ./testing/disdrv.h
 	gcc -c -Wall ./testing/disdrv.c -o dispEmu.o
 
+rpi_text.o: ./testing/rpi_text.c ./testing/rpi_text.h
+	gcc -c -Wall ./testing/rpi_text.c
 clean:
 	rm *.o
 

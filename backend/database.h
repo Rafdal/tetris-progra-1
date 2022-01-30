@@ -21,6 +21,7 @@ de busqueda basica
 typedef enum { DB_TYPE_STRING, DB_TYPE_INT, DB_TYPE_UNSIGNED_LONG, } db_datatype_t;
 
 typedef struct {
+    FILE* file;
     char* filename;     // nombre del archivo de la BD
     char** fieldnames;  // arreglo de nombres de los campos de la bd
     uint8_t fields;     // cantidad de campos de la bd
