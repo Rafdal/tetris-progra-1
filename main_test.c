@@ -192,6 +192,8 @@ void update_game_display(void){
 
 void key_press_callback(uint8_t key){
     
+    if()
+
     if(menu_is_current_available()){
         switch (key)
         {
