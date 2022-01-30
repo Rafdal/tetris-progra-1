@@ -50,6 +50,7 @@ int main(void){
 
     rpi_init_display();
     game_init();
+    easytimer_set_realTimeLoop(dpad_read);
 
 	init_audio(1);  // FUNCION PERTENECIENTE A SANTI's SANDBOX
 
@@ -164,7 +165,7 @@ void animation_row_compleate (void)
 		for(j=0; j < WIDTH; j++)
 		{
 				delete_pixel(row_compleate[i], j);
-				easytimer_delay(50);
+				easytimer_delay(20);
 				update_game_display();
 		}
 
@@ -192,7 +193,9 @@ void update_game_display(void){
 
 void key_press_callback(uint8_t key){
     
-    if()
+    if(easytimer_delay_active()){ // si el delay esta activo
+        return; // no hacer nada
+    }
 
     if(menu_is_current_available()){
         switch (key)
