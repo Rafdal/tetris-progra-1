@@ -79,7 +79,7 @@ void rpi_clear_area(uint8_t from_y, uint8_t from_x, uint8_t to_y, uint8_t to_x) 
 	uint8_t x, y;
 	if ( from_y <= RPI_HEIGHT && to_y <= RPI_HEIGHT)
 	{
-
+#warning WTF ESTO
 	}
 	for (point.y = from_y; point.y < to_y ; y++)
 	{

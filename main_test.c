@@ -44,6 +44,16 @@ void resume_game(void)
 	game_run();
 }
 
+void prueba_agus(void){
+     //PRUEBA AGUS
+	rpi_text_block_t text = rpi_text_create("Agus");
+	rpi_text_print(text, 0,2);
+	rpi_run_display();
+
+	rpi_text_destroy(text);
+    // AGUS
+}
+
 
 int main(void){
     printf("Inicializando...\n");
@@ -63,21 +73,13 @@ int main(void){
     main_menu = menu_init(5, "MENU", NULL, MENU_ACTION_DO_NOTHING);
     pause_menu = menu_init(4, "PAUSA", NULL, MENU_ACTION_JUST_EXIT);
 
-	 //PRUEBA AGUS
-	rpi_text_block_t text = rpi_text_create("Agus");
-	rpi_text_print(text, 0,2);
-	rpi_run_display();
-
-	rpi_text_destroy(text);
-
-	return 0;
 
     if(main_menu == NULL || pause_menu == NULL){
         printf("Error NULL menu!\n");
         return -1;
     }
     menu_set_option(main_menu, 0, "JUGAR", main_game_start);
-    menu_set_option(main_menu, 1, "PARTIDAS GUARDADAS", NULL);
+    menu_set_option(main_menu, 1, "PRUEBA AGUS", prueba_agus);
     menu_set_option(main_menu, 2, "TOP SCORES", NULL);
     menu_set_option(main_menu, 3, "CONFIGURACION", NULL);
     menu_set_option(main_menu, 4, "SALIR", menu_force_close_current);
@@ -96,7 +98,8 @@ int main(void){
     // Liberar memoria usada por los menues
     menu_destroy(main_menu);
     menu_destroy(pause_menu);
-	init_audio(0);
+    
+	init_audio(0); // wtf?
 
     rpi_clear_display();
 
