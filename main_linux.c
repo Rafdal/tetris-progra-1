@@ -62,6 +62,7 @@ void keypress_callback(uint8_t key);
 void read_events(void);
 void update_menu_display(void);
 void animation_row_compleate(void);
+//int init_audio(void);
 
 
 int main (void){
@@ -69,6 +70,7 @@ int main (void){
 	game_init();
 	uint64_t lastMillis;
 	int ret= initialize_display();
+//	int init_audio();
     if(ret){
         printf("Error al iniciar");
         return 0;   //si algo fallo termino el programa
@@ -209,7 +211,16 @@ int initialize_display(void) {
     assert(keyb_init(event_queue));
 
 
-    /*if (!al_install_audio()) {
+     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+     int init_audio(void) {
+    ALLEGRO_DISPLAY *display = NULL;
+    ALLEGRO_SAMPLE *sample = NULL;
+	//ALLEGRO_SAMPLE *sample1 = NULL;
+    ALLEGRO_EVENT_QUEUE *event_queue = NULL;
+    bool display_close = false;
+
+
+    if (!al_install_audio()) {
         fprintf(stderr, "failed to initialize audio!\n");
         return -1;
     }
@@ -224,13 +235,39 @@ int initialize_display(void) {
         return -1;
     }
 
-    const char* path = "tetris.wav";
-    sample = al_load_sample(path);
+    sample = al_load_sample("audio.wav");
+	//sample1 = al_load_sample("audio2.wav");
 
     if (!sample) {
-        printf("Audio clip sample \"%s\" not loaded!\n", path);
+        printf("Audio clip sample not loaded!\n");
         return -1;
-    }*/
+    }
+
+
+
+    //Loop the sample until the display closes.
+    al_play_sample(sample, 1.0, -1.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
+
+//	al_play_sample(sample1, 1.0, 1.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
+
+   /*   while (!display_close) {
+        ALLEGRO_EVENT ev;
+        if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
+        {
+            if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+                display_close = true;
+        }
+
+    }
+   */
+    al_uninstall_audio();
+    al_destroy_display(display);
+    al_destroy_event_queue(event_queue);
+    al_destroy_sample(sample);
+    return 0;
+}
+   /////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
     if (!al_init_image_addon()) { // ADDON necesario para manejo(no olvidar el freno de mano) de imagenes 
         printf("failed to initialize image addon !\n");
