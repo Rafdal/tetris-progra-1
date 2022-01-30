@@ -14,6 +14,8 @@
 #include <allegro5/allegro_image.h> //NO OLVIDAR INCLUIR ALLEGRO_IMAGE EN LINKER
 #include <allegro5/allegro_audio.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
 #include <allegro5/allegro_acodec.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
+#include <allegro5/allegro_ttf.h>
+#include <allegro5/allegro_font.h>
 #include "./frontend/keyboard.h"
 #include <stdbool.h>
 
@@ -270,7 +272,7 @@ int initialize_display(void) {
             0, 0, al_get_display_width(display), al_get_display_height(display), //a que tamaño queres que se dibuje la imagen
             0); */ //SIn flags podrian usar ALLEGRO_FLIP_HORIZONTAL o ALLEGRO_FLIP_VERTICAL muy utiles
     
-
+    
     al_flip_display();
     al_rest(2);
     deleteline(4);
