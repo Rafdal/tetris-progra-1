@@ -31,8 +31,11 @@ void rpi_init_display (void)
 }
 
 void rpi_set_display(uint8_t y, uint8_t x, char val){
-	assert(y<RPI_HEIGHT && x < RPI_WIDTH);
-	matrix[y][x] = val;
+	//assert(y<RPI_HEIGHT && x < RPI_WIDTH);
+	if(y<RPI_HEIGHT && x < RPI_WIDTH)
+	{
+		matrix[y][x] = val;
+	}
 }
 
 
@@ -75,17 +78,12 @@ void rpi_run_display (void)
 
 void rpi_clear_area(uint8_t from_y, uint8_t from_x, uint8_t to_y, uint8_t to_x) // borra el area seleccionada
 {
-	dcoord_t point = {};
 	uint8_t x, y;
-	if ( from_y <= RPI_HEIGHT && to_y <= RPI_HEIGHT)
+	for (y = from_y; y < to_y ; y++)
 	{
-#warning WTF ESTO
-	}
-	for (point.y = from_y; point.y < to_y ; y++)
-	{
-		for (point.x= from_x; point.x < to_x ; x++)
+		for (x= from_x; x < to_x ; x++)
 		{
-			disp_write(point, D_OFF);
+			rpi_set_display(y,x, 0);
 		}
 	}
 	disp_update();

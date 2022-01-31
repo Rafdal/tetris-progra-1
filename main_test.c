@@ -46,11 +46,18 @@ void resume_game(void)
 
 void prueba_agus(void){
      //PRUEBA AGUS
-	rpi_text_block_t text = rpi_text_create("Agus");
-	rpi_text_print(text, 0,2);
-	rpi_run_display();
+	 rpi_init_display();
+	 game_init();
 
-	rpi_text_destroy(text);
+	 rpi_text_block_t block = rpi_text_create("Hola", RPI_WIDTH, 0);
+
+	while(true)
+	{
+		rpi_slide(&block,250);
+		rpi_text_print(&block, 6, 0);
+	}
+
+	rpi_text_destroy(block);
     // AGUS
 }
 
