@@ -31,15 +31,13 @@ void rpi_slide(rpi_text_block_t *block, uint64_t speed_interval)
 	if(easytimer_get_millis() - (block->timestamp) >= speed_interval)
 	{
 
-		rpi_text_print(block, 0, block->x);
+		rpi_text_print(block, block->y, block->x);
 		rpi_run_display();
 
 		block->timestamp = easytimer_get_millis();
 		if(-(block->x) != block->string.width)
 		{
 			(block->x)--;
-			printf("Block: .x : %d\n", block->x);
-			printf("Block. Width : %d\n", block->string.width);
 		} else
 			block->x = RPI_WIDTH;
 

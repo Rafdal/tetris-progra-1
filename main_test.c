@@ -49,16 +49,20 @@ void prueba_agus(void){
 	 rpi_init_display();
 	 game_init();
 
-	 rpi_text_block_t block = rpi_text_create("Hola", RPI_WIDTH, 0);
+	 rpi_text_block_t block[] = {rpi_text_create("Hola Rafa", 0, 0), rpi_text_create("Hola Agus", 0, 5) , rpi_text_create("Hola Santi", 0, 10) };
 
 	while(true)
 	{
-		rpi_slide(&block,250);
-		rpi_text_print(&block, 6, 0);
+		rpi_slide(&block[0],250);
+		rpi_slide(&block[1], 300);
+		rpi_slide(&block[2], 500);
 	}
 
-	rpi_text_destroy(block);
-    // AGUS
+	rpi_text_destroy(block[0]);
+	rpi_text_destroy(block[1]);
+	rpi_text_destroy(block[2]);
+
+	// AGUS
 }
 
 void prueba1_santi(void){
