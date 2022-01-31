@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include "textblocks.h"
 
+extern ALLEGRO_FONT *font;
 
 blocktext_t* text_init_alleg ( ALLEGRO_COLOR color_bloque, ALLEGRO_COLOR color_font, int tamanio_letra, char* palabras, char* nombre_letra, int x, int y, int align)
 {
@@ -51,7 +52,7 @@ int text_global_font_changer (blocktext_t * bloque){
 
 void text_drawer (blocktext_t* bloque){
     
-    int ancho_fondo = al_get_text_width(font, bloque->tipo_letra);
+    int ancho_fondo = al_get_text_width(font, bloque->texto);
     int alto_fondo = al_get_font_line_height(font);
 
     al_draw_filled_rectangle(bloque->posx, bloque->posy, ((bloque->posx) + ancho_fondo), ((bloque->posy) + alto_fondo), bloque->block_color);
