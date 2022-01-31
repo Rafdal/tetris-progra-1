@@ -7,6 +7,7 @@
 #include <allegro5/allegro_primitives.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 
 //Estructura de datos de los bloques de texto
@@ -40,7 +41,7 @@ blocktext_t* text_init_alleg ( ALLEGRO_COLOR color_bloque, ALLEGRO_COLOR color_f
 // - [align]: parametro de alineacion de texto. Usar el Enum text_alinecion_t
 //RETORNA: NULL en caso de que haya un error y si no un puntero a la estructura blocktext_t
 // EJEMPLO: char * pathway_fuente= "./frontend/images/arial.ttf"
-//blocktext_t * GAME_OVER = text_init_alleg(al_map_rgb(255,0,0), al_map_rgb(0,255,0), 30, "GAME OVER", pathway_fuente, 350, 100)
+//blocktext_t * GAME_OVER = text_init_alleg(al_map_rgb(255,0,0), al_map_rgb(0,255,0), 30, "GAME OVER", pathway_fuente, 350, 100, ALINEADO_IZQUIERDA )
 //
 
 void text_drawer (blocktext_t* bloque);
