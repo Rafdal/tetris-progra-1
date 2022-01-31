@@ -54,13 +54,13 @@ void prueba_agus(void){
 	while(true)
 	{
 		rpi_slide(&block[0],250);
-		rpi_slide(&block[1], 300);
-		rpi_slide(&block[2], 500);
+		//rpi_slide(&block[1], 300);
+		//rpi_slide(&block[2], 500);
 	}
 
 	rpi_text_destroy(block[0]);
-	rpi_text_destroy(block[1]);
-	rpi_text_destroy(block[2]);
+	//rpi_text_destroy(block[1]);
+	//rpi_text_destroy(block[2]);
 
 	// AGUS
 }
@@ -181,19 +181,24 @@ void main_game_start(void){
 void animation_row_compleate (void)
 {
 	//PAUSO EL JUEGO
-	int i, j;
-	for( i=0; row_compleate[i] != 0 && i< WIDTH ; i++)
+	if(row_compleate[0] != 0)
 	{
+		int i, j;
 		for(j=0; j < WIDTH; j++)
 		{
+			for( i=0; row_compleate[i] != 0 && i< WIDTH ; i++)
+			{
 				delete_pixel(row_compleate[i], j);
-				easytimer_delay(20);
-				update_game_display();
+			}
+
+			easytimer_delay(20);
+			update_game_display();
 		}
-
-		delete_row(row_compleate[i]);
-		row_compleate[i]= 0;
-
+		for(i=0; i < 4 ; i++)
+		{
+			delete_row(row_compleate[i]);
+			row_compleate[i]= 0;
+		}
 	}
 }
 
