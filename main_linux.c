@@ -17,6 +17,7 @@
 #include <allegro5/allegro_acodec.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_font.h>
+#include <allegro5/allegro_primitives.h>
 #include "./frontend/keyboard.h"
 
 
@@ -135,30 +136,33 @@ void animation_row_compleate(void)
     float reductor;
     float angulo;
     float decremento= 0.1;
-	for( i=0; row_compleate[i] != 0 && i< WIDTH ; i++)
-	{
 
-        for(reductor=2.1, angulo=0; reductor>=0; angulo+=(3.1415/8)){
+    for(reductor=2.1, angulo=0; reductor>=0; angulo+=(3.1415/8)){
  
-            for(z=1; z<=ANCHO; z++){
+        for(z=1; z<=ANCHO; z++){
+
+	        for( i=0; row_compleate[i] != 0 && i< WIDTH ; i++)
+	    {
                 al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(row_compleate[i]), BLOCKSZ, BLOCKSZ, 0);
               //pongo el fondo en negro
                 al_draw_tinted_scaled_rotated_bitmap(pieza_blanca,  al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(pieza_blanca)/2, al_get_bitmap_height(pieza_blanca)/2, (BLOCKSZ/2 +BLOCKSZ*z), (BLOCKSZ/2 +BLOCKSZ*(row_compleate[i])),reductor, reductor, angulo, 0);
                 //se va haciendo mas chia a medida que rota
                 al_flip_display();
-                easytimer_delay(2);
+                easytimer_delay(5);
                 
             }
             reductor-=decremento;
         }
-           for(z=1; z<=ANCHO; z++){
-                al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(row_compleate[i]), BLOCKSZ, BLOCKSZ, 0);
-                al_flip_display();
-           } //pongo el fondo en negro de nuevo
 
+	}
+    for(i=0; row_compleate[i] != 0 && i< WIDTH ; i++){
+        for(z=1; z<=ANCHO; z++){
+            al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(row_compleate[i]), BLOCKSZ, BLOCKSZ, 0);
+            al_flip_display();
+        } //pongo el fondo en negro de nuevo
 		delete_row(row_compleate[i]);
 		row_compleate[i]= 0;
-	}
+    }
 }
 
 // HACER !
@@ -257,7 +261,7 @@ void update_display(void) {
 	}
     for(x=0; x<4 ; x++)
 	{
-		for(y=0; y<12 ; y++)
+		for(y=0; y<3 ; y++)
 		{
             float val= (float) next_block_public_matrix[y][x];
             al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+3) + BLOCKSZ*x, BLOCKSZ*(y+2), BLOCKSZ, BLOCKSZ, 0);
@@ -293,6 +297,10 @@ int initialize_display(void) {
 
     if (!al_init_image_addon()) { // ADDON necesario para manejo(no olvidar el freno de mano) de imagenes 
         printf("failed to initialize image addon !\n");
+        return -1;
+    }
+    if (!al_init_primitives_addon()) { 
+        fprintf(stderr, "failed to initialize primitives addon !\n");
         return -1;
     }
 
