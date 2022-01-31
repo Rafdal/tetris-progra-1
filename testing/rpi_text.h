@@ -26,9 +26,9 @@ typedef struct
 }rpi_text_block_t;
 
 
-rpi_text_block_t rpi_text_create(const char* str, int8_t x, int8_t y);
+rpi_text_block_t* rpi_text_create(const char* str, int8_t x, int8_t y);
 
-void rpi_text_destroy(rpi_text_block_t block);
+void rpi_text_destroy(rpi_text_block_t *block);
 
 void rpi_text_print(rpi_text_block_t *block, int8_t y, int8_t x);
 
