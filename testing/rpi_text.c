@@ -96,23 +96,32 @@ void rpi_text_print(rpi_text_block_t *block, int8_t y, int8_t x){
                 rpi_set_display(y+i, x+j, (char)block->string.data[i][j]);
             }
         }
+        block->state = RPI_TEXT_STATE_STATIC;
     }
 }
 
+void rpi_text_slide(rpi_text_block_t *block, uint64_t speed_interval){
+    block->interval = speed_interval;
+    block->state = RPI_TEXT_STATE_SLIDE;
+}
 
-void rpi_text_slide(rpi_text_block_t *block, uint64_t speed_interval)
-{
-	if(block != NULL && (easytimer_get_millis() - (block->timestamp) >= speed_interval) )
-	{
+void rpi_text_run(rpi_text_block_t *block){
+    if(block != NULL){
+        if(block->state == RPI_TEXT_STATE_SLIDE){
+            if(block != NULL && (easytimer_get_millis() - (block->timestamp) >= block->interval) )
+            {
 
-		rpi_text_print(block, block->y, block->x);
-		rpi_run_display();
+                rpi_text_print(block, block->y, block->x);
+                rpi_run_display();
 
-		block->timestamp = easytimer_get_millis();
-		if(-(block->x) != block->string.width)
-		{
-			(block->x)--;
-		} else
-			block->x = RPI_WIDTH;
-	}
+                block->timestamp = easytimer_get_millis();
+                if(-(block->x) != block->string.width)
+                {
+                    (block->x)--;
+                } else
+                    block->x = RPI_WIDTH;
+            }
+        }
+    }
+
 }
