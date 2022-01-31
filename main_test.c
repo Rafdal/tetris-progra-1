@@ -21,11 +21,14 @@ void key_press_callback(uint8_t key);
 void update_game_display(void);
 void main_game_start(void);
 void update_menu_display(void);
+void run_display_effects(void);
 void animation_row_compleate (void);
 int init_audio(char); //FUNCION PERTENECIENTE A SANTI's SANDBOX
 
 menu_t *main_menu = NULL;
 menu_t *pause_menu = NULL;
+
+rpi_text_block_t* texts[4] = {NULL, NULL, NULL, NULL};
 
 void exit_game(void){
     game_quit();                // Finalizar juego
@@ -67,14 +70,6 @@ void prueba_agus(void){
 	// AGUS
 }
 
-void prueba1_santi(void){
-
-}
-
-void prueba2_santi(void){
-
-}
-
 
 int main(void){
     printf("Inicializando...\n");
@@ -91,8 +86,8 @@ int main(void){
     dpad_use_press_callback_for_longpress(DPAD_LEFT);
     dpad_use_press_callback_for_longpress(DPAD_RIGHT);
 
-    main_menu = menu_init(5, "MENU", NULL, MENU_ACTION_DO_NOTHING);
-    pause_menu = menu_init(4, "PAUSA", NULL, MENU_ACTION_JUST_EXIT);
+    main_menu = menu_init(3, "MENU", NULL, MENU_ACTION_DO_NOTHING);
+    pause_menu = menu_init(3, "PAUSA", NULL, MENU_ACTION_JUST_EXIT);
 
 
     if(main_menu == NULL || pause_menu == NULL){
@@ -100,18 +95,16 @@ int main(void){
         return -1;
     }
     menu_set_option(main_menu, 0, "JUGAR", main_game_start);
-    menu_set_option(main_menu, 1, "PRUEBA AGUS", prueba_agus);
-    menu_set_option(main_menu, 2, "Prueba1 SANTI", prueba1_santi);
-    menu_set_option(main_menu, 3, "Prueba2 SANTI", prueba2_santi);
-    menu_set_option(main_menu, 4, "SALIR", menu_force_close_current);
+    menu_set_option(main_menu, 1, "Prueba2", NULL);
+    menu_set_option(main_menu, 2, "SALIR", menu_force_close_current);
 
     menu_set_option(pause_menu, 0, "REANUDAR", resume_game);
-    menu_set_option(pause_menu, 1, "GUARDAR", NULL);
-    menu_set_option(pause_menu, 2, "REINICIAR", restart_game);
-    menu_set_option(pause_menu, 3, "SALIR", exit_game);
+    menu_set_option(pause_menu, 1, "REINICIAR", restart_game);
+    menu_set_option(pause_menu, 2, "SALIR", exit_game);
 
     // Setear los callbacks que controlaran el menu
     menu_set_event_listener_display(dpad_read, update_menu_display);
+    menu_set_animation_callback(run_display_effects);
 
     // Ejecutar menu principal
     menu_run(main_menu);
@@ -127,13 +120,12 @@ int main(void){
     return 0;
 }
 
+void run_display_effects(void){
+
+}
+
 void update_menu_display(void){
-    printf("\n\n\n\n\n\n\n");
-
     menu_t menu_data = menu_get_current_menu_data();
-
-    printf("%s",menu_data.title);
-    putchar('\n');
 
     uint8_t id;
     for(id=0; id<menu_data.n_options; id++){
@@ -148,6 +140,11 @@ void update_menu_display(void){
             printf("%s",menu_data.option_titles[id]);
         putchar('\n');
     }
+
+    /* printf("\n\n\n\n\n\n\n");
+    printf("%s",menu_data.title);
+    putchar('\n');*/
+
 }
 
 void main_game_start(void){

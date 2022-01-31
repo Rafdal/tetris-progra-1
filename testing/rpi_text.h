@@ -1,13 +1,7 @@
 #ifndef _RPI_TEXT_H_
 #define _RPI_TEXT_H_
 
-#include "rpi_chars.h"
 #include <stdint.h>
-#include <stdlib.h>
-#include <stddef.h>
-#include <string.h>
-#include <stdio.h>
-#include "disdrv.h" // RASPBERRY DISPLAY
 
 #define RPI_TEXT_HEIGHT 5
 #define RPI_TEXT_SPACING 4
@@ -23,6 +17,7 @@ typedef struct
 	uint64_t timestamp;
 	int8_t x;
 	int8_t y;
+	uint8_t state; // este
 }rpi_text_block_t;
 
 
