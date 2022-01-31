@@ -4,7 +4,7 @@
 #include "ctype.h"
 
 // Crea un bloque de texto (funciona, probado en otro lugar)
-rpi_text_block_t* rpi_text_create(const char* str, int8_t x, int8_t y)
+rpi_text_block_t* rpi_text_create(const char* str, int8_t y, int8_t x)
 {
     rpi_text_block_t* block = (rpi_text_block_t*) malloc(sizeof(rpi_text_block_t));
     if (block == NULL)
@@ -94,7 +94,7 @@ void rpi_text_print(rpi_text_block_t *block, int8_t y, int8_t x){
 }
 
 
-void rpi_slide(rpi_text_block_t *block, uint64_t speed_interval)
+void rpi_text_slide(rpi_text_block_t *block, uint64_t speed_interval)
 {
 	if(block != NULL && (easytimer_get_millis() - (block->timestamp) >= speed_interval) )
 	{

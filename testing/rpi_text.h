@@ -26,13 +26,13 @@ typedef struct
 }rpi_text_block_t;
 
 
-rpi_text_block_t* rpi_text_create(const char* str, int8_t x, int8_t y);
+rpi_text_block_t* rpi_text_create(const char* str, int8_t y, int8_t x);
 
 void rpi_text_destroy(rpi_text_block_t *block);
 
 void rpi_text_print(rpi_text_block_t *block, int8_t y, int8_t x);
 
-void rpi_slide(rpi_text_block_t *block, uint64_t speed_interval);
+void rpi_text_slide(rpi_text_block_t *block, uint64_t speed_interval);
 
 
 #endif // _RPI_TEXT_H_
