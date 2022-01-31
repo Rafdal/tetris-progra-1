@@ -14,14 +14,25 @@
 
 typedef struct {
     uint8_t** data;
-    unsigned int width;
-} rpi_text_block_t;
+    int width;
+} rpi_string_block_t;
 
-rpi_text_block_t rpi_text_create(const char* str);
-void rpi_text_destroy(rpi_text_block_t text);
+typedef struct
+{
+	rpi_string_block_t string;
+	uint64_t timestamp;
+	int8_t x;
+	int8_t y;
+}rpi_text_block_t;
 
-void rpi_text_print(rpi_text_block_t text, uint8_t y, uint8_t x);
 
-void rpi_slide(rpi_text_block_t text, uint8_t y, uint8_t x, uint64_t speed_interval);
+rpi_text_block_t rpi_text_create(const char* str, int8_t x, int8_t y);
+
+void rpi_text_destroy(rpi_text_block_t block);
+
+void rpi_text_print(rpi_text_block_t *block, int8_t y, int8_t x);
+
+void rpi_slide(rpi_text_block_t *block, uint64_t speed_interval);
+
 
 #endif // _RPI_TEXT_H_

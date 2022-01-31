@@ -46,12 +46,23 @@ void resume_game(void)
 
 void prueba_agus(void){
      //PRUEBA AGUS
-	rpi_text_block_t text = rpi_text_create("Agus");
-	rpi_text_print(text, 0,2);
-	rpi_run_display();
+	 rpi_init_display();
+	 game_init();
 
-	rpi_text_destroy(text);
-    // AGUS
+	 rpi_text_block_t block[] = {rpi_text_create("Hola Rafa", 0, 0), rpi_text_create("Hola Agus", 0, 5) , rpi_text_create("Hola Santi", 0, 10) };
+
+	while(true)
+	{
+		rpi_slide(&block[0],250);
+		//rpi_slide(&block[1], 300);
+		//rpi_slide(&block[2], 500);
+	}
+
+	rpi_text_destroy(block[0]);
+	//rpi_text_destroy(block[1]);
+	//rpi_text_destroy(block[2]);
+
+	// AGUS
 }
 
 void prueba1_santi(void){
@@ -170,19 +181,24 @@ void main_game_start(void){
 void animation_row_compleate (void)
 {
 	//PAUSO EL JUEGO
-	int i, j;
-	for( i=0; row_compleate[i] != 0 && i< WIDTH ; i++)
+	if(row_compleate[0] != 0)
 	{
+		int i, j;
 		for(j=0; j < WIDTH; j++)
 		{
+			for( i=0; row_compleate[i] != 0 && i< WIDTH ; i++)
+			{
 				delete_pixel(row_compleate[i], j);
-				easytimer_delay(20);
-				update_game_display();
+			}
+
+			easytimer_delay(20);
+			update_game_display();
 		}
-
-		delete_row(row_compleate[i]);
-		row_compleate[i]= 0;
-
+		for(i=0; i < 4 ; i++)
+		{
+			delete_row(row_compleate[i]);
+			row_compleate[i]= 0;
+		}
 	}
 }
 
