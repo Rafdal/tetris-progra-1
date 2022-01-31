@@ -59,6 +59,9 @@ menu_t* menu_init(uint8_t options, char* title, menu_callback_t on_exit, menu_ac
 // - [action]:  accion que realizara el menu cuando se ejecuta la funcion "menu_back()"
 // RETORNA: NULL en caso de error | puntero a un menu en caso contrario
 // EJEMPLO: menu_t *cfg_menu = menu_init(3, "Config", NULL, MENU_ACTION_JUST_EXIT);
+void menu_destroy(menu_t *menu); 
+// libera memoria usada por el menu (llamar al finalizar el programa)
+
 void menu_set_option(menu_t *menu, uint8_t option_id, char* title, menu_callback_t callback);
 // DESCRIPCION Y PARAMETROS: Configurar una opcion de un menu
 // - [menu]:        puntero a menu_t (objeto menu)
@@ -74,7 +77,8 @@ void menu_set_event_listener_display(menu_callback_t ev_listener, menu_callback_
 //                      Dentro de esta funcion se deberia llamar menu_get_current_menu_data() para obtener
 //                      los datos del menu actual y asi poder mostrarlos al usuario.
 // EJEMPLO:     menu_set_event_listener_display(keyboard_read, display_update);
-void menu_destroy(menu_t *menu); // libera memoria usada por el menu (llamar al finalizar el programa)
+
+void menu_set_animation_callback(menu_callback_t animation_f); // OPCIONAL. Loop en tiempo real
 
 
 // (2) FUNCIONES DE MENU

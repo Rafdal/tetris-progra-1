@@ -1,9 +1,15 @@
 #include "rpi_text.h"
-#include "rpi_display.h"
-#include "easy_timer.h"
-#include "ctype.h"
 
-// Crea un bloque de texto (funciona, probado en otro lugar)
+#include "rpi_display.h"
+#include "rpi_chars.h"
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <ctype.h>
+
+#include "easy_timer.h"
+
+// Crea un bloque de texto
 rpi_text_block_t* rpi_text_create(const char* str, int8_t y, int8_t x)
 {
     rpi_text_block_t* block = (rpi_text_block_t*) malloc(sizeof(rpi_text_block_t));
@@ -69,7 +75,7 @@ rpi_text_block_t* rpi_text_create(const char* str, int8_t y, int8_t x)
     return block;
 }
 
-// Destruye un bloque de texto (funciona, probado en otro lugar)
+// Destruye un bloque de texto
 void rpi_text_destroy(rpi_text_block_t* block){
     int i;
     for(i=0;i<RPI_TEXT_HEIGHT;i++)
@@ -78,7 +84,7 @@ void rpi_text_destroy(rpi_text_block_t* block){
     free(block);
 }
 
-// SIN PROBAR, NO SE SI FUNCIONA
+// Imprime un bloque de texto de manera estatica
 void rpi_text_print(rpi_text_block_t *block, int8_t y, int8_t x){
     if(block != NULL && block->string.data != NULL){
         int i,j;
@@ -90,23 +96,32 @@ void rpi_text_print(rpi_text_block_t *block, int8_t y, int8_t x){
                 rpi_set_display(y+i, x+j, (char)block->string.data[i][j]);
             }
         }
+        block->state = RPI_TEXT_STATE_STATIC;
     }
 }
 
+void rpi_text_slide(rpi_text_block_t *block, uint64_t speed_interval){
+    block->interval = speed_interval;
+    block->state = RPI_TEXT_STATE_SLIDE;
+}
 
-void rpi_text_slide(rpi_text_block_t *block, uint64_t speed_interval)
-{
-	if(block != NULL && (easytimer_get_millis() - (block->timestamp) >= speed_interval) )
-	{
+void rpi_text_run(rpi_text_block_t *block){
+    if(block != NULL){
+        if(block->state == RPI_TEXT_STATE_SLIDE){
+            if(block != NULL && (easytimer_get_millis() - (block->timestamp) >= block->interval) )
+            {
 
-		rpi_text_print(block, block->y, block->x);
-		rpi_run_display();
+                rpi_text_print(block, block->y, block->x);
+                rpi_run_display();
 
-		block->timestamp = easytimer_get_millis();
-		if(-(block->x) != block->string.width)
-		{
-			(block->x)--;
-		} else
-			block->x = RPI_WIDTH;
-	}
+                block->timestamp = easytimer_get_millis();
+                if(-(block->x) != block->string.width)
+                {
+                    (block->x)--;
+                } else
+                    block->x = RPI_WIDTH;
+            }
+        }
+    }
+
 }
