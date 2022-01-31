@@ -5,6 +5,7 @@
 
 static menu_callback_t event_listener; // Callback lector de nuevos eventos
 static menu_callback_t update_display; // Callback para actualizar datos de interfaz de usuario
+static menu_callback_t display_animations; // Callback ejecutada en tiempo real (OPCIONAL)
 
 static menu_t *current_menu = NULL;    // Puntero al menu del contexto actual (en ejecucion)
 
@@ -120,6 +121,9 @@ void menu_run(menu_t *menu){
                 printf("Menu Event Error\n");
                 break;
             }
+
+            if(display_animations != NULL)
+                display_animations(); // Si hay animaciones, ejecutar
 
             // Si estamos en un estado de transicion, actualizamos el display
             if(menu->state != MENU_STATE_AVAILABLE && menu->state != MENU_STATE_CLOSE){

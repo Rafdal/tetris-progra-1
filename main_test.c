@@ -46,21 +46,23 @@ void resume_game(void)
 
 void prueba_agus(void){
      //PRUEBA AGUS
-	 rpi_init_display();
-	 game_init();
 
-	 rpi_text_block_t block[] = {rpi_text_create("Hola Rafa", 0, 0), rpi_text_create("Hola Agus", 0, 5) , rpi_text_create("Hola Santi", 0, 10) };
+	rpi_text_block_t* block[] = {
+        rpi_text_create("Hola Rafa", 0, 0), 
+        rpi_text_create("Hola Agus", 5, 0) , 
+        rpi_text_create("Hola Santi", 10, 0) 
+    };
 
+    rpi_text_print(block[1], 5, 0);
+    rpi_text_print(block[2], 10,0);
 	while(true)
 	{
-		rpi_slide(&block[0],250);
-		//rpi_slide(&block[1], 300);
-		//rpi_slide(&block[2], 500);
+		rpi_text_slide(block[0],250);
 	}
 
 	rpi_text_destroy(block[0]);
-	//rpi_text_destroy(block[1]);
-	//rpi_text_destroy(block[2]);
+	rpi_text_destroy(block[1]);
+	rpi_text_destroy(block[2]);
 
 	// AGUS
 }
@@ -304,8 +306,6 @@ int init_audio(char destroy) {
 	ALLEGRO_SAMPLE *sample = NULL;
 	//ALLEGRO_SAMPLE *sample1 = NULL;
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
-	bool display_close = false;
-
 
 	if (!al_install_audio()) {
 		fprintf(stderr, "failed to initialize audio!\n");
