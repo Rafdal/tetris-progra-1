@@ -10,7 +10,7 @@
 #include "easy_timer.h"
 
 // Crea un bloque de texto
-rpi_text_block_t* rpi_text_create(const char* str, int8_t y, int8_t x)
+rpi_text_block_t* rpi_text_create(const char* str, int8_t y_offset, int8_t x_offset)
 {
     rpi_text_block_t* block = (rpi_text_block_t*) malloc(sizeof(rpi_text_block_t));
     if (block == NULL)
@@ -18,8 +18,11 @@ rpi_text_block_t* rpi_text_create(const char* str, int8_t y, int8_t x)
 
     uint8_t size = strlen(str);
 
-	block->x= x;
-	block->y = y;
+	block->x_offset= x_offset;
+	block->x = 0;
+
+	block->y_offset = y_offset;
+	block->y = 0;
 
     block->string.data = (uint8_t**) calloc(RPI_TEXT_HEIGHT, sizeof(uint8_t*));
     if(block->string.data == NULL) 
@@ -85,18 +88,17 @@ void rpi_text_destroy(rpi_text_block_t* block){
 }
 
 // Imprime un bloque de texto de manera estatica
-void rpi_text_print(rpi_text_block_t *block, int8_t y, int8_t x){
-    if(block != NULL && block->string.data != NULL){
+void rpi_text_print(rpi_text_block_t *block){
+    if(block->string.data != NULL){
         int i,j;
         for(i=0; i<5 ; i++)
         {
             for(j=0; j<block->string.width; j++)
             {
-                if (y+i < RPI_HEIGHT && x+j < RPI_WIDTH )
-                rpi_set_display(y+i, x+j, (char)block->string.data[i][j]);
+                if (block->y_offset+block->y+i < RPI_HEIGHT && block->x_offset+block->x+j < RPI_WIDTH )
+                rpi_set_display(block->y_offset+block->y+i, block->x_offset+block->x+j, (char)block->string.data[i][j]);
             }
         }
-        block->state = RPI_TEXT_STATE_STATIC;
     }
 }
 
@@ -108,10 +110,10 @@ void rpi_text_slide(rpi_text_block_t *block, uint64_t speed_interval){
 void rpi_text_run(rpi_text_block_t *block){
     if(block != NULL){
         if(block->state == RPI_TEXT_STATE_SLIDE){
-            if(block != NULL && (easytimer_get_millis() - (block->timestamp) >= block->interval) )
+			if (easytimer_get_millis() - (block->timestamp) >= block->interval)
             {
 
-                rpi_text_print(block, block->y, block->x);
+                rpi_text_print(block);
                 rpi_run_display();
 
                 block->timestamp = easytimer_get_millis();
@@ -122,6 +124,8 @@ void rpi_text_run(rpi_text_block_t *block){
                     block->x = RPI_WIDTH;
             }
         }
+		else
+			rpi_text_print(block);
     }
 
 }

@@ -30,7 +30,7 @@ menu_t *pause_menu = NULL;
 
 rpi_text_block_t* menu_text[3] = {NULL, NULL, NULL};
 rpi_text_block_t* pause_text[3] = {NULL, NULL, NULL};
-// rpi_text_block_t* text_sliding = NULL; 
+// rpi_text_block_t* text_sliding = NULL;
 
 void exit_game(void){
     game_quit();                // Finalizar juego
@@ -58,13 +58,10 @@ void prueba_agus(void){
         rpi_text_create("Hola Santi", 10, 0) 
     };
 
-    rpi_text_print(block[1], 5, 0);
-    rpi_text_print(block[2], 10,0);
-    rpi_text_slide(block[0],250);
-	while(true)
-	{
-        rpi_text_run(block[0]);
-	}
+    rpi_text_print(block[0]);
+    rpi_text_print(block[1]);
+    rpi_text_print(block[2]);
+
 
 	rpi_text_destroy(block[0]);
 	rpi_text_destroy(block[1]);
@@ -80,7 +77,7 @@ int main(void){
     rpi_init_display();
 
 
-    // prueba_agus();
+    prueba_agus();
 
 
 
@@ -107,13 +104,15 @@ int main(void){
     menu_set_option(main_menu, 0, "JUGAR", main_game_start);
     menu_set_option(main_menu, 1, "Prueba2", NULL);
     menu_set_option(main_menu, 2, "SALIR", menu_force_close_current);
-    menu_text[0] = rpi_text_create("JUGAR", 0, 0);
+
+	menu_text[0] = rpi_text_create("JUGAR", 0, 0);
     menu_text[1] = rpi_text_create("PRUEBA", 5, 0);
     menu_text[2] = rpi_text_create("SALIR", 10, 0);
 
     menu_set_option(pause_menu, 0, "REANUDAR", resume_game);
     menu_set_option(pause_menu, 1, "REINICIAR", restart_game);
     menu_set_option(pause_menu, 2, "SALIR", exit_game);
+
 
     // Setear los callbacks que controlaran el menu
     menu_set_event_listener_display(dpad_read, update_menu_display);
@@ -142,8 +141,8 @@ void run_display_effects(void){
     uint8_t id;
     for(id=0; id<menu_data.n_options && id<3; id++){
         if(menu_data.current_option == id){
-            rpi_text_slide(menu_text[id], 600);
-            rpi_text_run(menu_text[id]);
+            rpi_text_slide(menu_text[id], 600); //La opcion seleccionada la coloca en moviemiento
+            rpi_text_run(menu_text[id]);	//Luego imprime la opcion
         }
     }
 }
@@ -156,7 +155,7 @@ void update_menu_display(void){
     for(id=0; id<menu_data.n_options; id++){
         // texts[id] = rpi_text_create(menu_data.option_titles[id], id*5, 0);
         if(menu_text[id] != NULL){
-            rpi_text_print(menu_text[id], id*5, 0);
+            rpi_text_print(menu_text[id]);
         }
     }
 
@@ -169,6 +168,7 @@ void update_menu_display(void){
 void main_game_start(void){
 
 	game_init();
+	rpi_clear_display();
 
     game_data_t game_data;
     uint64_t lastMillis;
