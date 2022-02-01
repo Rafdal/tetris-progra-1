@@ -387,7 +387,9 @@ void delete_row (uint8_t row)
 		for( j = 0 ; j < WIDTH; j++)
 		{
 			static_matrix[i][j] = static_matrix[i-1][j];
-			static_matrix[i-1][j] = 0 ;
+            game_public_matrix[i][j]= game_public_matrix[i-1][j];
+            static_matrix[i-1][j] = 0 ;
+            game_public_matrix[i-1][j]=0;
 		}
 	}
 }
