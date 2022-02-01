@@ -24,17 +24,6 @@ blocktext_t* text_init_alleg ( ALLEGRO_COLOR color_bloque, ALLEGRO_COLOR color_f
     return text;
 }
 
-int text_global_font_changer (blocktext_t * bloque){
-    font = al_load_font(bloque->tipo_letra, bloque->font_size, 0);
-    if (font==NULL)
-    {
-       printf("Error al cargar fuente");
-       return -1; 
-    }
-    return 0;
-    
-}//cambia el tipo de letra y el tamanio
-
 void text_drawer (blocktext_t* bloque){
     
     int ancho_fondo = al_get_text_width(font, bloque->texto);
@@ -58,8 +47,6 @@ void text_location_changer (blocktext_t * bloque, int newX, int newY){
 
 void text_destroy (blocktext_t * bloque){
     if(bloque != NULL ){
-            free(bloque->texto);
-            free(bloque->tipo_letra);
             free(bloque);
         }
 
@@ -68,4 +55,28 @@ void text_destroy (blocktext_t * bloque){
 void text_font_changer (blocktext_t* bloque,int tamanio, char * font_family){
     bloque->font_size=tamanio;
     bloque->tipo_letra= font_family;
+}
+
+int text_global_font_changer (blocktext_t * bloque){
+    font = al_load_font(bloque->tipo_letra, bloque->font_size, 0);
+    if (font==NULL)
+    {
+       printf("Error al cargar fuente");
+       return -1; 
+    }
+    return 0;
+    
+}//cambia el tipo de letra y el tamanio
+
+ALLEGRO_FONT * text_font_pointer_fetcher(void){
+    return font;
+}
+
+void text_score_drawer (blocktext_t * bloque, uint32_t puntos){
+    int ancho_fondo = al_get_text_width(font, "00000000000");
+    int alto_fondo = al_get_font_line_height(font);
+
+    al_draw_filled_rectangle(bloque->posx, bloque->posy, ((bloque->posx) + ancho_fondo), ((bloque->posy) + alto_fondo), bloque->block_color);
+    al_draw_textf(font, bloque->font_color, bloque->posx, bloque->posy, bloque->alineacion, "%i", puntos);
+
 }

@@ -85,4 +85,8 @@ void text_destroy (blocktext_t * bloque);
 // - [bloque]: puntero a estructura que se quiere destruir
 //OBLIGATORIO LLAMARLA AL FINAL DEL PROGRAMA
 
+ALLEGRO_FONT * text_font_pointer_fetcher(void);
+
+void text_score_drawer (blocktext_t * bloque, uint32_t puntos);
+
 #endif //_TEXT_H_
