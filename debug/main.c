@@ -1,7 +1,8 @@
 #include <stdio.h>
-#include "debug.h"
 
 // Ejemplo
+#define USAR_DEBUG   // desactiva o activa el uso de la macro DEBUG
+#include "debug.h"
 
 int main(void){
     debug_new_file("debug.txt");
@@ -9,7 +10,7 @@ int main(void){
     printf("a\n");
     for (int i = 0; i < 8; i++)
     {
-        deb_println("Hola %u, %s\n", i, "jaja");
+        DEBUG("test %u", 3)
     }
 
     return 0;
