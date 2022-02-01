@@ -19,11 +19,13 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_primitives.h>
 #include "./frontend/keyboard.h"
+#include "./frontend/textblocks.h"
 
 
 #define BLOCKSZ 50
 #define ANCHO   10
 #define ALTO    16
+#define PATH_LATO "./frontend/images/Lato-Black.ttf"
 
 ALLEGRO_DISPLAY *display = NULL;
 ALLEGRO_BITMAP *image = NULL;
@@ -32,6 +34,7 @@ ALLEGRO_BITMAP *muroV = NULL;
 ALLEGRO_SAMPLE *sample = NULL;
 ALLEGRO_EVENT_QUEUE * event_queue = NULL;
 ALLEGRO_BITMAP *pieza_blanca = NULL;
+
 
 /*void playAudio(void){
     al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
@@ -264,7 +267,7 @@ void update_display(void) {
 		for(y=0; y<3 ; y++)
 		{
             float val= (float) next_block_public_matrix[y][x];
-            al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+3) + BLOCKSZ*x, BLOCKSZ*(y+2), BLOCKSZ, BLOCKSZ, 0);
+            al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+3) + BLOCKSZ*x, BLOCKSZ*(y+3), BLOCKSZ, BLOCKSZ, 0);
             
         }
     }//DIBUJO PIEZA SIGUIENTE
@@ -299,8 +302,16 @@ int initialize_display(void) {
         printf("failed to initialize image addon !\n");
         return -1;
     }
+    if (!al_init_font_addon()) { 
+        fprintf(stderr, "failed to initialize font addon !\n");
+        return -1;
+    }
     if (!al_init_primitives_addon()) { 
         fprintf(stderr, "failed to initialize primitives addon !\n");
+        return -1;
+    }
+    if (!al_init_ttf_addon()) {  
+        fprintf(stderr, "failed to initialize ttf addon !\n");
         return -1;
     }
 
@@ -345,7 +356,33 @@ int initialize_display(void) {
         fprintf(stderr,"failed to create display!\n");
         return -1;
     }
+
     al_register_event_source(event_queue, al_get_display_event_source(display));
+    
+    
+    printf("hasta aca todo piola\n");
+    blocktext_t * pieza_sig = text_init_alleg(al_map_rgb(255,255,255), al_map_rgb(0,0,0), 30, "PIEZA SIGUIENTE", PATH_LATO, BLOCKSZ*(ANCHO+2.5), BLOCKSZ, ALINEADO_IZQUIERDA );
+    
+    if(pieza_sig==NULL){
+        printf("se cago el bloque");
+    }
+    
+    if(text_global_font_changer(pieza_sig))
+    {
+        printf("error con text_global_font_changer");
+    } //no funca esto
+     
+   if(pieza_sig==NULL){
+       printf("error con la pieza sig");
+        al_destroy_bitmap(image);
+        al_destroy_bitmap(muroH);
+        al_destroy_bitmap(muroV);
+        al_destroy_event_queue(event_queue);
+        al_destroy_display(display);
+   }
+    text_drawer(pieza_sig);
+    
+   
     //ahora dibujo el muro horizontal
     al_draw_scaled_bitmap(muroH, 0, 0, al_get_bitmap_width(muroH), al_get_bitmap_height(muroH), 0, BLOCKSZ*(ALTO), ((ANCHO+2)*BLOCKSZ), BLOCKSZ, 0);
     //empiezo uso la ultima fila

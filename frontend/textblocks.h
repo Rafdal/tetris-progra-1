@@ -50,7 +50,7 @@ void text_drawer (blocktext_t* bloque);
 //ATENCION: NO FLIPEA EL DISPLAY, ESO SE HACE A MANO
 
 
-int text_gloabal_font_changer (blocktext_t * bloque);
+int text_global_font_changer (blocktext_t * bloque);
 //DESCRIPCION: Cambia el tipo y tamanio de letra. Se va a usar un unico ALLEGRO_FONT global para el tipo de letra. De ser necesario...  
 //cambiar el estilo o tamanio esta funcion se encarga de ello. 
 // - [bloque]: Puntero a estructura la cual contiene todos los datos necesarios para cambiar el tipo de letra

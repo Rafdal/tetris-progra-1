@@ -1,41 +1,26 @@
 #include <allegro5/allegro.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
-#include <allegro5/allegro_image.h> //NO OLVIDAR INCLUIR ALLEGRO_IMAGE EN LINKER
-#include <allegro5/allegro_audio.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
-#include <allegro5/allegro_acodec.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_primitives.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include "textblocks.h"
 
-extern ALLEGRO_FONT *font;
+static ALLEGRO_FONT *font= NULL;
 
 blocktext_t* text_init_alleg ( ALLEGRO_COLOR color_bloque, ALLEGRO_COLOR color_font, int tamanio_letra, char* palabras, char* nombre_letra, int x, int y, int align)
 {
-blocktext_t * text = (blocktext_t*) calloc(1, sizeof(blocktext_t)); // Asignar memoria a la estructura
-    if(text != NULL ){
-        // Asignar memoria a los arreglos de informacion de las opciones
-        text->texto = (char**) calloc(1, sizeof(char*));
-        text->tipo_letra = (char**) calloc(1, sizeof(char*));
-
-        // Si ocurre un error liberar todo
-        if(text->texto == NULL ){
-            free(text->texto);
-            free(text->tipo_letra);
-            free(text);
-            text = NULL; // (error)
-        }
-
-        // Asignar los datos
-        text->texto = palabras;
-        text->font_size=tamanio_letra;
-        text->font_color=color_font;
-        text->block_color=color_bloque;
-        text->tipo_letra=nombre_letra;
-        text->posx= x;
-        text->posy=y;
-        text->alineacion=align;
-    }
+    blocktext_t * text = (blocktext_t*) calloc(1, sizeof(blocktext_t)); 
+    
+    // Asignar los datos
+    text->texto = palabras;
+    text->font_size=tamanio_letra;
+    text->font_color=color_font;
+    text->block_color=color_bloque;
+    text->tipo_letra=nombre_letra;
+    text->posx= x;
+    text->posy=y;
+    text->alineacion=align;
+    
     return text;
 }
 
