@@ -34,6 +34,7 @@ ALLEGRO_BITMAP *muroV = NULL;
 ALLEGRO_SAMPLE *sample = NULL;
 ALLEGRO_EVENT_QUEUE * event_queue = NULL;
 ALLEGRO_BITMAP *pieza_blanca = NULL;
+blocktext_t * score=NULL;
 
 
 /*void playAudio(void){
@@ -272,6 +273,7 @@ void update_display(void) {
         }
     }//DIBUJO PIEZA SIGUIENTE
 
+    text_score_drawer(score, game_get_data().score);
 	al_flip_display(); //despues de esribir toda la matriz muestro lo que escribi
 	printf("SCORE:\n%u\n", game_get_data().score);
 
@@ -360,17 +362,25 @@ int initialize_display(void) {
     al_register_event_source(event_queue, al_get_display_event_source(display));
     
     
-    printf("hasta aca todo piola\n");
-    blocktext_t * pieza_sig = text_init_alleg(al_map_rgb(255,255,255), al_map_rgb(0,0,0), 30, "PIEZA SIGUIENTE", PATH_LATO, BLOCKSZ*(ANCHO+2.5), BLOCKSZ, ALINEADO_IZQUIERDA );
-    
-    if(pieza_sig==NULL){
-        printf("se cago el bloque");
+    blocktext_t * pieza_sig = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "PIEZA SIGUIENTE", PATH_LATO, BLOCKSZ*(ANCHO+2.5), BLOCKSZ, ALINEADO_IZQUIERDA );
+    blocktext_t * puntaje = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "PUNTAJE:", PATH_LATO, BLOCKSZ*(ANCHO+2.5), BLOCKSZ*7, ALINEADO_IZQUIERDA );
+    score = text_init_alleg(al_map_rgb(255,0,0), al_map_rgb(255,255,255), 30, "", PATH_LATO, BLOCKSZ*(ANCHO+2.5), BLOCKSZ*9, ALINEADO_IZQUIERDA );
+
+  
+    if(puntaje==NULL){
+        printf("problema con pieza_sig");
+        al_destroy_bitmap(image);
+        al_destroy_bitmap(muroH);
+        al_destroy_bitmap(muroV);
+        al_destroy_event_queue(event_queue);
+        al_destroy_display(display);
+   
     }
-    
+
     if(text_global_font_changer(pieza_sig))
     {
         printf("error con text_global_font_changer");
-    } //no funca esto
+    } 
      
    if(pieza_sig==NULL){
        printf("error con la pieza sig");
@@ -381,6 +391,7 @@ int initialize_display(void) {
         al_destroy_display(display);
    }
     text_drawer(pieza_sig);
+    text_drawer(puntaje);
     
    
     //ahora dibujo el muro horizontal
@@ -394,6 +405,8 @@ int initialize_display(void) {
     al_flip_display();
     
     //playAudio();
+    text_destroy(pieza_sig);
+    text_destroy(puntaje);      //libero la memoria dinamica
 
     return 0;
 }
