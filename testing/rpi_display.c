@@ -13,6 +13,7 @@ void rpi_clear_display(void){
 			matrix[y][x] = (char)0;
 		}
 	}
+	disp_update();
 
 }
 

@@ -24,13 +24,13 @@ void update_menu_display(void);
 void run_display_effects(void);
 void animation_row_compleate (void);
 int init_audio(char); //FUNCION PERTENECIENTE A SANTI's SANDBOX
+void destroy_text (void);
+
 
 menu_t *main_menu = NULL;
 menu_t *pause_menu = NULL;
 
-rpi_text_block_t* menu_text[3] = {NULL, NULL, NULL};
-rpi_text_block_t* pause_text[3] = {NULL, NULL, NULL};
-// rpi_text_block_t* text_sliding = NULL;
+rpi_text_block_t* text[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
 
 void exit_game(void){
     game_quit();                // Finalizar juego
@@ -40,47 +40,21 @@ void exit_game(void){
 void restart_game(void){
     menu_force_close(pause_menu); // Cerrar menu pausa
 	game_init();
+	rpi_clear_display();
     game_start();
 }
 
 void resume_game(void)
 {
 	menu_force_close_current();
+	rpi_clear_display();
 	game_run();
 }
-
-void prueba_agus(void){
-     //PRUEBA AGUS
-
-	rpi_text_block_t* block[] = {
-        rpi_text_create("Hola Rafa", 0, 0), 
-        rpi_text_create("Hola Agus", 5, 0) , 
-        rpi_text_create("Hola Santi", 10, 0) 
-    };
-
-    rpi_text_print(block[0]);
-    rpi_text_print(block[1]);
-    rpi_text_print(block[2]);
-
-
-	rpi_text_destroy(block[0]);
-	rpi_text_destroy(block[1]);
-	rpi_text_destroy(block[2]);
-
-	// AGUS
-}
-
 
 int main(void){
     printf("Inicializando...\n");
 
     rpi_init_display();
-
-
-    prueba_agus();
-
-
-
 
     game_init();
     easytimer_set_realTimeLoop(dpad_read);
@@ -105,13 +79,18 @@ int main(void){
     menu_set_option(main_menu, 1, "Prueba2", NULL);
     menu_set_option(main_menu, 2, "SALIR", menu_force_close_current);
 
-	menu_text[0] = rpi_text_create("JUGAR", 0, 0);
-    menu_text[1] = rpi_text_create("PRUEBA", 5, 0);
-    menu_text[2] = rpi_text_create("SALIR", 10, 0);
+	text[0] = rpi_text_create(16, 0, 0);
+    text[1] = rpi_text_create(16, 0, 0);
+    text[2] = rpi_text_create(16, 0, 0);
 
-    menu_set_option(pause_menu, 0, "REANUDAR", resume_game);
+
+	menu_set_option(pause_menu, 0, "REANUDAR", resume_game);
     menu_set_option(pause_menu, 1, "REINICIAR", restart_game);
     menu_set_option(pause_menu, 2, "SALIR", exit_game);
+
+	text[3] = rpi_text_create(16, 0, 0);
+	text[4] = rpi_text_create(16, 0, 0);
+	text[5] = rpi_text_create(16, 0, 0);
 
 
     // Setear los callbacks que controlaran el menu
@@ -127,35 +106,45 @@ int main(void){
     
 	init_audio(0); // wtf?
 
-    uint8_t i;
-    for(i=0; i<3; i++)
-        rpi_text_destroy(menu_text[i]);
+    destroy_text();
 
     rpi_clear_display();
 
     return 0;
 }
 
+void destroy_text (void)
+{
+	menu_t menu_data = menu_get_current_menu_data();
+//Limpia los textos del menu
+	int i;
+	for (i=0; i< 6 ; i++)
+	{
+		rpi_text_destroy(text[i]);
+	}
+}
+
 void run_display_effects(void){
     menu_t menu_data = menu_get_current_menu_data();
     uint8_t id;
-    for(id=0; id<menu_data.n_options && id<3; id++){
+    for(id=0; id<menu_data.n_options; id++){
         if(menu_data.current_option == id){
-            rpi_text_slide(menu_text[id], 600); //La opcion seleccionada la coloca en moviemiento
-            rpi_text_run(menu_text[id]);	//Luego imprime la opcion
+            rpi_text_slide(text[id], 600); //La opcion seleccionada la coloca en moviemiento
+            rpi_text_run(text[id]);	//Luego imprime la opcion
         }
+		rpi_text_print(text[id]);
     }
 }
 
 void update_menu_display(void){
     menu_t menu_data = menu_get_current_menu_data();
 
-    rpi_clear_display();
     uint8_t id;
     for(id=0; id<menu_data.n_options; id++){
-        // texts[id] = rpi_text_create(menu_data.option_titles[id], id*5, 0);
-        if(menu_text[id] != NULL){
-            rpi_text_print(menu_text[id]);
+		rpi_text_parse(menu_data.option_titles[id], text[id]) ;
+		set_offset(text[id], 0 , 5*id , 0, 0);
+        if(text[id] != NULL){
+            rpi_text_print(text[id]);
         }
     }
 

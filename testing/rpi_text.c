@@ -10,23 +10,36 @@
 #include "easy_timer.h"
 
 // Crea un bloque de texto
-rpi_text_block_t* rpi_text_create(const char* str, int8_t y_offset, int8_t x_offset)
+rpi_text_block_t* rpi_text_create (uint8_t str_size , int8_t y_offset, int8_t x_offset )
 {
     rpi_text_block_t* block = (rpi_text_block_t*) malloc(sizeof(rpi_text_block_t));
     if (block == NULL)
+	{
         return NULL; // error
+	} else
+	{
+		block->str_size = str_size;
 
-    uint8_t size = strlen(str);
+		block->x_offset= x_offset;
+		block->x = 0;
 
-	block->x_offset= x_offset;
-	block->x = 0;
+		block->y_offset = y_offset;
+		block->y = 0;
 
-	block->y_offset = y_offset;
-	block->y = 0;
+		return block;
+
+	}
+}
+
+void rpi_text_parse(const char* str, rpi_text_block_t *block)
+{
+
+    uint8_t size = block->str_size;
+
 
     block->string.data = (uint8_t**) calloc(RPI_TEXT_HEIGHT, sizeof(uint8_t*));
-    if(block->string.data == NULL) 
-        return NULL; // error
+    //if(block->string.data == NULL)
+      //  return NULL; // error
 
     int i;
     for(i=0; i<RPI_TEXT_HEIGHT; i++){
@@ -36,10 +49,10 @@ rpi_text_block_t* rpi_text_create(const char* str, int8_t y_offset, int8_t x_off
                 free(block->string.data[i]);
             free(block->string.data);
             free(block);
-            return NULL;
+           //return NULL;
         }
     }
-    block->string.width = size*RPI_TEXT_SPACING;
+    block->string.width = strlen(str)*RPI_TEXT_SPACING;
 
     for(i=0; i<size; i++){
         // dcoord_t pos;
@@ -75,7 +88,7 @@ rpi_text_block_t* rpi_text_create(const char* str, int8_t y_offset, int8_t x_off
             }
         }
     }
-    return block;
+    //return block;
 }
 
 // Destruye un bloque de texto
@@ -117,7 +130,7 @@ void rpi_text_run(rpi_text_block_t *block){
                 rpi_run_display();
 
                 block->timestamp = easytimer_get_millis();
-                if(-(block->x) != block->string.width)
+                if(-(block->x) != block->string.width - 1)
                 {
                     (block->x)--;
                 } else
@@ -128,4 +141,13 @@ void rpi_text_run(rpi_text_block_t *block){
 			rpi_text_print(block);
     }
 
+}
+
+void set_offset ( rpi_text_block_t* block , int8_t x_offset, int8_t y_offset, int8_t x_slide , int8_t y_slide)
+{
+	block->x_offset = x_offset;
+	block->y_offset = y_offset;
+
+	block->x = x_slide;
+	block->y = y_slide;
 }

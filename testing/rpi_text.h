@@ -16,6 +16,7 @@ typedef struct {
 typedef struct
 {
 	rpi_string_block_t string;
+	uint8_t str_size;
 	uint64_t timestamp;
 	int8_t x;
 	int8_t x_offset;
@@ -26,7 +27,9 @@ typedef struct
 }rpi_text_block_t;
 
 
-rpi_text_block_t* rpi_text_create(const char* str, int8_t y_offset, int8_t x_offset);
+void rpi_text_parse(const char* str, rpi_text_block_t *block);
+
+rpi_text_block_t* rpi_text_create (uint8_t str_size , int8_t y_offset, int8_t x_offset);
 
 void rpi_text_destroy(rpi_text_block_t *block);
 
@@ -35,5 +38,8 @@ void rpi_text_print(rpi_text_block_t *block);
 void rpi_text_slide(rpi_text_block_t *block, uint64_t speed_interval);
 
 void rpi_text_run(rpi_text_block_t *block);
+
+void set_offset ( rpi_text_block_t* block , int8_t x_offset, int8_t y_offset, int8_t x_slide , int8_t y_slide);
+
 
 #endif // _RPI_TEXT_H_
