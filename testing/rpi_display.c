@@ -51,6 +51,20 @@ void rpi_copyToDis (matrix_hand_t* pfromMat, uint8_t y_offset, uint8_t x_offset)
 	}
 }
 
+//Recibe un puntero a una matriz y esta la imprime en la matriz del juego en una cierta area
+void rpi_copyToDis_area (matrix_hand_t *pfromMat, uint8_t x_init, uint8_t x_offset , uint8_t y_init, uint8_t y_offset)
+{
+	assert(pfromMat->height+y_offset <= RPI_HEIGHT);
+	assert(pfromMat->width+x_offset <= RPI_WIDTH);
+
+	int x,y;
+	for(y=y_init; y<pfromMat->height; y++){
+		for(x=x_init; x<pfromMat->width; x++){
+			matrix[y+y_offset][x+x_offset] = mat_get_byte(pfromMat, y, x);
+		}
+	}
+}
+
 // Ejecucion del display
 void rpi_run_display (void)
 {

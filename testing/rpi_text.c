@@ -145,7 +145,6 @@ void rpi_text_run(rpi_text_block_t *block){
 		else
 			rpi_text_print(block);
     }
-
 }
 
 //Modifica los offset y las posiciones de impresion del bloque de texto
@@ -156,4 +155,27 @@ void set_offset ( rpi_text_block_t* block , int8_t x_offset, int8_t y_offset, in
 
 	block->x = x_slide;
 	block->y = y_slide;
+}
+
+//Funcion que muestra el texto deslizante solo una vez
+void rpi_text_one_slide (rpi_text_block_t* block)
+{
+	if(block != NULL){
+		if(block->state == RPI_TEXT_STATE_SLIDE){
+			if (easytimer_get_millis() - (block->timestamp) >= block->interval)
+			{
+				rpi_text_print(block);
+				rpi_run_display();
+
+				block->timestamp = easytimer_get_millis();
+				if(-(block->x) != block->string.width - 1)
+				{
+					(block->x)--;
+				} else
+					block->state = RPI_TEXT_STATE_STATIC;
+			}
+		}
+		else
+			rpi_text_print(block);
+	}
 }

@@ -80,6 +80,7 @@ static bool colision = false; // true si hubo colision (con piso o pieza)
 enum {LEFT, RIGHT, R_LEFT, R_RIGHT, DOWN};
 static uint8_t last_movement; // Ultimo movimiento efectuado (se usa para FSM de correccion de posicion)
 static bool bad_movement = false; // true si hay que corregir el movimiento
+static void (*_animation_callback) (void) = NULL;
 
 // P R O T O T I P O S    P R I V A D O S
 static void _render(void); // Renderiza el bloque en la matriz
@@ -93,6 +94,7 @@ static void _update_score(int streak, uint8_t lvl);
 static void _init_arr_next_block (void); //Inicializa el arreglo con los proximos bloques
 static void _update_next_block (void); //Actualiza el arreglo con las proximas piezas una vez que la primera pieza de este arreglo ya fue impresa en el juego
 static void _update_level (void); //Actualiza el nivel del juego dependiendo del score obtenido
+static void _refresh_next_block_mat (void); //Actualiza la matriz de la pieza siguiente
 
 // F U N C I O N E S
 
@@ -169,19 +171,9 @@ void _init_arr_next_block (void) //Inicializa el arreglo con los proximos bloque
 	}
 }
 
-// Actualiza el arreglo con las proximas piezas una vez que la primera pieza de este arreglo ya fue impresa en el juego
-void _update_next_block (void)
+void _refresh_next_block_mat (void)
 {
-	int i,j,k;
-	for (i = 0 ; i < 3 ; i++)
-	{
-		id_next_block[i] = id_next_block[i+1];
-		arr_next_block[i] = arr_next_block[i+1];
-	}
-	id_next_block[3] = game_get_next_block();
-	arr_next_block[3] = blocks[id_next_block[3]];
-
-
+	int i, j, k;
 	//Antes de cargar la matriz nueva la limpio asi se carga correctamente con nuevas piezas
 	for(i=0 ; i < 12 ; i++)
 	{
@@ -203,7 +195,21 @@ void _update_next_block (void)
 			}
 		}
 	}
+}
 
+// Actualiza el arreglo con las proximas piezas una vez que la primera pieza de este arreglo ya fue impresa en el juego
+void _update_next_block (void)
+{
+	int i;
+	for (i = 0 ; i < 3 ; i++)
+	{
+		id_next_block[i] = id_next_block[i+1];
+		arr_next_block[i] = arr_next_block[i+1];
+	}
+	id_next_block[3] = game_get_next_block();
+	arr_next_block[3] = blocks[id_next_block[3]];
+
+	_refresh_next_block_mat();
 }
 
 // Funcion que devuelve la Data del Juego
@@ -277,7 +283,7 @@ int _can_write(uint8_t y, uint8_t x){
         return 1;
     }else
 	{
-        if(y==255)
+        if(y>=255)
             game_data.state = GAME_LOSE;
 
         printf("Error! se intento escribir matriz[%u][%u]\n", y, x);
@@ -315,8 +321,10 @@ void game_run(void){
 			_update_level();
 
 			_update_next_block(); //Una vez usado el primer bloque del arreglo, actualiza este arreglo colocando uno nuevo al final de este
+			_animation_callback();
    	 }
-	_update_game_public_matrix();
+		_update_game_public_matrix();
+		_refresh_next_block_mat();
     }
 }
 
@@ -585,4 +593,10 @@ void _update_level (void)
 		game_data.game_level = 6;
 		game_data.speed_interval = 200;
 	}
+}
+
+void game_set_delrow_callback (void (*func) (void))
+{
+	_animation_callback = func;
+
 }

@@ -18,6 +18,8 @@ void rpi_set_display(uint8_t y, uint8_t x, char val); // Setea en la matriz un v
 
 void rpi_copyToDis (matrix_hand_t* pfromMat, uint8_t y_offset, uint8_t x_offset); // Recibe un puntero a una matriz y esta la copia en la matriz del juego
 
+void rpi_copyToDis_area (matrix_hand_t *pfromMat, uint8_t x_init, uint8_t x_offset , uint8_t y_init, uint8_t y_offset); //Recibe un puntero a una matriz y esta la imprime en la matriz del juego en una cierta area
+
 void rpi_run_display (void); // Ejecucion del display
 
 void rpi_clear_area(uint8_t from_y, uint8_t from_x, uint8_t to_y, uint8_t to_x); // Limpia una cierta area del display
