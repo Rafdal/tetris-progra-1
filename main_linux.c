@@ -20,12 +20,20 @@
 #include <allegro5/allegro_primitives.h>
 #include "./frontend/keyboard.h"
 #include "./frontend/textblocks.h"
+#include "./backend/menu.h"
+#include "./backend/menu.h"
 
 
 #define BLOCKSZ 50
 #define ANCHO   10
 #define ALTO    16
 #define PATH_LATO "./frontend/images/Lato-Black.ttf"
+
+// **************************************
+// *	 V A R S . G L O B A L E S		*
+// **************************************
+menu_t *principal_menu = NULL;
+menu_t *pausa_menu = NULL;
 
 ALLEGRO_DISPLAY *display = NULL;
 ALLEGRO_BITMAP *image = NULL;
@@ -43,37 +51,46 @@ blocktext_t * score=NULL;
 */
 
 
-/* char matriz [16][10]={      // Esto no lo estas usando
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,1,1,1,1,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,5,5,5,0,0,0},
-    {0,0,0,0,0,5,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-}; */
 
+// ******************************
+// *	P R O T O T I P O S		*
+// ******************************
 
-// P R O T O T I P O S
-int initialize_display(void);
+int initialize_alleg(void);
+void initialize_display_game (void);
 void end_program (void);
 void update_display(void);
 void keypress_callback(uint8_t key);
 void read_events(void);
-void update_menu_display(void);
+void display_menu_display(void);
 void animation_row_compleate(void);
 void main_game_start(void);
 //int init_audio(void);
 
+// ******************************
+// *	C A L L B A C K S		*
+// ******************************
+//CALLBACK DE EXIT GAME
+void exit_game(void){
+    game_quit();                // Finalizar juego
+    menu_force_close(pausa_menu); // Cerrar menu pausa
+}
+
+//CALLBACK DE REINICIO DE JUEGO
+void restart_game(void){
+	initialize_display_game(); //inicio el display del juego
+    menu_force_close(pausa_menu); // Cerrar menu pausa
+	game_init();	//Inicio el juego
+    game_start(); 	//Corre el juego
+}
+
+//CALLBACK DE RENAUDAR JUEGO
+void resume_game(void)
+{
+	initialize_display_game(); //inicio el display del juego
+	menu_force_close_current();	//Cierra el menu
+	game_run();	//Corre el juego
+}
 
 int main (void){
 
@@ -81,21 +98,43 @@ int main (void){
 
     easytimer_set_realTimeLoop(read_events); // Leer eventos durante delays
 
-	int error = initialize_display();
-//	int init_audio();
-    if(error){
-        printf("Error al iniciar");
-        return 0;   //si algo fallo termino el programa
-    }
     keyb_on_press(keypress_callback);
     keyb_use_press_callback_for_longpress(KEYB_DOWN);
     keyb_use_press_callback_for_longpress(KEYB_LEFT);
     keyb_use_press_callback_for_longpress(KEYB_RIGHT);
 
-    // menu_set_event_listener_display(read_events, update_menu_display);
+	int error = initialize_alleg(); //inicializo Allegro
+//	int init_audio();
+    if(error){
+        printf("Error al iniciar");
+        return 0;   //si algo fallo termino el programa
+    }
+    
+    principal_menu = menu_init(2, "MENU", NULL, MENU_ACTION_DO_NOTHING);
+    pausa_menu = menu_init(3, "PAUSA", NULL, MENU_ACTION_JUST_EXIT);
+
+
+    if(principal_menu == NULL || pausa_menu == NULL){
+        printf("Error NULL menu!\n");
+        return -1;
+    }
+
+    // CALLBACKS DE OPCIONES DE MENU MAIN
+    menu_set_option(principal_menu, 0, "JUGAR", main_game_start);
+    menu_set_option(principal_menu, 1, "SALIR", menu_force_close_current);
+
+	// CALLBACKS DE OPCIONES DEL MENU DE PAUSA
+	menu_set_option(pausa_menu, 0, "REANUDAR", resume_game);
+    menu_set_option(pausa_menu, 1, "REINICIAR", restart_game);
+    menu_set_option(pausa_menu, 2, "SALIR", exit_game);
+
+
+
+    menu_set_event_listener_display(read_events, display_menu_display);
+    printf("hasta aca bien\n");
    
-   // menu_run(main_menu);
-   main_game_start();
+    menu_run(principal_menu);
+   //main_game_start();
     
     end_program();//borro todo
 
@@ -105,10 +144,12 @@ int main (void){
 
 void main_game_start(void){
 
+    printf("llego hasta aca\n");
     game_data_t game_data;
     uint64_t lastMillis;
 
     game_start(); // iniciar el juego
+    initialize_display_game();
 
     while ((game_data = game_get_data()).state != GAME_QUIT)
     {
@@ -170,8 +211,37 @@ void animation_row_compleate(void)
 }
 
 // HACER !
-void update_menu_display(void){
+void display_menu_display(void){
 
+    menu_t menu_data = menu_get_current_menu_data();
+    uint8_t id;
+    al_clear_to_color(al_map_rgb(0,0,0));   //fondo negro
+
+    
+    blocktext_t * menuprin = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, menu_data.title, PATH_LATO, al_get_display_width(display)/2, BLOCKSZ, CENTRADO );
+    if(text_global_font_changer(menuprin))
+    {
+        printf("error con text_global_font_changer");
+    }
+    
+    text_drawer(menuprin);
+    printf("todo piola\n");
+
+for(id=0; id<menu_data.n_options; id++)
+	{
+        if(menu_data.current_option == id){
+            blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(0,255,0), 30, menu_data.option_titles[id], PATH_LATO, al_get_display_width(display)/2, BLOCKSZ*(3+2*id), CENTRADO );
+            text_drawer(menuop);
+            text_destroy(menuop);
+        }// si es la que esta siendo apuntada, la dibujo en verde
+
+        else{
+            blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, menu_data.option_titles[id], PATH_LATO, al_get_display_width(display)/2, BLOCKSZ*(3+2*id), CENTRADO );
+            text_drawer(menuop);
+            text_destroy(menuop);
+        }//si no, en blanco
+        al_flip_display();
+    }   //imprimo cada opcion del menu en pantalla una abajo de la otra
    // text_t* titulo_txt = text_init("TETRIS JAJA", 14, NEGRO, ROJO);
    // text_display(titulo_txt, x, y);
    // text_set(titulo_txt, );
@@ -197,10 +267,40 @@ void keypress_callback(uint8_t key){
     if(easytimer_delay_active()){ // si hay un delay activo no hago nada
         return;
     }
+    if(menu_is_current_available()){
+switch (key)
+        {
+            case KEYB_UP:
+                menu_go_up();
+                printf("menu UP\n");
+                break;
 
-    switch (key)
-    {
-        case KEYB_UP:
+            case KEYB_DOWN:
+                menu_go_down();
+                printf("menu DOWN\n");
+                break;
+
+            case KEYB_LEFT:
+                menu_go_back();
+                printf("menu LEFT\n");
+                break;
+
+            case KEYB_SPACE:
+                menu_go_select();
+                printf("menu BTN\n");
+                break;
+
+            default:
+                break;
+        }
+            menu_t data = menu_get_current_menu_data();
+            printf("menu: %s, option: %u %s\n", data.title, data.current_option, data.option_titles[data.current_option]);
+    }
+    else if(game_get_data().state == GAME_RUN){
+
+        switch (key)
+        {
+            case KEYB_UP:
             printf("UP\n");
             break;
 
@@ -238,17 +338,18 @@ void keypress_callback(uint8_t key){
             break;
 
         case KEYB_ESC:
-            game_quit();
-            printf("Game quit\n");
+            menu_run(pausa_menu);
+            printf("Juego Pausado\n");
             break;
             
 
         default:
-            break;
+        break;
     }
     game_run();
 	animation_row_compleate();
     update_display(); // estamos viendo si esto buguea la eliminacion de filas
+    }
 }
 
 
@@ -280,7 +381,7 @@ void update_display(void) {
 }
 
 
-int initialize_display(void) {
+int initialize_alleg(void) {
     if (!al_init()) {
         printf( "failed to initialize allegro!\n");
         return -1;
@@ -360,27 +461,23 @@ int initialize_display(void) {
     }
 
     al_register_event_source(event_queue, al_get_display_event_source(display));
+    return 0;
+}
     
-    
+void  initialize_display_game (void){
     blocktext_t * pieza_sig = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "PIEZA SIGUIENTE", PATH_LATO, BLOCKSZ*(ANCHO+2.5), BLOCKSZ, ALINEADO_IZQUIERDA );
     blocktext_t * puntaje = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "PUNTAJE:", PATH_LATO, BLOCKSZ*(ANCHO+2.5), BLOCKSZ*7, ALINEADO_IZQUIERDA );
     score = text_init_alleg(al_map_rgb(255,0,0), al_map_rgb(255,255,255), 30, "", PATH_LATO, BLOCKSZ*(ANCHO+2.5), BLOCKSZ*9, ALINEADO_IZQUIERDA );
 
   
     if(puntaje==NULL){
-        printf("problema con pieza_sig");
-        al_destroy_bitmap(image);
-        al_destroy_bitmap(muroH);
-        al_destroy_bitmap(muroV);
-        al_destroy_event_queue(event_queue);
-        al_destroy_display(display);
-   
+        printf("problema con pieza_sig");   
     }
 
-    if(text_global_font_changer(pieza_sig))
+    /*if(text_global_font_changer(pieza_sig))
     {
         printf("error con text_global_font_changer");
-    } 
+    } */
      
    if(pieza_sig==NULL){
        printf("error con la pieza sig");
@@ -408,7 +505,6 @@ int initialize_display(void) {
     text_destroy(pieza_sig);
     text_destroy(puntaje);      //libero la memoria dinamica
 
-    return 0;
 }
 
 int init_audio(void) {
@@ -472,6 +568,8 @@ void end_program (void){
     al_destroy_bitmap(muroV);
     al_destroy_event_queue(event_queue);
     al_uninstall_keyboard();
+    menu_destroy(principal_menu);
+    menu_destroy(pausa_menu);
     //al_uninstall_audio(); // borrar audio
     //al_destroy_sample(sample);
     //al_shutdown_image_addon(); VER DOCUMENTACION ES LLAMADO AUTOMATICAMENTE AL SALIR DEL PROGRAMA
