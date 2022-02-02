@@ -8,18 +8,20 @@
 
 #define GAME_DEFAULT_SPEED_INTERVAL 2000  // milisegundos
 
-char game_public_matrix [HEIGHT][WIDTH];
-char next_block_public_matrix[12][4];
+char game_public_matrix [HEIGHT][WIDTH]; //Matriz publica del juego
+char next_block_public_matrix[12][4];	//Matriz publica de la pieza siguiente
 
-uint8_t row_compleate[4];
+uint8_t row_compleate[4]; 	//Arreglo de las filas siguientes
 
 typedef enum {GAME_IDLE, GAME_RUN, GAME_PAUSE, GAME_QUIT, GAME_LOSE} game_state_t;
 
+//Estructura de la pieza
 typedef struct{
 	const char *data;
 	uint8_t size;
 }BLOCK_t;
 
+//Estructura de los datos del juego
 typedef struct {
     uint8_t x;
     uint8_t y;
@@ -42,8 +44,7 @@ void game_run(void);    // ejecuta el juego
 void game_restart(void);// reinicia el juego
 void game_quit(void);   // sale del juego
 
-// Imprime la matriz en consola
-// void print_matrix(void);
+
 
 // Inserta un nuevo bloque arriba
 void game_insert_block(uint8_t id);
