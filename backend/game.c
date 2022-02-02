@@ -53,13 +53,6 @@ const char BLOCK_7[] = {
     0, 0, 0,
 };
 
-/* const char TEST_BLOCK[] = {
-        1, 2, 3,
-        8, 0, 4,
-        7, 6, 5,
-}; */
-
-
 BLOCK_t blocks[] = {
         { BLOCK_0, 1, },
         { BLOCK_1, 4, },
@@ -69,7 +62,6 @@ BLOCK_t blocks[] = {
         { BLOCK_5, 3, },
         { BLOCK_6, 3, },
         { BLOCK_7, 3, },
-        // { TEST_BLOCK, 3},
 };
 
 
@@ -77,7 +69,6 @@ BLOCK_t blocks[] = {
 
 static char matrix[HEIGHT][WIDTH]; // Privada
 static char static_matrix[HEIGHT][WIDTH]; // Privada
-//char game_public_matrix [HEIGHT][WIDTH]; //Publica (definida en el .h)
 
 // datos del juego (coordenadas x,y, rotacion, estado del juego, etc)
 static game_data_t game_data;
@@ -97,7 +88,7 @@ static int _can_write(uint8_t x, uint8_t y); // devuelve 1 si se puede escribir,
 static void _undo_movement(void); // deshace el movimiento anterior
 static uint8_t _check_row_complete (void); // chequea si una fila se elimino y en caso de serlo devuelve en numero de fila
 static void _update_game_public_matrix (void); // actualiza los valores de la matriz publica (la cual contiene la suma de la matriz estatic y dinamica)
-static void _clear_matrix(void);
+static void _clear_matrix(void); // Borra la matriz del bloque
 static void _update_score(int streak, uint8_t lvl);
 static void _init_arr_next_block (void); //Inicializa el arreglo con los proximos bloques
 static void _update_next_block (void); //Actualiza el arreglo con las proximas piezas una vez que la primera pieza de este arreglo ya fue impresa en el juego
@@ -112,7 +103,7 @@ void game_init(void){
     game_data.state = GAME_IDLE;
 }
 
-
+// Inicia el Juego
 void game_start(void){
     _clear_matrix();
     colision = false;
@@ -132,7 +123,7 @@ void game_start(void){
 	_init_arr_next_block(); //Inicializa el arreglo con las proximas piezas
 }
 
-// sale del juego
+// Sale del juego
 void game_quit(void){
     game_data.state = GAME_QUIT;
     _clear_matrix();
@@ -145,7 +136,7 @@ void game_quit(void){
     }
 }
 
-
+// Inicia el arreglo y matriz de la pieza siguente
 void _init_arr_next_block (void) //Inicializa el arreglo con los proximos bloques
 {
 	//Antes de cargar la matriz nueva la limpio asi se carga correctamente con nuevas piezas
@@ -178,8 +169,8 @@ void _init_arr_next_block (void) //Inicializa el arreglo con los proximos bloque
 	}
 }
 
-
-void _update_next_block (void) //Actualiza el arreglo con las proximas piezas una vez que la primera pieza de este arreglo ya fue impresa en el juego
+// Actualiza el arreglo con las proximas piezas una vez que la primera pieza de este arreglo ya fue impresa en el juego
+void _update_next_block (void)
 {
 	int i,j,k;
 	for (i = 0 ; i < 3 ; i++)
@@ -215,6 +206,7 @@ void _update_next_block (void) //Actualiza el arreglo con las proximas piezas un
 
 }
 
+// Funcion que devuelve la Data del Juego
 game_data_t game_get_data(void){
     return game_data;
 }
@@ -228,34 +220,6 @@ void _clear_matrix(void){
         }
     }
 }
-
-
-/* // Funcion AUXILIAR que imprime la matriz gral en la terminal
-void print_matrix(void){
-    printf("Rotation: %u\nx,y: %u, %u\n", game_data.rot, game_data.x, game_data.y);
-    for (int i = 0; i < 32; i++)        //34 es lo que queda bien jajaj
-        putchar('_');
-    putchar('\n');
-    for(int y=0; y<HEIGHT; y++)
-    {
-        putchar('|');
-        for(int x=0; x<WIDTH; x++)
-        {
-            char out = matrix[y][x]+static_matrix[y][x];
-            if(out == 0)
-                putchar('-');
-            else
-                putchar('0'+out); // La data
-
-            printf("  ");
-        }
-        putchar('|');
-        putchar('\n');
-    }
-    for (int i = 0; i < 32; i++)
-        putchar('_');
-    putchar('\n');
-} */
 
 
 // Funcion auxiliar para manejar un arreglo unidimensional (de una matriz) con coordenadas cartesianas
@@ -311,15 +275,17 @@ int _can_write(uint8_t y, uint8_t x){
         }
 
         return 1;
-    }else{
-        if(y==255){
+    }else
+	{
+        if(y==255)
             game_data.state = GAME_LOSE;
-        }
+
         printf("Error! se intento escribir matriz[%u][%u]\n", y, x);
         return 0;
     }
 }
 
+// Ejecucion del Juego
 void game_run(void){
     if(game_data.state == GAME_RUN){
         _render();
@@ -354,6 +320,7 @@ void game_run(void){
     }
 }
 
+//Actualizo la matriz de general. [Suma la matriz statica +  la matriz del juego]
 void _update_game_public_matrix(void)
 {
 	int i, j;
@@ -366,34 +333,35 @@ void _update_game_public_matrix(void)
 	}
 }
 
+//Borra pixeles de la matriz
 void delete_pixel (uint8_t row, uint8_t px)
 {
 	static_matrix[row][px] = 0;
+	matrix[row][px] = 0;
 	game_public_matrix[row][px]=0;
 }
 
+// Limpio la fila completa y desplazo lo que quedo suspendido
 void delete_row (uint8_t row)
 {
 	int i,j;
-	/*
-	for (j= 0; j< WIDTH ; j++)
-	{
-		delete_pixel(row,j);
-	}
-	printf("TEST\n");
-	 */
+
 	for ( i = row ; i > 0 ; i--)
 	{
 		for( j = 0 ; j < WIDTH; j++)
 		{
 			static_matrix[i][j] = static_matrix[i-1][j];
-            game_public_matrix[i][j]= game_public_matrix[i-1][j];
-            static_matrix[i-1][j] = 0 ;
-            game_public_matrix[i-1][j]=0;
+			matrix[i][j] = matrix[i-1][j];
+			game_public_matrix[i][j]= game_public_matrix[i-1][j];
+
+            static_matrix[i-1][j] = (char)0;
+			matrix[i-1][j] = (char)0;
+			game_public_matrix[i-1][j] = (char)0;
 		}
 	}
 }
 
+//Funcion que detecta si una fila se completo, devolviendo la CANTIDAD DE FILAS COMPLETAS
 uint8_t _check_row_complete (void)
 {
 	int i , j, k = 0;
@@ -409,7 +377,7 @@ uint8_t _check_row_complete (void)
 			k++;
 		}
 	}
-	return k;
+	return k; //Devuelve la cantidad de filas completas, que luego es usado para el score
 }
 
 
@@ -567,7 +535,6 @@ void game_rotate(int direction){
 }
 
 // _update_score actualiza el score segun el nivel en el que se encuentra
-
 void _update_score(int streak, uint8_t lvl){
 	switch (streak) {
 		case 1:
@@ -586,35 +553,36 @@ void _update_score(int streak, uint8_t lvl){
 	}
 }
 
+//Actualiza el Nivel a partir del score obtenido
 void _update_level (void)
 {
-	if ( game_data.score >= 0 && game_data.score<= 250 )
+	if ( game_data.score >= 0 && game_data.score<= 500 )
 	{
 		game_data.game_level = 1;
 	}
-	else if( game_data.score >250 && game_data.score <= 1000)
+	else if( game_data.score >500 && game_data.score <= 2000)
 	{
 		game_data.game_level = 2;
-		game_data.speed_interval = 1600;
-	}
-	else if( game_data.score >1000 && game_data.score <= 1500)
-	{
-		game_data.game_level = 3;
-		game_data.speed_interval = 1400;
-	}
-	else if( game_data.score >1500 && game_data.score <= 2000)
-	{
-		game_data.game_level = 4;
 		game_data.speed_interval = 1200;
 	}
-	else if( game_data.score >2000 && game_data.score <= 2500)
+	else if( game_data.score >2000 && game_data.score <= 3000)
+	{
+		game_data.game_level = 3;
+		game_data.speed_interval = 800;
+	}
+	else if( game_data.score >3000 && game_data.score <= 5000)
+	{
+		game_data.game_level = 4;
+		game_data.speed_interval = 600;
+	}
+	else if( game_data.score >5000 && game_data.score <= 10000)
 	{
 		game_data.game_level = 5;
-		game_data.speed_interval = 1000;
+		game_data.speed_interval = 400;
 	}
-	else if (game_data.score > 2500)
+	else if (game_data.score > 10000)
 	{
 		game_data.game_level = 6;
-		game_data.speed_interval = 800;
+		game_data.speed_interval = 200;
 	}
 }

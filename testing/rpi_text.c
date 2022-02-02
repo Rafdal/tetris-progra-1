@@ -1,13 +1,17 @@
-#include "rpi_text.h"
+/*
+		LIBRERIA DE MANEJO DE TEXTO
+	Usos: Esta libreria sirve para crar bloques de textos y luego poder imprimirlos en el display
+ 	de la RPI de forma "Estatica" y "Deslizante"
 
+*/
+#include "rpi_text.h"
 #include "rpi_display.h"
 #include "rpi_chars.h"
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include <ctype.h>
-
 #include "easy_timer.h"
+
 
 // Crea un bloque de texto
 rpi_text_block_t* rpi_text_create (uint8_t str_size , int8_t y_offset, int8_t x_offset )
@@ -31,6 +35,7 @@ rpi_text_block_t* rpi_text_create (uint8_t str_size , int8_t y_offset, int8_t x_
 	}
 }
 
+// Le asigna al bloque de texto un string
 void rpi_text_parse(const char* str, rpi_text_block_t *block)
 {
 
@@ -49,7 +54,6 @@ void rpi_text_parse(const char* str, rpi_text_block_t *block)
                 free(block->string.data[i]);
             free(block->string.data);
             free(block);
-           //return NULL;
         }
     }
     block->string.width = strlen(str)*RPI_TEXT_SPACING;
@@ -88,7 +92,6 @@ void rpi_text_parse(const char* str, rpi_text_block_t *block)
             }
         }
     }
-    //return block;
 }
 
 // Destruye un bloque de texto
@@ -115,11 +118,13 @@ void rpi_text_print(rpi_text_block_t *block){
     }
 }
 
+//Coloca el estado del bloque en "TEXTO DELIZANTE"
 void rpi_text_slide(rpi_text_block_t *block, uint64_t speed_interval){
     block->interval = speed_interval;
     block->state = RPI_TEXT_STATE_SLIDE;
 }
 
+//Analiza el estado del bloque y lo imprime
 void rpi_text_run(rpi_text_block_t *block){
     if(block != NULL){
         if(block->state == RPI_TEXT_STATE_SLIDE){
@@ -143,6 +148,7 @@ void rpi_text_run(rpi_text_block_t *block){
 
 }
 
+//Modifica los offset y las posiciones de impresion del bloque de texto
 void set_offset ( rpi_text_block_t* block , int8_t x_offset, int8_t y_offset, int8_t x_slide , int8_t y_slide)
 {
 	block->x_offset = x_offset;

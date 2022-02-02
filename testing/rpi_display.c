@@ -3,8 +3,11 @@
 #include "rpi_display.h"
 #include "disdrv.h" // RASPBERRY DISPLAY
 
-static char matrix[RPI_HEIGHT][RPI_WIDTH];
+static char matrix[RPI_HEIGHT][RPI_WIDTH]; //Matriz del display de la RPI
 
+// F U N C I O N E S
+
+// Borra el todos los datos del display
 void rpi_clear_display(void){
 	disp_clear(); //Borra el buffer
 	int x,y;
@@ -13,24 +16,19 @@ void rpi_clear_display(void){
 			matrix[y][x] = (char)0;
 		}
 	}
-	disp_update();
-
 }
 
-// Funcion que inicializa el display de la RPI.
+// Inicializa el display de la RPI.
 void rpi_init_display (void)
 {
 	printf("Inicializando display\n");
 	disp_init(); //Inicializa el display
 	disp_clear(); //Borra el buffer
-	int x,y;
-	for(y=0; y<RPI_HEIGHT; y++){
-		for(x=0; x<RPI_WIDTH; x++){
-			matrix[y][x] = (char)0;
-		}
-	}
+
+	rpi_clear_display(); //Limpia el display
 }
 
+// Setea en la matriz un valor segun las posiciones dadas
 void rpi_set_display(uint8_t y, uint8_t x, char val){
 	//assert(y<RPI_HEIGHT && x < RPI_WIDTH);
 	if(y<RPI_HEIGHT && x < RPI_WIDTH)
@@ -39,7 +37,7 @@ void rpi_set_display(uint8_t y, uint8_t x, char val){
 	}
 }
 
-
+// Recibe un puntero a una matriz y esta la copia en la matriz del juego
 void rpi_copyToDis (matrix_hand_t* pfromMat, uint8_t y_offset, uint8_t x_offset)
 {
 	assert(pfromMat->height+y_offset <= RPI_HEIGHT);
@@ -53,7 +51,7 @@ void rpi_copyToDis (matrix_hand_t* pfromMat, uint8_t y_offset, uint8_t x_offset)
 	}
 }
 
-
+// Ejecucion del display
 void rpi_run_display (void)
 {
 	dcoord_t initPoint = {}; //Crea un punto inicial
@@ -76,9 +74,8 @@ void rpi_run_display (void)
 	disp_update();
 }
 
-
-void rpi_clear_area(uint8_t from_y, uint8_t from_x, uint8_t to_y, uint8_t to_x) // borra el area seleccionada
-{
+// Limpia una cierta area del display
+void rpi_clear_area(uint8_t from_y, uint8_t from_x, uint8_t to_y, uint8_t to_x){
 	uint8_t x, y;
 	for (y = from_y; y < to_y ; y++)
 	{
@@ -87,5 +84,4 @@ void rpi_clear_area(uint8_t from_y, uint8_t from_x, uint8_t to_y, uint8_t to_x) 
 			rpi_set_display(y,x, 0);
 		}
 	}
-	disp_update();
 }

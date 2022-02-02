@@ -7,10 +7,10 @@
 int main(void){
     debug_new_file("debug.txt");
 
+    printf("a\n");
     for (int i = 0; i < 8; i++)
     {
-        printf("Esto no se imprime en el archivo\n");
-        DEBUG("Esto si, test %u, %s", i, "hola");
+        DEBUG("test %u", 3)
     }
 
     return 0;
