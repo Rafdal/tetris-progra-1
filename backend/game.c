@@ -556,11 +556,11 @@ void _update_score(int streak, uint8_t lvl){
 //Actualiza el Nivel a partir del score obtenido
 void _update_level (void)
 {
-	if ( game_data.score >= 0 && game_data.score<= 500 )
+	if ( game_data.score >= 0 && game_data.score< 80 )
 	{
 		game_data.game_level = 1;
 	}
-	else if( game_data.score >500 && game_data.score <= 2000)
+	else if( game_data.score >=80 && game_data.score <= 2000)
 	{
 		game_data.game_level = 2;
 		game_data.speed_interval = 1200;

@@ -44,4 +44,6 @@ void rpi_text_run(rpi_text_block_t *block); //Analiza el estado del bloque y lo 
 
 void set_offset ( rpi_text_block_t* block , int8_t x_offset, int8_t y_offset, int8_t x_slide , int8_t y_slide); //Modifica los offset y las posiciones de impresion del bloque de texto
 
+void rpi_text_one_slide (rpi_text_block_t* block); //Funcion que muestra el texto deslizante solo una vez
+
 #endif // _RPI_TEXT_H_

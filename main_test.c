@@ -34,6 +34,12 @@ void animation_row_compleate (void);  //Ejecuta la animacion de fila completa
 void key_press_callback(uint8_t key); // Define los Callbacks de las teclas
 
 int init_audio(char); //Inicializa el audio
+/*
+void* animation_deleate_row(void); //Elimina las filas completas de forma animada
+
+void* animation_text (void); //Muestra un texto en pantalla
+*/
+
 
 
 // **************************************
@@ -43,7 +49,9 @@ menu_t *main_menu = NULL;
 menu_t *pause_menu = NULL;
 
 rpi_text_block_t* text[6] = {NULL, NULL, NULL, NULL, NULL, NULL}; //Reserva de puntero para los bloques de textos
+rpi_text_block_t* animation = NULL;
 
+static uint8_t game_level = 1;
 
 // ******************************
 // *	C A L L B A C K S		*
@@ -58,6 +66,7 @@ void exit_game(void){
 void restart_game(void){
 	rpi_clear_display(); //limpio el display
     menu_force_close(pause_menu); // Cerrar menu pausa
+	game_level = 1;
 	game_init();	//Inicio el juego
     game_start(); 	//Corre el juego
 }
@@ -249,8 +258,9 @@ void update_menu_display(void)
 
 void animation_row_compleate (void)
 {
-	if(row_compleate[0] != 0) //Si existe fila completa entro a la animacion
+	if(row_compleate[0] != 0 ) //Si existe fila completa entro a la animacion
 	{
+
 		int i, j;
 		for(j=0; j < WIDTH; j++) // Me muevo por columnas
 		{
@@ -258,7 +268,7 @@ void animation_row_compleate (void)
 			{
 				delete_pixel(row_compleate[i], j);
 			}
-			easytimer_delay(15); //Delay
+			easytimer_delay(25); //Delay
 			update_game_display(); //Actualizo el display
 		}
 
@@ -266,6 +276,28 @@ void animation_row_compleate (void)
 		{
 			delete_row(row_compleate[i]);
 			row_compleate[i]= 0; //Coloco en cero el arreglo
+		}
+		update_game_display();
+
+
+		game_data_t game_data = game_get_data();
+
+		if (game_level != game_data.game_level)
+		{
+			printf("LEVEL UP\n");
+			game_level = game_data.game_level;
+
+			animation = rpi_text_create(16, 0, 0);
+			rpi_text_parse("LEVEL UP", animation);
+
+			rpi_clear_area(0, 0, 5, RPI_WIDTH);
+
+			rpi_text_slide(animation, 50);
+			while(animation->state == RPI_TEXT_STATE_SLIDE)
+				rpi_text_one_slide(animation);
+
+			rpi_run_display();
+
 		}
 	}
 }
