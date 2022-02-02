@@ -69,5 +69,9 @@ void delete_pixel (uint8_t row, uint8_t px);
 // Elimina y desplaza la fila completa
 void delete_row (uint8_t row);
 
+// Setea el callback de la animacion de la eliminacion de una fila
+void game_set_delrow_callback (void (*func) (void));
+
+
 
 #endif // GAME_H

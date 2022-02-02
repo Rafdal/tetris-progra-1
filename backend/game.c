@@ -80,6 +80,7 @@ static bool colision = false; // true si hubo colision (con piso o pieza)
 enum {LEFT, RIGHT, R_LEFT, R_RIGHT, DOWN};
 static uint8_t last_movement; // Ultimo movimiento efectuado (se usa para FSM de correccion de posicion)
 static bool bad_movement = false; // true si hay que corregir el movimiento
+static void (*_animation_callback) (void) = NULL;
 
 // P R O T O T I P O S    P R I V A D O S
 static void _render(void); // Renderiza el bloque en la matriz
@@ -320,6 +321,7 @@ void game_run(void){
 			_update_level();
 
 			_update_next_block(); //Una vez usado el primer bloque del arreglo, actualiza este arreglo colocando uno nuevo al final de este
+			_animation_callback();
    	 }
 		_update_game_public_matrix();
 		_refresh_next_block_mat();
@@ -591,4 +593,10 @@ void _update_level (void)
 		game_data.game_level = 6;
 		game_data.speed_interval = 200;
 	}
+}
+
+void game_set_delrow_callback (void (*func) (void))
+{
+	_animation_callback = func;
+
 }

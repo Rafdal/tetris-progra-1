@@ -137,6 +137,8 @@ int main(void){
     menu_set_event_listener_display(dpad_read, update_menu_display);
     menu_set_animation_callback(run_display_effects);
 
+	//Setear callback de animacion de eliminar fila
+	game_set_delrow_callback(animation_row_compleate);
     // Ejecutar menu principal
     menu_run(main_menu);
 
@@ -179,7 +181,7 @@ void main_game_start(void){
         if(game_data.state == GAME_RUN && easytimer_get_millis()-lastMillis >= game_data.speed_interval){
             game_move_down();
             game_run();	//Corro el juego
-			animation_row_compleate();	//Analizo si se completo una fila y corro lo animacion
+			//animation_row_compleate();	//Analizo si se completo una fila y corro lo animacion
             update_game_display();  //Actualizo el display
 
             lastMillis = easytimer_get_millis();
@@ -410,7 +412,7 @@ void key_press_callback(uint8_t key){
                 break;
         }
         game_run();
-		animation_row_compleate();
+		//animation_row_compleate();
 		update_game_display();
     }else{
         printf("Error state.\n");
