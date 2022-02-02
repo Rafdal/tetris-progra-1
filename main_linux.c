@@ -35,13 +35,17 @@
 menu_t *principal_menu = NULL;
 menu_t *pausa_menu = NULL;
 
+
+
 ALLEGRO_DISPLAY *display = NULL;
 ALLEGRO_BITMAP *image = NULL;
 ALLEGRO_BITMAP *muroH = NULL;
 ALLEGRO_BITMAP *muroV = NULL;
+ALLEGRO_BITMAP *pieza_blanca = NULL;
+ALLEGRO_BITMAP *tetris_cartel = NULL;
+
 ALLEGRO_SAMPLE *sample = NULL;
 ALLEGRO_EVENT_QUEUE * event_queue = NULL;
-ALLEGRO_BITMAP *pieza_blanca = NULL;
 blocktext_t * score=NULL;
 
 
@@ -131,7 +135,6 @@ int main (void){
 
 
     menu_set_event_listener_display(read_events, display_menu_display);
-    printf("hasta aca bien\n");
    
     menu_run(principal_menu);
    //main_game_start();
@@ -144,7 +147,6 @@ int main (void){
 
 void main_game_start(void){
 
-    printf("llego hasta aca\n");
     game_data_t game_data;
     uint64_t lastMillis;
 
@@ -200,6 +202,7 @@ void animation_row_compleate(void)
         }
 
 	}
+    int contador_filas_destruidas=0;
     for(i=0; row_compleate[i] != 0 && i< WIDTH ; i++){
         for(z=1; z<=ANCHO; z++){
             al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(row_compleate[i]), BLOCKSZ, BLOCKSZ, 0);
@@ -207,6 +210,11 @@ void animation_row_compleate(void)
         } //pongo el fondo en negro de nuevo
 		delete_row(row_compleate[i]);
 		row_compleate[i]= 0;
+        contador_filas_destruidas++; //incremento contador
+    }
+    if(contador_filas_destruidas==4){
+        al_draw_text(text_font_pointer_fetcher(),al_map_rgb(0,120,120), BLOCKSZ*3,BLOCKSZ*4,CENTRADO,"T E T R I S !");
+
     }
 }
 
@@ -225,7 +233,6 @@ void display_menu_display(void){
     }
     
     text_drawer(menuprin);
-    printf("todo piola\n");
 
 for(id=0; id<menu_data.n_options; id++)
 	{
@@ -263,8 +270,8 @@ void read_events(void){
 
 
 void keypress_callback(uint8_t key){
-
     if(easytimer_delay_active()){ // si hay un delay activo no hago nada
+    printf("se mantiene presionada\n");
         return;
     }
     if(menu_is_current_available()){
@@ -449,12 +456,23 @@ int initialize_alleg(void) {
         al_destroy_event_queue(event_queue);
         return -1;
     }
+    tetris_cartel = al_load_bitmap("./frontend/images/tetris_cartel.png");
+    if (!tetris_cartel) {
+        printf("failed to load tetris_cartel !\n");
+        al_destroy_bitmap(image);
+        al_destroy_bitmap(muroH);
+        al_destroy_bitmap(muroV);
+        al_destroy_bitmap(pieza_blanca);
+        al_destroy_event_queue(event_queue);
+        return -1;
+    }
 
     display = al_create_display(((ANCHO+8)*BLOCKSZ), ((ALTO+1)*BLOCKSZ));
     if (!display) {
         al_destroy_bitmap(image);
         al_destroy_bitmap(muroH);
         al_destroy_bitmap(muroV);
+        al_destroy_bitmap(pieza_blanca);
         al_destroy_event_queue(event_queue);
         fprintf(stderr,"failed to create display!\n");
         return -1;
@@ -467,7 +485,7 @@ int initialize_alleg(void) {
 void  initialize_display_game (void){
     blocktext_t * pieza_sig = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "PIEZA SIGUIENTE", PATH_LATO, BLOCKSZ*(ANCHO+2.5), BLOCKSZ, ALINEADO_IZQUIERDA );
     blocktext_t * puntaje = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "PUNTAJE:", PATH_LATO, BLOCKSZ*(ANCHO+2.5), BLOCKSZ*7, ALINEADO_IZQUIERDA );
-    score = text_init_alleg(al_map_rgb(255,0,0), al_map_rgb(255,255,255), 30, "", PATH_LATO, BLOCKSZ*(ANCHO+2.5), BLOCKSZ*9, ALINEADO_IZQUIERDA );
+    score = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "", PATH_LATO, BLOCKSZ*(ANCHO+2.5), BLOCKSZ*9, ALINEADO_IZQUIERDA );
 
   
     if(puntaje==NULL){
@@ -566,6 +584,8 @@ void end_program (void){
     al_destroy_bitmap(image);
     al_destroy_bitmap(muroH);
     al_destroy_bitmap(muroV);
+    al_destroy_bitmap(pieza_blanca);    
+    al_destroy_bitmap(tetris_cartel);
     al_destroy_event_queue(event_queue);
     al_uninstall_keyboard();
     menu_destroy(principal_menu);
