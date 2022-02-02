@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
+#include <pthread.h>
 
 #include "./backend/game.h"
 #include "./backend/menu.h"
@@ -34,11 +35,14 @@ void animation_row_compleate (void);  //Ejecuta la animacion de fila completa
 void key_press_callback(uint8_t key); // Define los Callbacks de las teclas
 
 int init_audio(char); //Inicializa el audio
-/*
-void* animation_deleate_row(void); //Elimina las filas completas de forma animada
 
-void* animation_text (void); //Muestra un texto en pantalla
-*/
+_Noreturn void * animation_deleate_row(); //Elimina las filas completas de forma animada
+
+_Noreturn void * animation_text (); //Muestra un texto en pantalla
+
+void update_game_animation(uint8_t x_init, uint8_t y_init);
+
+
 
 
 
@@ -192,7 +196,7 @@ void main_game_start(void){
 
 void update_game_display(void){
 
-	rpi_clear_display(); //Limpio el display de la RPI
+	//rpi_clear_display(); //Limpio el display de la RPI
 
 	// Actualizo la matriz del juego y la cargo en la matriz a imprimir
 	matrix_hand_t mat_handler;
@@ -210,6 +214,23 @@ void update_game_display(void){
 
 	printf("SCORE: %u\n", game_get_data().score);
 	printf("LEVEL: %d\n", game_get_data().game_level );
+}
+
+void update_game_animation(uint8_t x_init, uint8_t y_init)
+{
+	// Actualizo la matriz del juego y la cargo en la matriz a imprimir
+	matrix_hand_t mat_handler;
+	assert(mat_init(&mat_handler, HEIGHT, WIDTH));
+	MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, HEIGHT, WIDTH);
+	rpi_copyToDis_area(&mat_handler, x_init, 0, y_init, 0);
+
+	//Actualizo la matriz de la pieza siguiente y la cargo en la matriz a imprimir
+	matrix_hand_t public_next_mat;
+	assert(mat_init(&public_next_mat, 12, 4));
+	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, next_block_public_matrix, 12,4);
+	rpi_copyToDis_area(&public_next_mat, x_init, 11, y_init, 0);
+
+	rpi_run_display(); //Actualizo el display
 }
 
 void destroy_text (void)
@@ -261,44 +282,56 @@ void animation_row_compleate (void)
 	if(row_compleate[0] != 0 ) //Si existe fila completa entro a la animacion
 	{
 
-		int i, j;
-		for(j=0; j < WIDTH; j++) // Me muevo por columnas
+		pthread_t tid1,tid2;
+
+		pthread_create(&tid1,NULL,animation_text,NULL);
+		pthread_create(&tid2,NULL,animation_deleate_row,NULL);
+
+
+		pthread_join(tid1,NULL);
+		pthread_join(tid2,NULL);
+
+	}
+}
+
+_Noreturn void * animation_text ()
+{
+	game_data_t game_data = game_get_data();
+
+	if (game_level != game_data.game_level)
+	{
+		printf("LEVEL UP\n");
+		game_level = game_data.game_level;
+
+		animation = rpi_text_create(16, 0, 0);
+		rpi_text_parse("LEVEL UP", animation);
+
+		rpi_clear_area(0, 0, 5, RPI_WIDTH);
+
+		rpi_text_slide(animation, 100);
+		while(animation->state == RPI_TEXT_STATE_SLIDE)
+			rpi_text_one_slide(animation);
+	}
+}
+
+_Noreturn void * animation_deleate_row()
+{
+	int i, j;
+	for(j=0; j < WIDTH; j++) // Me muevo por columnas
+	{
+		for( i=0; row_compleate[i] != 0 && i< WIDTH ; i++) //Me muevo por filas
 		{
-			for( i=0; row_compleate[i] != 0 && i< WIDTH ; i++) //Me muevo por filas
-			{
-				delete_pixel(row_compleate[i], j);
-			}
-			easytimer_delay(25); //Delay
-			update_game_display(); //Actualizo el display
+			delete_pixel(row_compleate[i], j);
 		}
+		easytimer_delay(150); //Delay
+		rpi_run_display();
+		update_game_animation(0, 5); //Actualizo el display
+	}
 
-		for(i=0; i < 4 ; i++) //Elimino las filas completas
-		{
-			delete_row(row_compleate[i]);
-			row_compleate[i]= 0; //Coloco en cero el arreglo
-		}
-		update_game_display();
-
-
-		game_data_t game_data = game_get_data();
-
-		if (game_level != game_data.game_level)
-		{
-			printf("LEVEL UP\n");
-			game_level = game_data.game_level;
-
-			animation = rpi_text_create(16, 0, 0);
-			rpi_text_parse("LEVEL UP", animation);
-
-			rpi_clear_area(0, 0, 5, RPI_WIDTH);
-
-			rpi_text_slide(animation, 50);
-			while(animation->state == RPI_TEXT_STATE_SLIDE)
-				rpi_text_one_slide(animation);
-
-			rpi_run_display();
-
-		}
+	for(i=0; i < 4 ; i++) //Elimino las filas completas
+	{
+		delete_row(row_compleate[i]);
+		row_compleate[i]= 0; //Coloco en cero el arreglo
 	}
 }
 

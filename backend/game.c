@@ -93,6 +93,7 @@ static void _update_score(int streak, uint8_t lvl);
 static void _init_arr_next_block (void); //Inicializa el arreglo con los proximos bloques
 static void _update_next_block (void); //Actualiza el arreglo con las proximas piezas una vez que la primera pieza de este arreglo ya fue impresa en el juego
 static void _update_level (void); //Actualiza el nivel del juego dependiendo del score obtenido
+static void _refresh_next_block_mat (void); //Actualiza la matriz de la pieza siguiente
 
 // F U N C I O N E S
 
@@ -169,19 +170,9 @@ void _init_arr_next_block (void) //Inicializa el arreglo con los proximos bloque
 	}
 }
 
-// Actualiza el arreglo con las proximas piezas una vez que la primera pieza de este arreglo ya fue impresa en el juego
-void _update_next_block (void)
+void _refresh_next_block_mat (void)
 {
-	int i,j,k;
-	for (i = 0 ; i < 3 ; i++)
-	{
-		id_next_block[i] = id_next_block[i+1];
-		arr_next_block[i] = arr_next_block[i+1];
-	}
-	id_next_block[3] = game_get_next_block();
-	arr_next_block[3] = blocks[id_next_block[3]];
-
-
+	int i, j, k;
 	//Antes de cargar la matriz nueva la limpio asi se carga correctamente con nuevas piezas
 	for(i=0 ; i < 12 ; i++)
 	{
@@ -203,7 +194,21 @@ void _update_next_block (void)
 			}
 		}
 	}
+}
 
+// Actualiza el arreglo con las proximas piezas una vez que la primera pieza de este arreglo ya fue impresa en el juego
+void _update_next_block (void)
+{
+	int i;
+	for (i = 0 ; i < 3 ; i++)
+	{
+		id_next_block[i] = id_next_block[i+1];
+		arr_next_block[i] = arr_next_block[i+1];
+	}
+	id_next_block[3] = game_get_next_block();
+	arr_next_block[3] = blocks[id_next_block[3]];
+
+	_refresh_next_block_mat();
 }
 
 // Funcion que devuelve la Data del Juego
@@ -316,7 +321,8 @@ void game_run(void){
 
 			_update_next_block(); //Una vez usado el primer bloque del arreglo, actualiza este arreglo colocando uno nuevo al final de este
    	 }
-	_update_game_public_matrix();
+		_update_game_public_matrix();
+		_refresh_next_block_mat();
     }
 }
 

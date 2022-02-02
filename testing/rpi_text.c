@@ -164,7 +164,6 @@ void rpi_text_one_slide (rpi_text_block_t* block)
 		if(block->state == RPI_TEXT_STATE_SLIDE){
 			if (easytimer_get_millis() - (block->timestamp) >= block->interval)
 			{
-
 				rpi_text_print(block);
 				rpi_run_display();
 

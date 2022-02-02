@@ -1,5 +1,5 @@
 test: main_test.o menu.o dispEmu.o t_rpi_display.o t_easy_timer.o t_matrix_handler.o teclado_trucho.o game.o rpi_text.o
-	gcc -Wall main_test.o menu.o dispEmu.o easy_timer.o rpi_display.o teclado_trucho.o game.o matrix_handler.o rpi_text.o -o test `pkg-config --libs allegro-5 allegro_audio-5 allegro_acodec-5`
+	gcc -Wall main_test.o menu.o dispEmu.o easy_timer.o rpi_display.o teclado_trucho.o game.o matrix_handler.o rpi_text.o -o test `pkg-config --libs allegro-5 allegro_audio-5 allegro_acodec-5` -lpthread
 
 back: main_back.o game.o easy_timer.o teclado_trucho.o
 	gcc -Wall main_back.o game.o easy_timer.o teclado_trucho.o -o back `pkg-config --libs allegro-5`
@@ -18,7 +18,7 @@ db: main_db.o
 #################
 
 main_test.o: main_test.c
-	gcc -c -Wall main_test.c `pkg-config --cflags allegro-5`
+	gcc -c -Wall main_test.c `pkg-config --cflags allegro-5` -lpthread
 
 main_rasp.o: main_rasp.c
 	gcc -c -Wall main_rasp.c
