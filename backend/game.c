@@ -277,7 +277,7 @@ int _can_write(uint8_t y, uint8_t x){
         return 1;
     }else
 	{
-        if(y==255)
+        if(y>=255)
             game_data.state = GAME_LOSE;
 
         printf("Error! se intento escribir matriz[%u][%u]\n", y, x);
