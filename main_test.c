@@ -139,6 +139,7 @@ int main(void){
 
 	//Setear callback de animacion de eliminar fila
 	game_set_delrow_callback(animation_row_compleate);
+
     // Ejecutar menu principal
     menu_run(main_menu);
 
