@@ -27,7 +27,7 @@
 #define BLOCKSZ 50
 #define ANCHO   10
 #define ALTO    16
-#define PATH_LATO "./frontend/images/Lato-Black.ttf"
+#define PATH_LATO "./frontend/images/Tetris.ttf"
 
 // **************************************
 // *	 V A R S . G L O B A L E S		*
@@ -135,6 +135,7 @@ int main (void){
 
 
     menu_set_event_listener_display(read_events, display_menu_display);
+    game_set_delrow_callback(animation_row_compleate);
    
     menu_run(principal_menu);
    //main_game_start();
@@ -160,7 +161,6 @@ void main_game_start(void){
         if(game_data.state == GAME_RUN && easytimer_get_millis()-lastMillis >= game_data.speed_interval){
             game_move_down();
             game_run();
-			animation_row_compleate();
             update_display();
             lastMillis = easytimer_get_millis();
         }
@@ -178,43 +178,47 @@ void main_game_start(void){
 
 void animation_row_compleate(void)
 {
-	int i;
-    int z;
-    float reductor;
-    float angulo;
-    float decremento= 0.1;
+    if(row_compleate[0])
+    {
+        int i;
+        int z;
+        float reductor;
+        float angulo;
+        float decremento= 0.1;
+        int contador_filas_destruidas;
+        int indicador;
 
-    for(reductor=2.1, angulo=0; reductor>=0; angulo+=(3.1415/8)){
- 
-        for(z=1; z<=ANCHO; z++){
+        for(reductor=2.1, angulo=0, indicador=0; reductor>=0; angulo+=(3.1415/8)){
+    
+            for(z=1; z<=ANCHO; z++){
 
-	        for( i=0; row_compleate[i] != 0 && i< WIDTH ; i++)
-	    {
-                al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(row_compleate[i]), BLOCKSZ, BLOCKSZ, 0);
-              //pongo el fondo en negro
-                al_draw_tinted_scaled_rotated_bitmap(pieza_blanca,  al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(pieza_blanca)/2, al_get_bitmap_height(pieza_blanca)/2, (BLOCKSZ/2 +BLOCKSZ*z), (BLOCKSZ/2 +BLOCKSZ*(row_compleate[i])),reductor, reductor, angulo, 0);
-                //se va haciendo mas chia a medida que rota
-                al_flip_display();
-                easytimer_delay(5);
-                
+                for( i=0, contador_filas_destruidas=0; row_compleate[i] != 0 && i< WIDTH ; i++){
+                    al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(row_compleate[i]), BLOCKSZ, BLOCKSZ, 0);
+                //pongo el fondo en negro
+                    al_draw_tinted_scaled_rotated_bitmap(pieza_blanca,  al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(pieza_blanca)/2, al_get_bitmap_height(pieza_blanca)/2, (BLOCKSZ/2 +BLOCKSZ*z), (BLOCKSZ/2 +BLOCKSZ*(row_compleate[i])),reductor, reductor, angulo, 0);
+                    //se va haciendo mas chia a medida que rota
+                    al_flip_display();
+                    easytimer_delay(5);
+                    contador_filas_destruidas++; //incremento contador
+                    if(contador_filas_destruidas==4 && !indicador){
+                        al_draw_text(text_font_pointer_fetcher(),al_map_rgb(0,120,120), BLOCKSZ*6,BLOCKSZ*4,CENTRADO,"T E T R I S !");
+                        al_flip_display();
+                        indicador++;
+                        }
+                }
+                reductor-=decremento;
             }
-            reductor-=decremento;
+
         }
-
-	}
-    int contador_filas_destruidas=0;
-    for(i=0; row_compleate[i] != 0 && i< WIDTH ; i++){
-        for(z=1; z<=ANCHO; z++){
-            al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(row_compleate[i]), BLOCKSZ, BLOCKSZ, 0);
-            al_flip_display();
-        } //pongo el fondo en negro de nuevo
-		delete_row(row_compleate[i]);
-		row_compleate[i]= 0;
-        contador_filas_destruidas++; //incremento contador
-    }
-    if(contador_filas_destruidas==4){
-        al_draw_text(text_font_pointer_fetcher(),al_map_rgb(0,120,120), BLOCKSZ*3,BLOCKSZ*4,CENTRADO,"T E T R I S !");
-
+        for(i=0; row_compleate[i] != 0 && i< WIDTH ; i++){
+            for(z=1; z<=ANCHO; z++){
+                al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(row_compleate[i]), BLOCKSZ, BLOCKSZ, 0);
+                al_flip_display();
+            } //pongo el fondo en negro de nuevo
+            delete_row(row_compleate[i]);
+            row_compleate[i]= 0;
+        }
+        
     }
 }
 
@@ -224,9 +228,9 @@ void display_menu_display(void){
     menu_t menu_data = menu_get_current_menu_data();
     uint8_t id;
     al_clear_to_color(al_map_rgb(0,0,0));   //fondo negro
-
+    al_draw_scaled_bitmap(tetris_cartel, 0, 0, al_get_bitmap_width(tetris_cartel), al_get_bitmap_height(tetris_cartel),BLOCKSZ*3, BLOCKSZ, al_get_display_width(display)-BLOCKSZ*6, BLOCKSZ*8, 0);
     
-    blocktext_t * menuprin = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, menu_data.title, PATH_LATO, al_get_display_width(display)/2, BLOCKSZ, CENTRADO );
+    blocktext_t * menuprin = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 45, menu_data.title, PATH_LATO, al_get_display_width(display)/2, al_get_display_height(display)/2+BLOCKSZ*2, CENTRADO );
     if(text_global_font_changer(menuprin))
     {
         printf("error con text_global_font_changer");
@@ -237,13 +241,13 @@ void display_menu_display(void){
 for(id=0; id<menu_data.n_options; id++)
 	{
         if(menu_data.current_option == id){
-            blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(0,255,0), 30, menu_data.option_titles[id], PATH_LATO, al_get_display_width(display)/2, BLOCKSZ*(3+2*id), CENTRADO );
+            blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(0,255,0), 30, menu_data.option_titles[id], PATH_LATO, al_get_display_width(display)/2,(al_get_display_height(display)/2)+(BLOCKSZ*(4+id)), CENTRADO );
             text_drawer(menuop);
             text_destroy(menuop);
         }// si es la que esta siendo apuntada, la dibujo en verde
 
         else{
-            blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, menu_data.option_titles[id], PATH_LATO, al_get_display_width(display)/2, BLOCKSZ*(3+2*id), CENTRADO );
+            blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, menu_data.option_titles[id], PATH_LATO, al_get_display_width(display)/2, (al_get_display_height(display)/2)+(BLOCKSZ*(4+id)), CENTRADO );
             text_drawer(menuop);
             text_destroy(menuop);
         }//si no, en blanco
@@ -339,10 +343,10 @@ switch (key)
             printf("UPLEFT\n");
             break;
 
-        case KEYB_SPACE:
+        /*case KEYB_SPACE:
             game_start();
             printf("BTN\n");
-            break;
+            break;*/
 
         case KEYB_ESC:
             menu_run(pausa_menu);
@@ -354,7 +358,6 @@ switch (key)
         break;
     }
     game_run();
-	animation_row_compleate();
     update_display(); // estamos viendo si esto buguea la eliminacion de filas
     }
 }
@@ -483,29 +486,26 @@ int initialize_alleg(void) {
 }
     
 void  initialize_display_game (void){
-    blocktext_t * pieza_sig = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "PIEZA SIGUIENTE", PATH_LATO, BLOCKSZ*(ANCHO+2.5), BLOCKSZ, ALINEADO_IZQUIERDA );
+    blocktext_t * pieza_sig = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 25, "PIEZA  SIGUIENTE", PATH_LATO, BLOCKSZ*(ANCHO+2.5), BLOCKSZ, ALINEADO_IZQUIERDA );
     blocktext_t * puntaje = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "PUNTAJE:", PATH_LATO, BLOCKSZ*(ANCHO+2.5), BLOCKSZ*7, ALINEADO_IZQUIERDA );
     score = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "", PATH_LATO, BLOCKSZ*(ANCHO+2.5), BLOCKSZ*9, ALINEADO_IZQUIERDA );
 
-  
     if(puntaje==NULL){
         printf("problema con pieza_sig");   
     }
 
-    /*if(text_global_font_changer(pieza_sig))
+    if(text_global_font_changer(pieza_sig))
     {
         printf("error con text_global_font_changer");
-    } */
-     
-   if(pieza_sig==NULL){
-       printf("error con la pieza sig");
-        al_destroy_bitmap(image);
-        al_destroy_bitmap(muroH);
-        al_destroy_bitmap(muroV);
-        al_destroy_event_queue(event_queue);
-        al_destroy_display(display);
-   }
+    }
+
+    al_clear_to_color(al_map_rgb(0,0,0));
     text_drawer(pieza_sig);
+
+    if(text_global_font_changer(puntaje))
+    {
+        printf("error con text_global_font_changer");
+    }
     text_drawer(puntaje);
     
    
