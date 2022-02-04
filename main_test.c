@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
+#include <pthread.h>
 
 #include "./backend/game.h"
 #include "./backend/menu.h"
@@ -35,6 +36,17 @@ void key_press_callback(uint8_t key); // Define los Callbacks de las teclas
 
 int init_audio(char); //Inicializa el audio
 
+_Noreturn void * animation_deleate_row(); //Elimina las filas completas de forma animada
+
+_Noreturn void * animation_text (); //Muestra un texto en pantalla
+
+void update_game_animation(uint8_t x_init, uint8_t y_init);
+
+void animation_game_finish(void);
+
+
+
+
 
 // **************************************
 // *	 V A R S . G L O B A L E S		*
@@ -43,7 +55,9 @@ menu_t *main_menu = NULL;
 menu_t *pause_menu = NULL;
 
 rpi_text_block_t* text[6] = {NULL, NULL, NULL, NULL, NULL, NULL}; //Reserva de puntero para los bloques de textos
+rpi_text_block_t* animation = NULL; //Reserva de puntero para animacion
 
+static uint8_t game_level = 1;
 
 // ******************************
 // *	C A L L B A C K S		*
@@ -58,6 +72,7 @@ void exit_game(void){
 void restart_game(void){
 	rpi_clear_display(); //limpio el display
     menu_force_close(pause_menu); // Cerrar menu pausa
+	game_level = 1;
 	game_init();	//Inicio el juego
     game_start(); 	//Corre el juego
 }
@@ -124,6 +139,9 @@ int main(void){
     menu_set_event_listener_display(dpad_read, update_menu_display);
     menu_set_animation_callback(run_display_effects);
 
+	//Setear callback de animacion de eliminar fila
+	game_set_delrow_callback(animation_row_compleate);
+
     // Ejecutar menu principal
     menu_run(main_menu);
 
@@ -166,14 +184,14 @@ void main_game_start(void){
         if(game_data.state == GAME_RUN && easytimer_get_millis()-lastMillis >= game_data.speed_interval){
             game_move_down();
             game_run();	//Corro el juego
-			animation_row_compleate();	//Analizo si se completo una fila y corro lo animacion
+			//animation_row_compleate();	//Analizo si se completo una fila y corro lo animacion
             update_game_display();  //Actualizo el display
 
             lastMillis = easytimer_get_millis();
         }
 
         if(game_data.state == GAME_LOSE){
-            printf("Perdiste! The Game\n");
+			animation_game_finish();
             break;
             #warning BREAK HARDCODEADO
         }
@@ -183,7 +201,13 @@ void main_game_start(void){
 
 void update_game_display(void){
 
-	rpi_clear_display(); //Limpio el display de la RPI
+	game_data_t game_data = game_get_data();
+
+	animation = rpi_text_create(16, 11, 12);
+	char buffer[50];
+	int n = sprintf(buffer, "%d", game_data.game_level);
+	rpi_text_parse(buffer, animation);
+	rpi_text_print(animation);
 
 	// Actualizo la matriz del juego y la cargo en la matriz a imprimir
 	matrix_hand_t mat_handler;
@@ -193,14 +217,31 @@ void update_game_display(void){
 
 	//Actualizo la matriz de la pieza siguiente y la cargo en la matriz a imprimir
 	matrix_hand_t public_next_mat;
-	assert(mat_init(&public_next_mat, 12, 4));
-	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, next_block_public_matrix, 12,4);
+	assert(mat_init(&public_next_mat, 11, 4));
+	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, next_block_public_matrix, 11,4);
 	rpi_copyToDis(&public_next_mat, 0, 11);
 
 	rpi_run_display(); //Actualizo el display
 
 	printf("SCORE: %u\n", game_get_data().score);
 	printf("LEVEL: %d\n", game_get_data().game_level );
+}
+
+void update_game_animation(uint8_t x_init, uint8_t y_init)
+{
+	// Actualizo la matriz del juego y la cargo en la matriz a imprimir
+	matrix_hand_t mat_handler;
+	assert(mat_init(&mat_handler, HEIGHT, WIDTH));
+	MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, HEIGHT, WIDTH);
+	rpi_copyToDis_area(&mat_handler, x_init, 0, y_init, 0);
+
+	//Actualizo la matriz de la pieza siguiente y la cargo en la matriz a imprimir
+	matrix_hand_t public_next_mat;
+	assert(mat_init(&public_next_mat, 12, 4));
+	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, next_block_public_matrix, 12,4);
+	rpi_copyToDis_area(&public_next_mat, x_init, 11, y_init, 0);
+
+	rpi_run_display(); //Actualizo el display
 }
 
 void destroy_text (void)
@@ -249,20 +290,58 @@ void update_menu_display(void)
 
 void animation_row_compleate (void)
 {
-	if(row_compleate[0] != 0) //Si existe fila completa entro a la animacion
+	if(row_compleate[0] != 0 ) //Si existe fila completa entro a la animacion
 	{
-		int i, j;
-		for(j=0; j < WIDTH; j++) // Me muevo por columnas
-		{
-			for( i=0; row_compleate[i] != 0 && i< WIDTH ; i++) //Me muevo por filas
-			{
-				delete_pixel(row_compleate[i], j);
-			}
-			easytimer_delay(15); //Delay
-			update_game_display(); //Actualizo el display
-		}
 
-		for(i=0; i < 4 ; i++) //Elimino las filas completas
+		pthread_t tid1,tid2;
+
+		pthread_create(&tid1,NULL,animation_text,NULL);
+		pthread_create(&tid2,NULL,animation_deleate_row,NULL);
+
+
+		pthread_join(tid1,NULL);
+		pthread_join(tid2,NULL);
+
+	}
+}
+
+_Noreturn void * animation_text ()
+{
+	game_data_t game_data = game_get_data();
+
+	if (game_level != game_data.game_level)
+	{
+		printf("LEVEL UP\n");
+		game_level = game_data.game_level;
+
+		animation = rpi_text_create(16, 0, 0);
+		rpi_text_parse("LEVEL UP", animation);
+
+		rpi_clear_area(0, 0, 5, RPI_WIDTH);
+
+		rpi_text_slide(animation, 100);
+		while(animation->state == RPI_TEXT_STATE_SLIDE)
+			rpi_text_one_slide(animation);
+	}
+}
+
+_Noreturn void * animation_deleate_row()
+{
+	int i, j;
+	for(j=0; j < WIDTH; j++) // Me muevo por columnas
+	{
+		for( i=0; row_compleate[i] != 0 && i< WIDTH ; i++) //Me muevo por filas
+		{
+			delete_pixel(row_compleate[i], j);
+		}
+		easytimer_delay(100); //Delay
+		rpi_run_display();
+		update_game_animation(0, 5); //Actualizo el display
+	}
+
+	for(i=0; i < 4 ; i++) //Elimino las filas completas
+	{
+		if(row_compleate[i] != 0)
 		{
 			delete_row(row_compleate[i]);
 			row_compleate[i]= 0; //Coloco en cero el arreglo
@@ -345,7 +424,7 @@ void key_press_callback(uint8_t key){
                 break;
         }
         game_run();
-		animation_row_compleate();
+		//animation_row_compleate();
 		update_game_display();
     }else{
         printf("Error state.\n");
@@ -407,4 +486,43 @@ int init_audio(char destroy) {
 		al_destroy_sample(sample);
 	}
 	return 0;
+}
+
+void animation_game_finish(void)
+{
+	game_data_t game_data = game_get_data();
+	
+	rpi_clear_display();
+	char score[16];
+	int n = sprintf(score, "%d", game_data.score);
+	
+	animation = rpi_text_create(16, 2, RPI_WIDTH);
+	text[0] = rpi_text_create(16, 10, 0);
+	
+	rpi_text_parse("PERDISTE", animation);
+	rpi_text_parse(score, text[0]);
+
+	rpi_text_slide(animation, 200);
+
+	printf("STRING SIZE: %lu\n", strlen(score));
+
+	if(strlen(score) > 3)
+	{
+		rpi_text_slide(text[0], 200);
+		set_offset(text[0], RPI_WIDTH + 2, 10, 0, 0);
+
+		while(animation->state == RPI_TEXT_STATE_SLIDE)
+		{
+			rpi_text_one_slide(animation);
+			rpi_text_one_slide(text[0]);
+		}
+	}
+	else
+	{
+		rpi_text_print(text[0]);
+		while (animation->state == RPI_TEXT_STATE_SLIDE)
+			rpi_text_one_slide(animation);
+	}
+
+
 }
