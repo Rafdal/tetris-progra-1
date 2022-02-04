@@ -51,8 +51,20 @@ CCADMIN=CCadmin
 
 
 # build
-build: audio_lib.c
-	gcc audio_lib.c -Wall -o audio `pkg-config --libs allegro-5 allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5`
+audio: audio_test.o audio_lib.o keyboard.o
+	gcc audio_test.o audio_lib.o keyboard.o easy_timer.o -o audio `pkg-config --libs allegro-5 allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5`
+
+audio_test.o: audio_test.c audio_lib.o keyboard.o
+	gcc audio_test.c -Wall -c `pkg-config --libs allegro-5 allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5`
+
+audio_lib.o: audio_lib.c audio_lib.h
+	gcc audio_lib.c -Wall -c `pkg-config --libs allegro-5 allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5`
+
+keyboard.o: keyboard.c keyboard.h
+	gcc keyboard.c  -c -Wall `pkg-config --cflags allegro-5`
+
+easy_timer.o: easy_timer.c easy_timer.h
+	gcc -c -Wall easy_timer.c
 
 #.build-post
 
