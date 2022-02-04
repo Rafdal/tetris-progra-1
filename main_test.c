@@ -42,6 +42,8 @@ _Noreturn void * animation_text (); //Muestra un texto en pantalla
 
 void update_game_animation(uint8_t x_init, uint8_t y_init);
 
+void animation_game_finish(void);
+
 
 
 
@@ -53,7 +55,7 @@ menu_t *main_menu = NULL;
 menu_t *pause_menu = NULL;
 
 rpi_text_block_t* text[6] = {NULL, NULL, NULL, NULL, NULL, NULL}; //Reserva de puntero para los bloques de textos
-rpi_text_block_t* animation = NULL;
+rpi_text_block_t* animation = NULL; //Reserva de puntero para animacion
 
 static uint8_t game_level = 1;
 
@@ -189,7 +191,7 @@ void main_game_start(void){
         }
 
         if(game_data.state == GAME_LOSE){
-            printf("Perdiste! The Game\n");
+			animation_game_finish();
             break;
             #warning BREAK HARDCODEADO
         }
@@ -199,7 +201,13 @@ void main_game_start(void){
 
 void update_game_display(void){
 
-	//rpi_clear_display(); //Limpio el display de la RPI
+	game_data_t game_data = game_get_data();
+
+	animation = rpi_text_create(16, 11, 12);
+	char buffer[50];
+	int n = sprintf(buffer, "%d", game_data.game_level);
+	rpi_text_parse(buffer, animation);
+	rpi_text_print(animation);
 
 	// Actualizo la matriz del juego y la cargo en la matriz a imprimir
 	matrix_hand_t mat_handler;
@@ -209,8 +217,8 @@ void update_game_display(void){
 
 	//Actualizo la matriz de la pieza siguiente y la cargo en la matriz a imprimir
 	matrix_hand_t public_next_mat;
-	assert(mat_init(&public_next_mat, 12, 4));
-	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, next_block_public_matrix, 12,4);
+	assert(mat_init(&public_next_mat, 11, 4));
+	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, next_block_public_matrix, 11,4);
 	rpi_copyToDis(&public_next_mat, 0, 11);
 
 	rpi_run_display(); //Actualizo el display
@@ -326,15 +334,18 @@ _Noreturn void * animation_deleate_row()
 		{
 			delete_pixel(row_compleate[i], j);
 		}
-		easytimer_delay(150); //Delay
+		easytimer_delay(100); //Delay
 		rpi_run_display();
 		update_game_animation(0, 5); //Actualizo el display
 	}
 
 	for(i=0; i < 4 ; i++) //Elimino las filas completas
 	{
-		delete_row(row_compleate[i]);
-		row_compleate[i]= 0; //Coloco en cero el arreglo
+		if(row_compleate[i] != 0)
+		{
+			delete_row(row_compleate[i]);
+			row_compleate[i]= 0; //Coloco en cero el arreglo
+		}
 	}
 }
 
@@ -475,4 +486,43 @@ int init_audio(char destroy) {
 		al_destroy_sample(sample);
 	}
 	return 0;
+}
+
+void animation_game_finish(void)
+{
+	game_data_t game_data = game_get_data();
+	
+	rpi_clear_display();
+	char score[16];
+	int n = sprintf(score, "%d", game_data.score);
+	
+	animation = rpi_text_create(16, 2, RPI_WIDTH);
+	text[0] = rpi_text_create(16, 10, 0);
+	
+	rpi_text_parse("PERDISTE", animation);
+	rpi_text_parse(score, text[0]);
+
+	rpi_text_slide(animation, 200);
+
+	printf("STRING SIZE: %lu\n", strlen(score));
+
+	if(strlen(score) > 3)
+	{
+		rpi_text_slide(text[0], 200);
+		set_offset(text[0], RPI_WIDTH + 2, 10, 0, 0);
+
+		while(animation->state == RPI_TEXT_STATE_SLIDE)
+		{
+			rpi_text_one_slide(animation);
+			rpi_text_one_slide(text[0]);
+		}
+	}
+	else
+	{
+		rpi_text_print(text[0]);
+		while (animation->state == RPI_TEXT_STATE_SLIDE)
+			rpi_text_one_slide(animation);
+	}
+
+
 }
