@@ -527,6 +527,7 @@ void animation_game_finish(void)
 	else
 	{
 		rpi_text_print(text_stat);
+        rpi_text_slide(text_anim,100);
 		while (text_anim->state == RPI_TEXT_STATE_SLIDE)
 			rpi_text_one_slide(text_anim);
 	}
