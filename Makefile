@@ -86,7 +86,7 @@ teclado_trucho.o: ./testing/joystick.c ./testing/joystick.h
 dispEmu.o: ./testing/disdrv.c ./testing/disdrv.h
 	gcc -c -Wall ./testing/disdrv.c -o dispEmu.o
 
-rpi_text.o: ./testing/rpi_text.c ./testing/rpi_text.h
+rpi_text.o: ./testing/rpi_text.c ./testing/rpi_text.h ./testing/rpi_chars.h
 	gcc -c -Wall ./testing/rpi_text.c
 	
 clean:

@@ -7,8 +7,6 @@ typedef uint8_t rpi_char_t[8]; // 8 byte array
 
 // hecho a manopla con https://maxpromer.github.io/LCD-Character-Creator/
 
-void rpi_putchar(char c, uint8_t y, uint8_t x);
-
 
 static const rpi_char_t UNKNOWN_ = {
     0x1F,
@@ -336,8 +334,8 @@ static const rpi_char_t ascii_0_z[] = {
         0x00
     }, // M
     {
-        0x00,
         0x18,
+        0x14,
         0x14,
         0x14,
         0x14,
@@ -436,17 +434,17 @@ static const rpi_char_t ascii_0_z[] = {
         0x00
     }, // W
     {
-        0x00,
+        0x14,
         0x14,
         0x08,
-        0x08,
+        0x14,
         0x14,
         0x00,
         0x00,
         0x00
     }, // X
     {
-        0x00,
+        0x14,
         0x14,
         0x08,
         0x08,

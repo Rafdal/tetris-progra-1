@@ -129,13 +129,13 @@ int main(void){
     }
 
 	// CALLBACKS DE OPCIONES DE MENU MAIN
-    menu_set_option(main_menu, 0, "JUGAR", main_game_start);
-    menu_set_option(main_menu, 1, "SALIR", menu_force_close_current);
+    menu_set_option(main_menu, 0, "PLAY", main_game_start);
+    menu_set_option(main_menu, 1, "EXIT", menu_force_close_current);
 
 	// CALLBACKS DE OPCIONES DEL MENU DE PAUSA
-	menu_set_option(pause_menu, 0, "REANUDAR", resume_game);
-    menu_set_option(pause_menu, 1, "REINICIAR", restart_game);
-    menu_set_option(pause_menu, 2, "SALIR", exit_game);
+	menu_set_option(pause_menu, 0, "RESUME", resume_game);
+    menu_set_option(pause_menu, 1, "RESTART", restart_game);
+    menu_set_option(pause_menu, 2, "EXIT", exit_game);
 
 	// RESERVA DE MEMORIA PARA EL BLOQUE DE TEXTOS DESLIZANTES Y LOS ESTATICOS
     text_stat = rpi_text_reserve(STR_SIZES);
@@ -421,6 +421,7 @@ void key_press_callback(uint8_t key){
                 break;
 
             case DPAD_BTN:
+				rpi_clear_display();
                 menu_run(pause_menu);
                 printf("game BTN\n");
                 break;
