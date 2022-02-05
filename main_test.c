@@ -34,11 +34,11 @@ void update_game_display(void); // Actualiza la matriz del juego
 
 void destroy_text (void); //Destruye los bloques de textos deslizantes
 
-void run_display_effects(void);	// Ejecuta los efectos del display de la RPI
+void run_menu_effects(void);	// Ejecuta los efectos del display de la RPI
 
 void update_menu_display(void);	//Actualiza el display del menu
 
-void animation_row_compleate (void);  //Ejecuta la animacion de fila completa
+void animation_row_complete (void);  //Ejecuta la animacion de fila completa
 
 void key_press_callback(uint8_t key); // Define los Callbacks de las teclas
 
@@ -54,6 +54,11 @@ void animation_game_finish(void);
 
 void animation_game_start (void);
 
+void exit_game(void);
+
+void restart_game(void);
+
+void resume_game(void);
 
 
 
@@ -68,30 +73,6 @@ rpi_text_block_t* text_anim = NULL; // Puntero para texto deslizante con anumaci
 
 static uint8_t game_level = 1;
 
-// ******************************
-// *	C A L L B A C K S		*
-// ******************************
-//CALLBACK DE EXIT GAME
-void exit_game(void){
-    game_quit();                  // Finalizar juego
-    menu_force_close(pause_menu); // Cerrar menu pausa
-}
-
-//CALLBACK DE REINICIO DE JUEGO
-void restart_game(void){
-	rpi_clear_display(); //limpio el display
-    menu_force_close(pause_menu); // Cerrar menu pausa
-	game_init();	//Inicio el juego
-    game_start(); 	//Corre el juego
-}
-
-//CALLBACK DE RENAUDAR JUEGO
-void resume_game(void)
-{
-	rpi_clear_display(); 	//Limpia el display
-	menu_force_close(pause_menu); //Cierra el menu de pausa
-	game_run();	//Corre el juego
-}
 
 
 // ******************
@@ -145,10 +126,10 @@ int main(void){
 
     // Setear los callbacks que controlaran el menu
     menu_set_event_listener_display(dpad_read, update_menu_display);
-    menu_set_animation_callback(run_display_effects);
+    menu_set_animation_callback(run_menu_effects);
 
 	//Setear callback de animacion de eliminar fila
-	game_set_delrow_callback(animation_row_compleate);
+	game_set_delrow_callback(animation_row_complete);
 
 	animation_game_start();
 
@@ -177,92 +158,33 @@ int main(void){
     return 0;
 }
 
-// ******************************
-// *	F U N C I O N E S		*
-// ******************************
-void main_game_start(void){
 
+// **************************************
+// *	M E N U    C A L L B A C K S	*
+// **************************************
+//CALLBACK DE EXIT GAME
+void exit_game(void){
+    game_quit();                  // Finalizar juego
+    menu_force_close(pause_menu); // Cerrar menu pausa
+}
+
+//CALLBACK DE REINICIO DE JUEGO
+void restart_game(void){
+	rpi_clear_display(); //limpio el display
+    menu_force_close(pause_menu); // Cerrar menu pausa
 	game_init();	//Inicio el juego
-	rpi_clear_display(); //Limpio el display
-
-    game_data_t game_data;
-    uint64_t lastMillis;
-
-    game_start(); //Empiezo el juego
-
-    while ((game_data = game_get_data()).state != GAME_QUIT)
-    {
-        dpad_read(); //Leo el pad
-
-		//Funcion para que la pieza baje sola
-        if(game_data.state == GAME_RUN && easytimer_get_millis()-lastMillis >= game_data.speed_interval){
-            game_move_down();
-            game_run();	//Corro el juego
-			//animation_row_compleate();	//Analizo si se completo una fila y corro lo animacion
-            update_game_display();  //Actualizo el display
-
-            lastMillis = easytimer_get_millis();
-        }
-
-        if(game_data.state == GAME_LOSE){
-			animation_game_finish();
-			rpi_clear_display();
-			game_quit();
-        }
-    }
-    printf("Leaving game...\n");
-	rpi_clear_display();
+    game_start(); 	//Corre el juego
 }
 
-void update_game_display(void){
-
-	rpi_clear_display();
-
-	game_data_t game_data = game_get_data();
-
-    rpi_text_set_offset(text_stat,12,11,0,0);
-
-	char buffer[32];
-	sprintf(buffer, "%d", game_data.game_level);
-	rpi_text_set(buffer, text_stat);
-	rpi_text_print(text_stat);
-
-	// Actualizo la matriz del juego y la cargo en la matriz a imprimir
-	matrix_hand_t mat_handler;
-	assert(mat_init(&mat_handler, HEIGHT, WIDTH));
-	MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, HEIGHT, WIDTH);
-	rpi_copyToDis(&mat_handler, 0, 0);
-
-	//Actualizo la matriz de la pieza siguiente y la cargo en la matriz a imprimir
-	matrix_hand_t public_next_mat;
-	assert(mat_init(&public_next_mat, 11, 4));
-	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, next_block_public_matrix, 11,4);
-	rpi_copyToDis(&public_next_mat, 0, 11);
-
-	rpi_run_display(); //Actualizo el display
-
-	printf("SCORE: %u\n", game_get_data().score);
-	printf("LEVEL: %d\n", game_get_data().game_level);
-}
-
-void update_game_animation(uint8_t x_init, uint8_t y_init)
+//CALLBACK DE RENAUDAR JUEGO
+void resume_game(void)
 {
-	// Actualizo la matriz del juego y la cargo en la matriz a imprimir
-	matrix_hand_t mat_handler;
-	assert(mat_init(&mat_handler, HEIGHT, WIDTH));
-	MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, HEIGHT, WIDTH);
-	rpi_copyToDis_area(&mat_handler, x_init, 0, y_init, 0);
-
-	//Actualizo la matriz de la pieza siguiente y la cargo en la matriz a imprimir
-	matrix_hand_t public_next_mat;
-	assert(mat_init(&public_next_mat, 12, 4));
-	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, next_block_public_matrix, 12,4);
-	rpi_copyToDis_area(&public_next_mat, x_init, 11, y_init, 0);
-
-	rpi_run_display(); //Actualizo el display
+	rpi_clear_display(); 	//Limpia el display
+	menu_force_close(pause_menu); //Cierra el menu de pausa
+	game_run();	//Corre el juego
 }
 
-void run_display_effects(void)
+void run_menu_effects(void)
 {
 	menu_t menu_data = menu_get_current_menu_data();
     uint8_t id;
@@ -296,71 +218,9 @@ void update_menu_display(void)
     rpi_run_display(); //Actualizo el display
 }
 
-void animation_row_compleate (void)
-{
-	if(row_compleate[0] != 0 ) //Si existe fila completa entro a la animacion
-	{
 
-		pthread_t tid1,tid2;
-
-		pthread_create(&tid1,NULL,animation_text,NULL);
-		pthread_create(&tid2,NULL,animation_deleate_row,NULL);
-
-
-		pthread_join(tid1,NULL);
-		pthread_join(tid2,NULL);
-
-	}
-}
-
-_Noreturn void * animation_text ()
-{
-	game_data_t game_data = game_get_data();
-
-	if (game_level != game_data.game_level)
-	{
-		game_level = game_data.game_level;
-		char level_string[16];
-		sprintf(level_string, "LEVEL %d", game_level);
-
-        rpi_text_set_offset(text_anim, 0, 0, 0, 0);
-		rpi_text_slide(text_anim, 50);
-		rpi_text_set(level_string, text_anim);
-
-		rpi_clear_area(0, 0, 5, RPI_WIDTH);
-
-		// rpi_text_slide(text_anim, 100);
-		while(text_anim->state == RPI_TEXT_STATE_SLIDE)
-			rpi_text_one_slide(text_anim);
-	}
-}
-
-_Noreturn void * animation_deleate_row()
-{
-	int i, j;
-	for(j=0; j < WIDTH; j++) // Me muevo por columnas
-	{
-		for( i=0; row_compleate[i] != 0 && i< WIDTH ; i++) //Me muevo por filas
-		{
-			delete_pixel(row_compleate[i], j);
-		}
-		easytimer_delay(125); //Delay
-		rpi_run_display();
-		update_game_animation(0, 5); //Actualizo el display
-	}
-
-	for(i=0; i < 4 ; i++) //Elimino las filas completas
-	{
-		if(row_compleate[i] != 0)
-		{
-			delete_row(row_compleate[i]);
-			row_compleate[i]= 0; //Coloco en cero el arreglo
-		}
-	}
-}
 
 void key_press_callback(uint8_t key){
-    printf("keypress cback\n");
     DEBUG("key_press_callback");
     if(easytimer_delay_active()){ // si el delay esta activo
         return; // no hacer nada
@@ -437,11 +297,162 @@ void key_press_callback(uint8_t key){
                 break;
         }
         game_run();
-		//animation_row_compleate();
+		//animation_row_complete();
 		update_game_display();
     }else{
         printf("Error state.\n");
     }
+}
+
+
+// ***********************************************
+// *	F U N C I O N E S	 D E L    J U E G O	 *
+// ***********************************************
+void main_game_start(void){
+
+	game_init();	//Inicio el juego
+	rpi_clear_display(); //Limpio el display
+
+    game_data_t game_data;
+    uint64_t lastMillis;
+
+    game_start(); //Empiezo el juego
+
+    while ((game_data = game_get_data()).state != GAME_QUIT)
+    {
+        dpad_read(); //Leo el pad
+
+		//Funcion para que la pieza baje sola
+        if(game_data.state == GAME_RUN && easytimer_get_millis()-lastMillis >= game_data.speed_interval){
+            game_move_down();
+            game_run();	//Corro el juego
+			//animation_row_complete();	//Analizo si se completo una fila y corro lo animacion
+            update_game_display();  //Actualizo el display
+
+            lastMillis = easytimer_get_millis();
+        }
+
+        if(game_data.state == GAME_LOSE){
+			animation_game_finish();
+			rpi_clear_display();
+			game_quit();
+        }
+    }
+    printf("Leaving game...\n");
+	rpi_clear_display();
+}
+
+void update_game_display(void){
+
+	rpi_clear_display();
+
+	game_data_t game_data = game_get_data();
+
+    rpi_text_set_offset(text_stat,12,11,0,0);
+
+	char buffer[32];
+	sprintf(buffer, "%d", game_data.game_level);
+	rpi_text_set(buffer, text_stat);
+	rpi_text_print(text_stat);
+
+	// Actualizo la matriz del juego y la cargo en la matriz a imprimir
+	matrix_hand_t mat_handler;
+	assert(mat_init(&mat_handler, HEIGHT, WIDTH));
+	MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, HEIGHT, WIDTH);
+	rpi_copyToDis(&mat_handler, 0, 0);
+
+	//Actualizo la matriz de la pieza siguiente y la cargo en la matriz a imprimir
+	matrix_hand_t public_next_mat;
+	assert(mat_init(&public_next_mat, 11, 4));
+	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, next_block_public_matrix, 11,4);
+	rpi_copyToDis(&public_next_mat, 0, 11);
+
+	rpi_run_display(); //Actualizo el display
+
+	printf("SCORE: %u\n", game_get_data().score);
+	printf("LEVEL: %d\n", game_get_data().game_level);
+}
+
+void update_game_animation(uint8_t x_init, uint8_t y_init)
+{
+	// Actualizo la matriz del juego y la cargo en la matriz a imprimir
+	matrix_hand_t mat_handler;
+	assert(mat_init(&mat_handler, HEIGHT, WIDTH));
+	MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, HEIGHT, WIDTH);
+	rpi_copyToDis_area(&mat_handler, x_init, 0, y_init, 0);
+
+	//Actualizo la matriz de la pieza siguiente y la cargo en la matriz a imprimir
+	matrix_hand_t public_next_mat;
+	assert(mat_init(&public_next_mat, 12, 4));
+	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, next_block_public_matrix, 12,4);
+	rpi_copyToDis_area(&public_next_mat, x_init, 11, y_init, 0);
+
+	rpi_run_display(); //Actualizo el display
+}
+
+
+
+void animation_row_complete (void)
+{
+	if(row_complete[0] != 0 ) //Si existe fila completa entro a la animacion
+	{
+
+		pthread_t tid1,tid2;
+
+		pthread_create(&tid1,NULL,animation_text,NULL);
+		pthread_create(&tid2,NULL,animation_deleate_row,NULL);
+
+
+		pthread_join(tid1,NULL);
+		pthread_join(tid2,NULL);
+
+	}
+}
+
+_Noreturn void * animation_text ()
+{
+	game_data_t game_data = game_get_data();
+
+	if (game_level != game_data.game_level)
+	{
+		game_level = game_data.game_level;
+		char level_string[16];
+		sprintf(level_string, "LEVEL %d", game_level);
+
+        rpi_text_set_offset(text_anim, 0, 0, 0, 0);
+		rpi_text_slide(text_anim, 50);
+		rpi_text_set(level_string, text_anim);
+
+		rpi_clear_area(0, 0, 5, RPI_WIDTH);
+
+		// rpi_text_slide(text_anim, 100);
+		while(text_anim->state == RPI_TEXT_STATE_SLIDE)
+			rpi_text_one_slide(text_anim);
+	}
+}
+
+_Noreturn void * animation_deleate_row()
+{
+	int i, j;
+	for(j=0; j < WIDTH; j++) // Me muevo por columnas
+	{
+		for( i=0; row_complete[i] != 0 && i< WIDTH ; i++) //Me muevo por filas
+		{
+			delete_pixel(row_complete[i], j);
+		}
+		easytimer_delay(125); //Delay
+		rpi_run_display();
+		update_game_animation(0, 5); //Actualizo el display
+	}
+
+	for(i=0; i < 4 ; i++) //Elimino las filas completas
+	{
+		if(row_complete[i] != 0)
+		{
+			delete_row(row_complete[i]);
+			row_complete[i]= 0; //Coloco en cero el arreglo
+		}
+	}
 }
 
 int init_audio(char destroy) {

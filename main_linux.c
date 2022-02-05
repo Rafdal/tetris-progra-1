@@ -198,7 +198,7 @@ void main_game_start(void){
 
 void animation_row_compleate(void)
 {
-    if(row_compleate[0])
+    if(row_complete[0])
     {
         int i;
         int z;
@@ -212,10 +212,10 @@ void animation_row_compleate(void)
     
             for(z=1; z<=ANCHO; z++){
 
-                for( i=0, contador_filas_destruidas=0; row_compleate[i] != 0 && i< WIDTH ; i++){
-                    al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(row_compleate[i]), BLOCKSZ, BLOCKSZ, 0);
+                for( i=0, contador_filas_destruidas=0; row_complete[i] != 0 && i< WIDTH ; i++){
+                    al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(row_complete[i]), BLOCKSZ, BLOCKSZ, 0);
                 //pongo el fondo en negro
-                    al_draw_tinted_scaled_rotated_bitmap(pieza_blanca,  al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(pieza_blanca)/2, al_get_bitmap_height(pieza_blanca)/2, (BLOCKSZ/2 +BLOCKSZ*z), (BLOCKSZ/2 +BLOCKSZ*(row_compleate[i])),reductor, reductor, angulo, 0);
+                    al_draw_tinted_scaled_rotated_bitmap(pieza_blanca,  al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(pieza_blanca)/2, al_get_bitmap_height(pieza_blanca)/2, (BLOCKSZ/2 +BLOCKSZ*z), (BLOCKSZ/2 +BLOCKSZ*(row_complete[i])),reductor, reductor, angulo, 0);
                     //se va haciendo mas chia a medida que rota
                     al_flip_display();
                     easytimer_delay(5);
@@ -230,13 +230,13 @@ void animation_row_compleate(void)
             }
 
         }
-        for(i=0; row_compleate[i] != 0 && i< WIDTH ; i++){
+        for(i=0; row_complete[i] != 0 && i< WIDTH ; i++){
             for(z=1; z<=ANCHO; z++){
-                al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(row_compleate[i]), BLOCKSZ, BLOCKSZ, 0);
+                al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(row_complete[i]), BLOCKSZ, BLOCKSZ, 0);
                 al_flip_display();
             } //pongo el fondo en negro de nuevo
-            delete_row(row_compleate[i]);
-            row_compleate[i]= 0;
+            delete_row(row_complete[i]);
+            row_complete[i]= 0;
         }
         
     }

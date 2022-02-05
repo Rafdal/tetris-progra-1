@@ -381,7 +381,7 @@ uint8_t _check_row_complete (void)
 		}
 		if (j == WIDTH)	//Si el for recorrio todas las columnas de esa fila y su contenido fue diferente a cero
 		{
-			row_compleate[k] = i;	//Si existe una fila completa, completa un arreglo publico el cual contiene el numero de fila compleata
+			row_complete[k] = i;	//Si existe una fila completa, completa un arreglo publico el cual contiene el numero de fila compleata
 			k++;
 		}
 	}
