@@ -24,7 +24,6 @@ void rpi_init_display (void)
 	printf("Inicializando display\n");
 	disp_init(); //Inicializa el display
 	disp_clear(); //Borra el buffer
-
 	rpi_clear_display(); //Limpia el display
 }
 

@@ -52,6 +52,7 @@ void update_game_animation(uint8_t x_init, uint8_t y_init);
 
 void animation_game_finish(void);
 
+void animation_game_start (void);
 
 
 
@@ -106,11 +107,12 @@ int main(void){
     #endif
 
     dpad_init();	//Inicializo el pad (joystick usado como pad direccional de 4 botones)
-
     game_init();	//Inicializa el juego
+
     easytimer_set_realTimeLoop(dpad_read);
 
 	// init_audio(1);  //Inicializo el audio
+
 
 
 	//Defino los callback for longpress
@@ -147,6 +149,8 @@ int main(void){
 
 	//Setear callback de animacion de eliminar fila
 	game_set_delrow_callback(animation_row_compleate);
+
+	animation_game_start();
 
     // Ejecutar menu principal
     DEBUG("Running main menu...");
@@ -207,6 +211,7 @@ void main_game_start(void){
         }
     }
     printf("Leaving game...\n");
+	rpi_clear_display();
 }
 
 void update_game_display(void){
@@ -215,7 +220,7 @@ void update_game_display(void){
 
 	game_data_t game_data = game_get_data();
 
-    rpi_text_set_offset(text_stat,11,12,0,0);
+    rpi_text_set_offset(text_stat,12,11,0,0);
 
 	char buffer[32];
 	sprintf(buffer, "%d", game_data.game_level);
@@ -314,11 +319,13 @@ _Noreturn void * animation_text ()
 
 	if (game_level != game_data.game_level)
 	{
-		printf("LEVEL UP\n");
 		game_level = game_data.game_level;
+		char level_string[16];
+		sprintf(level_string, "LEVEL %d", game_level);
 
         rpi_text_set_offset(text_anim, 0, 0, 0, 0);
-		rpi_text_set("LEVEL UP", text_anim);
+		rpi_text_slide(text_anim, 100);
+		rpi_text_set(level_string, text_anim);
 
 		rpi_clear_area(0, 0, 5, RPI_WIDTH);
 
@@ -503,32 +510,45 @@ void animation_game_finish(void)
 	sprintf(score, "%d", game_data.score);
 	
     rpi_text_set_offset(text_anim, RPI_WIDTH/2, 2, 0,0);
-    rpi_text_set_offset(text_stat, 10, 10, 0,0);
-	
+
 	rpi_text_set("PERDISTE", text_anim);
 	rpi_text_set(score, text_stat);
 
 	rpi_text_slide(text_anim, 200);
 
-	printf("STRING SIZE: %lu\n", strlen(score));
-
 	if(strlen(score) > 3)
 	{
 		rpi_text_slide(text_stat, 200);
-		rpi_text_set_offset(text_stat,2, 10, 0, 0);
+		rpi_text_set_offset(text_stat,RPI_WIDTH, 10, 0, 0);
 
 		while(text_anim->state == RPI_TEXT_STATE_SLIDE)
 		{
-			printf("TEST\n");
 			rpi_text_one_slide(text_anim);
 			rpi_text_one_slide(text_stat);
 		}
 	}
 	else
 	{
+		rpi_text_set_offset(text_stat, 1, 10, 0,0);
 		rpi_text_print(text_stat);
         rpi_text_slide(text_anim,100);
 		while (text_anim->state == RPI_TEXT_STATE_SLIDE)
 			rpi_text_one_slide(text_anim);
 	}
+}
+
+void animation_game_start (void)
+{
+	rpi_clear_display();
+
+	rpi_text_set("TETRIS", text_anim);
+	rpi_text_slide(text_anim, 150);
+	rpi_text_set_offset(text_anim, RPI_WIDTH, RPI_TEXT_SPACING + 1, 0, 0);
+
+	while (text_anim->state == RPI_TEXT_STATE_SLIDE)
+	{
+		rpi_text_one_slide(text_anim);
+	}
+	rpi_clear_display();
+	easytimer_delay(500);
 }

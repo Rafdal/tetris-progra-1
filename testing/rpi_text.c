@@ -192,9 +192,7 @@ void rpi_text_one_slide (rpi_text_block_t* block)
 					(block->x)--;
 				} else
 				{
-					printf("STATE: STATIC\n");
 					block->state = RPI_TEXT_STATE_STATIC;
-
 				}
 			}
 		}
