@@ -26,6 +26,8 @@
 #define ANCHO   10
 #define ALTO    16
 #define PATH_TTF "./frontend/images/Tetris.ttf"
+#define YPOS_SCORE BLOCKSZ*12
+#define YPOS_NIVEL BLOCKSZ*14
 
 // **************************************
 // *	 V A R S . G L O B A L E S		*
@@ -119,7 +121,7 @@ int main (void){
 
 	int error = initialize_alleg(); //inicializo Allegro
 
-    
+
     keyb_on_press(keypress_callback);
     keyb_use_press_callback_for_longpress(KEYB_DOWN);
     keyb_use_press_callback_for_longpress(KEYB_LEFT);
@@ -403,10 +405,10 @@ void update_display(void) {
 	}
     for(x=0; x<4 ; x++)
 	{
-		for(y=0; y<3 ; y++)
+		for(y=0; y<10 ; y++)
 		{
             float val= (float) next_block_public_matrix[y][x];
-            al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+3+x), BLOCKSZ*(y+3), BLOCKSZ, BLOCKSZ, 0);
+            al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+3+x), BLOCKSZ*(y+1), BLOCKSZ, BLOCKSZ, 0);
             
         }
     }//DIBUJO PIEZA SIGUIENTE
@@ -527,12 +529,12 @@ int initialize_alleg(void) {
 }
     
 void  initialize_display_game (void){
-    blocktext_t * pieza_sig = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 25, "PIEZA  SIGUIENTE", PATH_TTF, BLOCKSZ*(ANCHO+2.5), BLOCKSZ, ALINEADO_IZQUIERDA );
-    blocktext_t * puntaje = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "PUNTAJE:", PATH_TTF, BLOCKSZ*(ANCHO+2.5), BLOCKSZ*7, ALINEADO_IZQUIERDA );
-    blocktext_t * lvl_game = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "NIVEL:", PATH_TTF, BLOCKSZ*(ANCHO+2.5), BLOCKSZ*11, ALINEADO_IZQUIERDA );
+    blocktext_t * pieza_sig = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 25, "PIEZA  SIGUIENTE", PATH_TTF, BLOCKSZ*(ANCHO+2.5), BLOCKSZ/4, ALINEADO_IZQUIERDA );
+    blocktext_t * puntaje = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "PUNTAJE:", PATH_TTF, BLOCKSZ*(ANCHO+2.5), YPOS_SCORE, ALINEADO_IZQUIERDA );
+    blocktext_t * lvl_game = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "NIVEL:", PATH_TTF, BLOCKSZ*(ANCHO+2.5), YPOS_NIVEL, ALINEADO_IZQUIERDA );
     
-    score = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "", PATH_TTF, BLOCKSZ*(ANCHO+2.5), BLOCKSZ*8, ALINEADO_IZQUIERDA );
-    nivel = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "", PATH_TTF, BLOCKSZ*(ANCHO+2.5), BLOCKSZ*12, ALINEADO_IZQUIERDA );
+    score = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "", PATH_TTF, BLOCKSZ*(ANCHO+2.5), YPOS_SCORE+BLOCKSZ, ALINEADO_IZQUIERDA );
+    nivel = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "", PATH_TTF, BLOCKSZ*(ANCHO+2.5), YPOS_NIVEL+BLOCKSZ, ALINEADO_IZQUIERDA );
 
     if(puntaje==NULL || pieza_sig==NULL || lvl_game==NULL){
         printf("problema con titulo de initialize_display_game");   
