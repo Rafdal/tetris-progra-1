@@ -11,7 +11,7 @@
 char game_public_matrix [HEIGHT][WIDTH]; //Matriz publica del juego
 char next_block_public_matrix[12][4];	//Matriz publica de la pieza siguiente
 
-uint8_t row_compleate[4]; 	//Arreglo de las filas siguientes
+uint8_t row_complete[4]; 	//Arreglo de las filas siguientes
 
 typedef enum {GAME_IDLE, GAME_RUN, GAME_PAUSE, GAME_QUIT, GAME_LOSE} game_state_t;
 
