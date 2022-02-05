@@ -195,5 +195,4 @@ void dpad_read(void){
         }
         lastMillis = easytimer_get_millis();
     }
-
 }

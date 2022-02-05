@@ -5,10 +5,10 @@
 #include <stdarg.h>
 
 #ifdef USAR_DEBUG
-#define DEBUG(msg, ...) deb_println(msg, __VA_ARGS__ );
+#define DEBUG(...)  deb_println( __VA_ARGS__ )
 #warning Usando DEBUG, para desactivar, comentar el    #define USAR_DEBUG     antes de incluir la libreria
 #else
-#define DEBUG(msg, ...) 
+#define DEBUG(...) 
 #endif
 
 int debug_new_file(char* _filename); // Crear un nuevo archivo en blanco o borrar uno existente

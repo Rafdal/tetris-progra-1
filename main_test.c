@@ -14,8 +14,14 @@
 // LIBRERIAS ALEGRO
 #include <allegro5/allegro.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
 #include <allegro5/allegro_image.h> //NO OLVIDAR INCLUIR ALLEGRO_IMAGE EN LINKER
-#include <allegro5/allegro_audio.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
-#include <allegro5/allegro_acodec.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
+
+
+// DEBUG
+#define USAR_DEBUG
+#include "./debug/debug.h"
+
+
+#define STR_SIZES 64
 
 // ******************************
 // *	P R O T O T I P O S		*
@@ -34,7 +40,7 @@ void animation_row_compleate (void);  //Ejecuta la animacion de fila completa
 
 void key_press_callback(uint8_t key); // Define los Callbacks de las teclas
 
-int init_audio(char); //Inicializa el audio
+// int init_audio(char); //Inicializa el audio
 
 _Noreturn void * animation_deleate_row(); //Elimina las filas completas de forma animada
 
@@ -54,8 +60,8 @@ void animation_game_finish(void);
 menu_t *main_menu = NULL;
 menu_t *pause_menu = NULL;
 
-rpi_text_block_t* text[6] = {NULL, NULL, NULL, NULL, NULL, NULL}; //Reserva de puntero para los bloques de textos
-rpi_text_block_t* animation = NULL; //Reserva de puntero para animacion
+rpi_text_block_t* text_stat = NULL; // Puntero para los bloques de texto estaticos
+rpi_text_block_t* text_anim = NULL; // Puntero para texto deslizante con anumacion
 
 static uint8_t game_level = 1;
 
@@ -64,7 +70,7 @@ static uint8_t game_level = 1;
 // ******************************
 //CALLBACK DE EXIT GAME
 void exit_game(void){
-    game_quit();                // Finalizar juego
+    game_quit();                  // Finalizar juego
     menu_force_close(pause_menu); // Cerrar menu pausa
 }
 
@@ -72,7 +78,6 @@ void exit_game(void){
 void restart_game(void){
 	rpi_clear_display(); //limpio el display
     menu_force_close(pause_menu); // Cerrar menu pausa
-	game_level = 1;
 	game_init();	//Inicio el juego
     game_start(); 	//Corre el juego
 }
@@ -81,7 +86,7 @@ void restart_game(void){
 void resume_game(void)
 {
 	rpi_clear_display(); 	//Limpia el display
-	menu_force_close_current();	//Cierra el menu
+	menu_force_close(pause_menu); //Cierra el menu de pausa
 	game_run();	//Corre el juego
 }
 
@@ -94,12 +99,17 @@ int main(void){
 
     rpi_init_display(); //Inicializo el display
 
+    #ifdef USAR_DEBUG
+    debug_new_file("debug.txt");
+    #endif
+
+    dpad_init();	//Inicializo el pad (joystick usado como pad direccional de 4 botones)
+
     game_init();	//Inicializa el juego
     easytimer_set_realTimeLoop(dpad_read);
 
-	init_audio(1);  //Inicializo el audio
+	// init_audio(1);  //Inicializo el audio
 
-    dpad_init();	//Inicializo el pad
 
 	//Defino los callback for longpress
     dpad_on_press(key_press_callback);
@@ -126,14 +136,9 @@ int main(void){
     menu_set_option(pause_menu, 1, "REINICIAR", restart_game);
     menu_set_option(pause_menu, 2, "SALIR", exit_game);
 
-	// RESERVA DE MEMORIA PARA BLOQUES DE TEXTOS DESLIZANTES
-	text[0] = rpi_text_create(16, 0, 0);
-    text[1] = rpi_text_create(16, 0, 0);
-    text[2] = rpi_text_create(16, 0, 0);
-	text[3] = rpi_text_create(16, 0, 0);
-	text[4] = rpi_text_create(16, 0, 0);
-	text[5] = rpi_text_create(16, 0, 0);
-
+	// RESERVA DE MEMORIA PARA EL BLOQUE DE TEXTOS DESLIZANTES Y LOS ESTATICOS
+    text_stat = rpi_text_reserve(STR_SIZES);
+    text_anim = rpi_text_reserve(STR_SIZES);
 
     // Setear los callbacks que controlaran el menu
     menu_set_event_listener_display(dpad_read, update_menu_display);
@@ -143,7 +148,9 @@ int main(void){
 	game_set_delrow_callback(animation_row_compleate);
 
     // Ejecutar menu principal
+    DEBUG("Running main menu...");
     menu_run(main_menu);
+    DEBUG("Exit main menu...");
 
 
 	// **************************
@@ -155,10 +162,12 @@ int main(void){
     menu_destroy(pause_menu);
 
 	// Destruye el audio
-	init_audio(0);
-
+	// init_audio(0);
 	// Destruye los bloques de textos deslizantes
-    destroy_text();
+    printf("Lol\n");
+    rpi_text_destroy(text_anim);
+    rpi_text_destroy(text_stat);
+    printf("boe\n");
 
     return 0;
 }
@@ -192,8 +201,7 @@ void main_game_start(void){
 
         if(game_data.state == GAME_LOSE){
 			animation_game_finish();
-            break;
-            #warning BREAK HARDCODEADO
+            game_data.state = GAME_QUIT;
         }
     }
     printf("Leaving game...\n");
@@ -203,11 +211,12 @@ void update_game_display(void){
 
 	game_data_t game_data = game_get_data();
 
-	animation = rpi_text_create(16, 11, 12);
-	char buffer[50];
-	int n = sprintf(buffer, "%d", game_data.game_level);
-	rpi_text_parse(buffer, animation);
-	rpi_text_print(animation);
+    rpi_text_set_offset(text_stat,11,12,0,0);
+
+	char buffer[32];
+	sprintf(buffer, "%d", game_data.game_level);
+	rpi_text_set(buffer, text_stat);
+	rpi_text_print(text_stat);
 
 	// Actualizo la matriz del juego y la cargo en la matriz a imprimir
 	matrix_hand_t mat_handler;
@@ -224,7 +233,7 @@ void update_game_display(void){
 	rpi_run_display(); //Actualizo el display
 
 	printf("SCORE: %u\n", game_get_data().score);
-	printf("LEVEL: %d\n", game_get_data().game_level );
+	printf("LEVEL: %d\n", game_get_data().game_level);
 }
 
 void update_game_animation(uint8_t x_init, uint8_t y_init)
@@ -244,17 +253,6 @@ void update_game_animation(uint8_t x_init, uint8_t y_init)
 	rpi_run_display(); //Actualizo el display
 }
 
-void destroy_text (void)
-{
-	//Limpio los bloques de textos
-	int i;
-	for (i=0; i< 6 ; i++)
-	{
-		rpi_text_destroy(text[i]); //Destruyo los bloques de textos deslizantes
-		text[i] = NULL;	//Apunto a NULL
-	}
-}
-
 void run_display_effects(void)
 {
     menu_t menu_data = menu_get_current_menu_data();
@@ -263,8 +261,7 @@ void run_display_effects(void)
     for(id=0; id<menu_data.n_options; id++){
         if(menu_data.current_option == id)
 		{
-            rpi_text_slide(text[id], 250); //La opcion seleccionada la coloca en moviemiento
-            rpi_text_run(text[id]);	//Luego imprime la opcion
+            rpi_text_run(text_anim);	// Deslizar el texto de la opcion focuseada
         }
     }
 }
@@ -278,11 +275,15 @@ void update_menu_display(void)
 
     for(id=0; id<menu_data.n_options; id++)
 	{
-		rpi_text_parse(menu_data.option_titles[id], text[id]); //Cargo los titulos en los bloques de textos
-		set_offset(text[id], 0 , 5*id , 0, 0); //Defino las posiciones de los bloques deslizantes
-
-        if(text[id] != NULL){
-            rpi_text_print(text[id]); //Imprimo las opciones
+        if(menu_data.current_option == id){
+            rpi_text_set(menu_data.option_titles[id], text_anim); //Cargo los titulos en los bloques de textos
+            rpi_text_set_offset(text_anim, 0 , 5*id , 0, 0); //Defino las posiciones de los bloques
+            rpi_text_slide(text_anim,250);
+        }
+        else{
+            rpi_text_set(menu_data.option_titles[id], text_stat); //Cargo los titulos en los bloques de textos
+            rpi_text_set_offset(text_stat, 0 , 5*id , 0, 0); //Defino las posiciones de los bloques
+            rpi_text_print(text_stat); //Imprimo las opciones
         }
     }
     rpi_run_display(); //Actualizo el display
@@ -314,14 +315,14 @@ _Noreturn void * animation_text ()
 		printf("LEVEL UP\n");
 		game_level = game_data.game_level;
 
-		animation = rpi_text_create(16, 0, 0);
-		rpi_text_parse("LEVEL UP", animation);
+        rpi_text_set_offset(text_anim, 0, 0, 0, 0);
+		rpi_text_set("LEVEL UP", text_anim);
 
 		rpi_clear_area(0, 0, 5, RPI_WIDTH);
 
-		rpi_text_slide(animation, 100);
-		while(animation->state == RPI_TEXT_STATE_SLIDE)
-			rpi_text_one_slide(animation);
+		// rpi_text_slide(text_anim, 100);
+		while(text_anim->state == RPI_TEXT_STATE_SLIDE)
+			rpi_text_one_slide(text_anim);
 	}
 }
 
@@ -350,7 +351,8 @@ _Noreturn void * animation_deleate_row()
 }
 
 void key_press_callback(uint8_t key){
-
+    printf("keypress cback\n");
+    DEBUG("key_press_callback");
     if(easytimer_delay_active()){ // si el delay esta activo
         return; // no hacer nada
     }
@@ -381,8 +383,9 @@ void key_press_callback(uint8_t key){
             default:
                 break;
         }
-            menu_t data = menu_get_current_menu_data();
-            printf("menu: %s, option: %u %s\n", data.title, data.current_option, data.option_titles[data.current_option]);
+            // DEBUG
+            // menu_t data = menu_get_current_menu_data();
+            // printf("menu: %s, option: %u %s\n", data.title, data.current_option, data.option_titles[data.current_option]);
     }else if(game_get_data().state == GAME_RUN){
         switch (key)
         {
@@ -431,62 +434,6 @@ void key_press_callback(uint8_t key){
     }
 }
 
-int init_audio(char destroy) {
-	ALLEGRO_DISPLAY *display = NULL;
-	ALLEGRO_SAMPLE *sample = NULL;
-	//ALLEGRO_SAMPLE *sample1 = NULL;
-	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
-
-	if (!al_install_audio()) {
-		fprintf(stderr, "failed to initialize audio!\n");
-		return -1;
-	}
-
-	if (!al_init_acodec_addon()) {
-		fprintf(stderr, "failed to initialize audio codecs!\n");
-		return -1;
-	}
-
-	if (!al_reserve_samples(1)) {
-		fprintf(stderr, "failed to reserve samples!\n");
-		return -1;
-	}
-
-	sample = al_load_sample("audio.wav");
-	//sample1 = al_load_sample("audio2.wav");
-
-	if (!sample) {
-		printf("Audio clip sample not loaded!\n");
-		return -1;
-	}
-
-
-
-	//Loop the sample until the display closes.
-	al_play_sample(sample, 1.0, -1.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
-
-//	al_play_sample(sample1, 1.0, 1.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
-
-	/*   while (!display_close) {
-		 ALLEGRO_EVENT ev;
-		 if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
-		 {
-			 if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
-				 display_close = true;
-		 }
-
-	 }
-	*/
-
-	if(!destroy) {
-
-		al_uninstall_audio();
-		al_destroy_display(display);
-		al_destroy_event_queue(event_queue);
-		al_destroy_sample(sample);
-	}
-	return 0;
-}
 
 void animation_game_finish(void)
 {
@@ -494,35 +441,33 @@ void animation_game_finish(void)
 	
 	rpi_clear_display();
 	char score[16];
-	int n = sprintf(score, "%d", game_data.score);
+	sprintf(score, "%d", game_data.score);
 	
-	animation = rpi_text_create(16, 2, RPI_WIDTH);
-	text[0] = rpi_text_create(16, 10, 0);
+    rpi_text_set_offset(text_anim, 2, RPI_WIDTH, 0,0);
+    rpi_text_set_offset(text_stat, 10, 0, 0,0);
 	
-	rpi_text_parse("PERDISTE", animation);
-	rpi_text_parse(score, text[0]);
+	rpi_text_set("PERDISTE", text_anim);
+	rpi_text_set(score, text_stat);
 
-	rpi_text_slide(animation, 200);
+	rpi_text_slide(text_anim, 200);
 
 	printf("STRING SIZE: %lu\n", strlen(score));
 
 	if(strlen(score) > 3)
 	{
-		rpi_text_slide(text[0], 200);
-		set_offset(text[0], RPI_WIDTH + 2, 10, 0, 0);
+		rpi_text_slide(text_stat, 200);
+		rpi_text_set_offset(text_stat, RPI_WIDTH + 2, 10, 0, 0);
 
-		while(animation->state == RPI_TEXT_STATE_SLIDE)
+		while(text_anim->state == RPI_TEXT_STATE_SLIDE)
 		{
-			rpi_text_one_slide(animation);
-			rpi_text_one_slide(text[0]);
+			rpi_text_one_slide(text_anim);
+			rpi_text_one_slide(text_stat);
 		}
 	}
 	else
 	{
-		rpi_text_print(text[0]);
-		while (animation->state == RPI_TEXT_STATE_SLIDE)
-			rpi_text_one_slide(animation);
+		rpi_text_print(text_stat);
+		while (text_anim->state == RPI_TEXT_STATE_SLIDE)
+			rpi_text_one_slide(text_anim);
 	}
-
-
 }

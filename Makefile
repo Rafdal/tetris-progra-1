@@ -1,5 +1,5 @@
-test: main_test.o menu.o dispEmu.o t_rpi_display.o t_easy_timer.o t_matrix_handler.o teclado_trucho.o game.o rpi_text.o
-	gcc -Wall main_test.o menu.o dispEmu.o easy_timer.o rpi_display.o teclado_trucho.o game.o matrix_handler.o rpi_text.o -o test `pkg-config --libs allegro-5 allegro_audio-5 allegro_acodec-5` -lpthread
+test: debug.o main_test.o menu.o dispEmu.o t_rpi_display.o t_easy_timer.o t_matrix_handler.o teclado_trucho.o game.o rpi_text.o
+	gcc -Wall debug.o main_test.o menu.o dispEmu.o easy_timer.o rpi_display.o teclado_trucho.o game.o matrix_handler.o rpi_text.o -o test `pkg-config --libs allegro-5 allegro_audio-5 allegro_acodec-5` -lpthread
 
 back: main_back.o game.o easy_timer.o teclado_trucho.o
 	gcc -Wall main_back.o game.o easy_timer.o teclado_trucho.o -o back `pkg-config --libs allegro-5`
@@ -68,6 +68,9 @@ matrix_handler.o: ./libs/matrix_handler.c ./libs/matrix_handler.h
 # TESTING LIBS 	#
 #################
 
+debug.o: ./debug/debug.c ./debug/debug.h
+	gcc -c -Wall ./debug/debug.c
+
 t_matrix_handler.o: ./testing/matrix_handler.c ./testing/matrix_handler.h
 	gcc -c -Wall ./testing/matrix_handler.c
 
@@ -85,6 +88,7 @@ dispEmu.o: ./testing/disdrv.c ./testing/disdrv.h
 
 rpi_text.o: ./testing/rpi_text.c ./testing/rpi_text.h
 	gcc -c -Wall ./testing/rpi_text.c
+	
 clean:
 	rm *.o
 
