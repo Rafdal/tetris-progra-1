@@ -1,10 +1,8 @@
 /* 
- * File:   main.c
- * Author: r2d2
- *			Ramiro A. Merello (rmerello@itba.edu.ar)
- *
- * Created on June 4, 2016, 6:38 PM
+ * File:   main_linux.c
+ * Author: RD,AC,AS,SV
  */
+
 #include "./backend/game.h"
 #include "./frontend/easy_timer.h"
 #include <assert.h>
@@ -27,26 +25,29 @@
 #define BLOCKSZ 50
 #define ANCHO   10
 #define ALTO    16
-#define PATH_LATO "./frontend/images/Tetris.ttf"
+#define PATH_TTF "./frontend/images/Tetris.ttf"
 
 // **************************************
 // *	 V A R S . G L O B A L E S		*
 // **************************************
-menu_t *principal_menu = NULL;
-menu_t *pausa_menu = NULL;
-
-
-
-ALLEGRO_DISPLAY *display = NULL;
+//BITMAPS
 ALLEGRO_BITMAP *image = NULL;
 ALLEGRO_BITMAP *muroH = NULL;
 ALLEGRO_BITMAP *muroV = NULL;
 ALLEGRO_BITMAP *pieza_blanca = NULL;
 ALLEGRO_BITMAP *tetris_cartel = NULL;
+ALLEGRO_BITMAP *diagrama_teclado = NULL;
 
+//UTILIDADES ALLEGRO
+ALLEGRO_DISPLAY *display = NULL;
 ALLEGRO_SAMPLE *sample = NULL;
 ALLEGRO_EVENT_QUEUE * event_queue = NULL;
+
+//UTILIDADES EXTRA
 blocktext_t * score=NULL;
+blocktext_t * nivel=NULL;
+menu_t *principal_menu = NULL;
+menu_t *pausa_menu = NULL;
 
 
 /*void playAudio(void){
@@ -69,6 +70,7 @@ void read_events(void);
 void display_menu_display(void);
 void animation_row_compleate(void);
 void main_game_start(void);
+void how_to_play (void);
 //int init_audio(void);
 
 // ******************************
@@ -96,6 +98,19 @@ void resume_game(void)
 	game_run();	//Corre el juego
 }
 
+//CALLBACK DE CONTROLES/INSTRUCCIONES
+void how_to_play (void){
+    easytimer_delay(300);
+    al_draw_scaled_bitmap(diagrama_teclado, 0, 0, al_get_bitmap_width(diagrama_teclado), al_get_bitmap_height(diagrama_teclado), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
+    al_flip_display();
+    while ((!keyb_is_pressed(KEYB_ENTER)) && (!keyb_is_pressed(KEYB_ESC)) && (!keyb_is_pressed(KEYB_SPACE)))
+    {
+        read_events();
+    }
+    
+}
+
+
 int main (void){
 
 	game_init(); // inicializar la libreria del juego
@@ -114,18 +129,20 @@ int main (void){
         return 0;   //si algo fallo termino el programa
     }
     
-    principal_menu = menu_init(2, "MENU", NULL, MENU_ACTION_DO_NOTHING);
-    pausa_menu = menu_init(3, "PAUSA", NULL, MENU_ACTION_JUST_EXIT);
+    principal_menu = menu_init(3, "MENU PRINCIPAL", NULL, MENU_ACTION_DO_NOTHING);
+    pausa_menu = menu_init(3, "MENU DE PAUSA", NULL, MENU_ACTION_JUST_EXIT);
 
 
     if(principal_menu == NULL || pausa_menu == NULL){
         printf("Error NULL menu!\n");
         return -1;
     }
+    
 
     // CALLBACKS DE OPCIONES DE MENU MAIN
     menu_set_option(principal_menu, 0, "JUGAR", main_game_start);
-    menu_set_option(principal_menu, 1, "SALIR", menu_force_close_current);
+    menu_set_option(principal_menu, 1, "COMO JUGAR", how_to_play );
+    menu_set_option(principal_menu, 2, "SALIR", menu_force_close_current);
 
 	// CALLBACKS DE OPCIONES DEL MENU DE PAUSA
 	menu_set_option(pausa_menu, 0, "REANUDAR", resume_game);
@@ -231,7 +248,7 @@ void display_menu_display(void){
     al_clear_to_color(al_map_rgb(0,0,0));   //fondo negro
     al_draw_scaled_bitmap(tetris_cartel, 0, 0, al_get_bitmap_width(tetris_cartel), al_get_bitmap_height(tetris_cartel),BLOCKSZ*3, BLOCKSZ, al_get_display_width(display)-BLOCKSZ*6, BLOCKSZ*8, 0);
     
-    blocktext_t * menuprin = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 45, menu_data.title, PATH_LATO, al_get_display_width(display)/2, al_get_display_height(display)/2+BLOCKSZ*2, CENTRADO );
+    blocktext_t * menuprin = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 45, menu_data.title, PATH_TTF, al_get_display_width(display)/2, al_get_display_height(display)/2+BLOCKSZ*2, CENTRADO );
     if(text_global_font_changer(menuprin))
     {
         printf("error con text_global_font_changer");
@@ -242,13 +259,13 @@ void display_menu_display(void){
 for(id=0; id<menu_data.n_options; id++)
 	{
         if(menu_data.current_option == id){
-            blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(0,255,0), 30, menu_data.option_titles[id], PATH_LATO, al_get_display_width(display)/2,(al_get_display_height(display)/2)+(BLOCKSZ*(4+id)), CENTRADO );
+            blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(0,255,0), 30, menu_data.option_titles[id], PATH_TTF, al_get_display_width(display)/2,(al_get_display_height(display)/2)+(BLOCKSZ*(4+id)), CENTRADO );
             text_drawer(menuop);
             text_destroy(menuop);
         }// si es la que esta siendo apuntada, la dibujo en verde
 
         else{
-            blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, menu_data.option_titles[id], PATH_LATO, al_get_display_width(display)/2, (al_get_display_height(display)/2)+(BLOCKSZ*(4+id)), CENTRADO );
+            blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, menu_data.option_titles[id], PATH_TTF, al_get_display_width(display)/2, (al_get_display_height(display)/2)+(BLOCKSZ*(4+id)), CENTRADO );
             text_drawer(menuop);
             text_destroy(menuop);
         }//si no, en blanco
@@ -264,12 +281,14 @@ void read_events(void){
     ALLEGRO_EVENT ev;
     if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola
     {
+        keyb_run(&ev); // paso como parametro a
+
         if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
             game_quit();
         }
     }
-    keyb_run(&ev); // paso como parametro a
 }
+
 
 
 
@@ -297,6 +316,11 @@ switch (key)
                 break;
 
             case KEYB_SPACE:
+                menu_go_select();
+                printf("menu BTN\n");
+                break;
+
+            case KEYB_ENTER:
                 menu_go_select();
                 printf("menu BTN\n");
                 break;
@@ -363,6 +387,7 @@ switch (key)
 }
 
 
+
 void update_display(void) {
 
 	uint8_t x, y;
@@ -379,7 +404,7 @@ void update_display(void) {
 		for(y=0; y<3 ; y++)
 		{
             float val= (float) next_block_public_matrix[y][x];
-            al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+3) + BLOCKSZ*x, BLOCKSZ*(y+3), BLOCKSZ, BLOCKSZ, 0);
+            al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+3+x), BLOCKSZ*(y+3), BLOCKSZ, BLOCKSZ, 0);
             
         }
     }//DIBUJO PIEZA SIGUIENTE
@@ -387,6 +412,7 @@ void update_display(void) {
     text_score_drawer(score, game_get_data().score);
 	al_flip_display(); //despues de esribir toda la matriz muestro lo que escribi
 	printf("SCORE:\n%u\n", game_get_data().score);
+    text_score_drawer(nivel, game_get_data().game_level);
 
 }
 
@@ -469,6 +495,17 @@ int initialize_alleg(void) {
         al_destroy_event_queue(event_queue);
         return -1;
     }
+    diagrama_teclado = al_load_bitmap("./frontend/images/howtoplay3.png");
+    if (!tetris_cartel) {
+        printf("failed to load diagrama_cartel !\n");
+        al_destroy_bitmap(image);
+        al_destroy_bitmap(muroH);
+        al_destroy_bitmap(muroV);
+        al_destroy_bitmap(pieza_blanca);
+        al_destroy_bitmap(tetris_cartel);
+        al_destroy_event_queue(event_queue);
+        return -1;
+    }
 
     display = al_create_display(((ANCHO+8)*BLOCKSZ), ((ALTO+1)*BLOCKSZ));
     if (!display) {
@@ -476,6 +513,8 @@ int initialize_alleg(void) {
         al_destroy_bitmap(muroH);
         al_destroy_bitmap(muroV);
         al_destroy_bitmap(pieza_blanca);
+        al_destroy_bitmap(diagrama_teclado);
+        al_destroy_bitmap(tetris_cartel);
         al_destroy_event_queue(event_queue);
         fprintf(stderr,"failed to create display!\n");
         return -1;
@@ -486,12 +525,15 @@ int initialize_alleg(void) {
 }
     
 void  initialize_display_game (void){
-    blocktext_t * pieza_sig = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 25, "PIEZA  SIGUIENTE", PATH_LATO, BLOCKSZ*(ANCHO+2.5), BLOCKSZ, ALINEADO_IZQUIERDA );
-    blocktext_t * puntaje = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "PUNTAJE:", PATH_LATO, BLOCKSZ*(ANCHO+2.5), BLOCKSZ*7, ALINEADO_IZQUIERDA );
-    score = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "", PATH_LATO, BLOCKSZ*(ANCHO+2.5), BLOCKSZ*9, ALINEADO_IZQUIERDA );
+    blocktext_t * pieza_sig = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 25, "PIEZA  SIGUIENTE", PATH_TTF, BLOCKSZ*(ANCHO+2.5), BLOCKSZ, ALINEADO_IZQUIERDA );
+    blocktext_t * puntaje = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "PUNTAJE:", PATH_TTF, BLOCKSZ*(ANCHO+2.5), BLOCKSZ*7, ALINEADO_IZQUIERDA );
+    blocktext_t * lvl_game = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "NIVEL:", PATH_TTF, BLOCKSZ*(ANCHO+2.5), BLOCKSZ*11, ALINEADO_IZQUIERDA );
+    
+    score = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "", PATH_TTF, BLOCKSZ*(ANCHO+2.5), BLOCKSZ*8, ALINEADO_IZQUIERDA );
+    nivel = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "", PATH_TTF, BLOCKSZ*(ANCHO+2.5), BLOCKSZ*12, ALINEADO_IZQUIERDA );
 
-    if(puntaje==NULL){
-        printf("problema con pieza_sig");   
+    if(puntaje==NULL || pieza_sig==NULL || lvl_game==NULL){
+        printf("problema con titulo de initialize_display_game");   
     }
 
     if(text_global_font_changer(pieza_sig))
@@ -507,6 +549,8 @@ void  initialize_display_game (void){
         printf("error con text_global_font_changer");
     }
     text_drawer(puntaje);
+    text_drawer(lvl_game);
+    text_score_drawer(nivel, game_get_data().game_level);
     
    
     //ahora dibujo el muro horizontal
@@ -514,7 +558,7 @@ void  initialize_display_game (void){
     //empiezo uso la ultima fila
     //dibujo las paredes
     al_draw_scaled_bitmap(muroV, 0, 0, al_get_bitmap_width(muroV), al_get_bitmap_height(muroV), 0, 0, BLOCKSZ, al_get_display_height(display)-BLOCKSZ, 0);
-    al_draw_scaled_bitmap(muroV, 0, 0, al_get_bitmap_width(muroV), al_get_bitmap_height(muroV),((ANCHO+2)*BLOCKSZ)-BLOCKSZ , 0, BLOCKSZ, al_get_display_height(display)-BLOCKSZ, 0);
+    al_draw_scaled_bitmap(muroV, 0, 0, al_get_bitmap_width(muroV), al_get_bitmap_height(muroV),((ANCHO+1)*BLOCKSZ) , 0, BLOCKSZ, al_get_display_height(display)-BLOCKSZ, 0);
         
     
     al_flip_display();
@@ -580,16 +624,25 @@ int init_audio(void) {
 
 
 void end_program (void){
-    al_destroy_display(display);
+
+// DESTRUCCION DE BITMAPS
     al_destroy_bitmap(image);
     al_destroy_bitmap(muroH);
     al_destroy_bitmap(muroV);
     al_destroy_bitmap(pieza_blanca);    
     al_destroy_bitmap(tetris_cartel);
+    al_destroy_bitmap(diagrama_teclado);
+
+// DESTRUCCION DE UTILIDADES ALLEGRO
+    al_destroy_display(display);
     al_destroy_event_queue(event_queue);
     al_uninstall_keyboard();
+
+//DESTRUCCION DE UTILIDADES EXTRA
     menu_destroy(principal_menu);
     menu_destroy(pausa_menu);
+    text_destroy(nivel);
+    text_destroy(score);
     //al_uninstall_audio(); // borrar audio
     //al_destroy_sample(sample);
     //al_shutdown_image_addon(); VER DOCUMENTACION ES LLAMADO AUTOMATICAMENTE AL SALIR DEL PROGRAMA
