@@ -14,6 +14,8 @@
 // LIBRERIAS ALEGRO
 #include <allegro5/allegro.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
 #include <allegro5/allegro_image.h> //NO OLVIDAR INCLUIR ALLEGRO_IMAGE EN LINKER
+#include <allegro5/allegro_audio.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
+#include <allegro5/allegro_acodec.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
 
 
 // DEBUG
@@ -432,6 +434,64 @@ void key_press_callback(uint8_t key){
     }else{
         printf("Error state.\n");
     }
+}
+
+
+int init_audio(char destroy) {
+	ALLEGRO_DISPLAY *display = NULL;
+	ALLEGRO_SAMPLE *sample = NULL;
+	//ALLEGRO_SAMPLE *sample1 = NULL;
+	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
+
+	if (!al_install_audio()) {
+		fprintf(stderr, "failed to initialize audio!\n");
+		return -1;
+	}
+
+	if (!al_init_acodec_addon()) {
+		fprintf(stderr, "failed to initialize audio codecs!\n");
+		return -1;
+	}
+
+	if (!al_reserve_samples(1)) {
+		fprintf(stderr, "failed to reserve samples!\n");
+		return -1;
+	}
+
+	sample = al_load_sample("audio.wav");
+	//sample1 = al_load_sample("audio2.wav");
+
+	if (!sample) {
+		printf("Audio clip sample not loaded!\n");
+		return -1;
+	}
+
+
+
+	//Loop the sample until the display closes.
+	al_play_sample(sample, 1.0, -1.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
+
+//	al_play_sample(sample1, 1.0, 1.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
+
+	/*   while (!display_close) {
+		 ALLEGRO_EVENT ev;
+		 if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
+		 {
+			 if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+				 display_close = true;
+		 }
+
+	 }
+	*/
+
+	if(!destroy) {
+
+		al_uninstall_audio();
+		al_destroy_display(display);
+		al_destroy_event_queue(event_queue);
+		al_destroy_sample(sample);
+	}
+	return 0;
 }
 
 
