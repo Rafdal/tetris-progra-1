@@ -44,6 +44,17 @@ rpi_text_block_t* rpi_text_reserve (uint8_t str_max_size)
 void rpi_text_set(const char* str, rpi_text_block_t *block)
 {
     if(block != NULL && str != NULL){
+
+		//Antes de cargar en la memoria los bloques de textos los limpio para eliminar todo tipo de residuo
+		int i, j;
+		for (i=0; i < RPI_TEXT_HEIGHT; i++)
+		{
+			for (j=0; j < block->string.width ; j++)
+			{
+				block->string.data[i][j] = (uint8_t)0;
+			}
+		}
+
         block->str_size = strlen(str);
         block->string.width = block->str_size*RPI_TEXT_SPACING;
 
@@ -55,7 +66,6 @@ void rpi_text_set(const char* str, rpi_text_block_t *block)
         }
 
         // block->state = RPI_TEXT_STATE_OFF;
-        int i;
         for(i=0; i < block->string.width; i++){
             int c = toupper((int)str[i]); // Solo usamos mayusculas
 
@@ -181,10 +191,12 @@ void rpi_text_one_slide (rpi_text_block_t* block)
 				{
 					(block->x)--;
 				} else
+				{
+					printf("STATE: STATIC\n");
 					block->state = RPI_TEXT_STATE_STATIC;
+
+				}
 			}
 		}
-		else
-			__rpi_text_print(block);
 	}
 }

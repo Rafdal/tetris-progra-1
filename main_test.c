@@ -120,7 +120,7 @@ int main(void){
     dpad_use_press_callback_for_longpress(DPAD_RIGHT);
 
 	//Inicializo los menu
-    main_menu = menu_init(3, "MENU", NULL, MENU_ACTION_DO_NOTHING);
+    main_menu = menu_init(2, "MENU", NULL, MENU_ACTION_DO_NOTHING);
     pause_menu = menu_init(3, "PAUSA", NULL, MENU_ACTION_JUST_EXIT);
 
     if(main_menu == NULL || pause_menu == NULL){
@@ -130,8 +130,7 @@ int main(void){
 
 	// CALLBACKS DE OPCIONES DE MENU MAIN
     menu_set_option(main_menu, 0, "JUGAR", main_game_start);
-    menu_set_option(main_menu, 1, "Prueba2", NULL);
-    menu_set_option(main_menu, 2, "SALIR", menu_force_close_current);
+    menu_set_option(main_menu, 1, "SALIR", menu_force_close_current);
 
 	// CALLBACKS DE OPCIONES DEL MENU DE PAUSA
 	menu_set_option(pause_menu, 0, "REANUDAR", resume_game);
@@ -203,13 +202,16 @@ void main_game_start(void){
 
         if(game_data.state == GAME_LOSE){
 			animation_game_finish();
-            game_data.state = GAME_QUIT;
+			rpi_clear_display();
+			game_quit();
         }
     }
     printf("Leaving game...\n");
 }
 
 void update_game_display(void){
+
+	rpi_clear_display();
 
 	game_data_t game_data = game_get_data();
 
@@ -257,7 +259,7 @@ void update_game_animation(uint8_t x_init, uint8_t y_init)
 
 void run_display_effects(void)
 {
-    menu_t menu_data = menu_get_current_menu_data();
+	menu_t menu_data = menu_get_current_menu_data();
     uint8_t id;
 
     for(id=0; id<menu_data.n_options; id++){
@@ -272,8 +274,6 @@ void update_menu_display(void)
 {
     menu_t menu_data = menu_get_current_menu_data();
     uint8_t id;
-
-	rpi_clear_display();
 
     for(id=0; id<menu_data.n_options; id++)
 	{
@@ -436,7 +436,6 @@ void key_press_callback(uint8_t key){
     }
 }
 
-
 int init_audio(char destroy) {
 	ALLEGRO_DISPLAY *display = NULL;
 	ALLEGRO_SAMPLE *sample = NULL;
@@ -494,7 +493,6 @@ int init_audio(char destroy) {
 	return 0;
 }
 
-
 void animation_game_finish(void)
 {
 	game_data_t game_data = game_get_data();
@@ -503,8 +501,8 @@ void animation_game_finish(void)
 	char score[16];
 	sprintf(score, "%d", game_data.score);
 	
-    rpi_text_set_offset(text_anim, 2, RPI_WIDTH, 0,0);
-    rpi_text_set_offset(text_stat, 10, 0, 0,0);
+    rpi_text_set_offset(text_anim, RPI_WIDTH/2, 2, 0,0);
+    rpi_text_set_offset(text_stat, 10, 10, 0,0);
 	
 	rpi_text_set("PERDISTE", text_anim);
 	rpi_text_set(score, text_stat);
@@ -516,10 +514,11 @@ void animation_game_finish(void)
 	if(strlen(score) > 3)
 	{
 		rpi_text_slide(text_stat, 200);
-		rpi_text_set_offset(text_stat, RPI_WIDTH + 2, 10, 0, 0);
+		rpi_text_set_offset(text_stat,2, 10, 0, 0);
 
 		while(text_anim->state == RPI_TEXT_STATE_SLIDE)
 		{
+			printf("TEST\n");
 			rpi_text_one_slide(text_anim);
 			rpi_text_one_slide(text_stat);
 		}
