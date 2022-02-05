@@ -106,6 +106,10 @@ void keyb_run(ALLEGRO_EVENT* pev){
             case ALLEGRO_KEY_SPACE:
                 key_state[KEYB_SPACE] = true;
                 break;
+
+            case ALLEGRO_KEY_ENTER:
+                key_state[KEYB_ENTER] = true;
+                break;
         }
     }
     else if (pev->type == ALLEGRO_EVENT_KEY_UP) {
@@ -140,6 +144,10 @@ void keyb_run(ALLEGRO_EVENT* pev){
 
             case ALLEGRO_KEY_ESCAPE:
                 key_state[KEYB_ESC] = false;
+                break;
+
+            case ALLEGRO_KEY_ENTER:
+                key_state[KEYB_ENTER] = false;
                 break;
         }
     }

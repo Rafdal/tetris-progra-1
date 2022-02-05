@@ -9,10 +9,9 @@
 
 typedef void (*keyb_callback_t)(uint8_t);
 
-#define KEYB_KEYS 8
-#define KEYB_LONGPRESS_DELAY 100
-enum {KEYB_UP, KEYB_RIGHT, KEYB_DOWN, KEYB_LEFT, KEYB_Q, KEYB_E, KEYB_SPACE, KEYB_ESC};
 
+#define KEYB_LONGPRESS_DELAY 100
+enum {KEYB_UP, KEYB_RIGHT, KEYB_DOWN, KEYB_LEFT, KEYB_Q, KEYB_E, KEYB_SPACE, KEYB_ESC, KEYB_ENTER, KEYB_KEYS};
 #define DEBUG
 
 bool keyb_init(ALLEGRO_EVENT_QUEUE *queue); // iniciar libreria - true = OK | false = error
