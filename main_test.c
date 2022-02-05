@@ -324,7 +324,7 @@ _Noreturn void * animation_text ()
 		sprintf(level_string, "LEVEL %d", game_level);
 
         rpi_text_set_offset(text_anim, 0, 0, 0, 0);
-		rpi_text_slide(text_anim, 100);
+		rpi_text_slide(text_anim, 50);
 		rpi_text_set(level_string, text_anim);
 
 		rpi_clear_area(0, 0, 5, RPI_WIDTH);
@@ -344,7 +344,7 @@ _Noreturn void * animation_deleate_row()
 		{
 			delete_pixel(row_compleate[i], j);
 		}
-		easytimer_delay(100); //Delay
+		easytimer_delay(125); //Delay
 		rpi_run_display();
 		update_game_animation(0, 5); //Actualizo el display
 	}

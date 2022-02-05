@@ -187,7 +187,7 @@ void rpi_text_one_slide (rpi_text_block_t* block)
 				rpi_run_display();
 
 				block->timestamp = easytimer_get_millis();
-				if(-(block->x) != block->string.width +5)
+				if(-(block->x) != block->string.width + 4*RPI_TEXT_SPACING)
 				{
 					(block->x)--;
 				} else
