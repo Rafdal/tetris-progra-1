@@ -1,9 +1,4 @@
 Running main menu...
 key_press_callback
 key_press_callback
-key_press_callback
-key_press_callback
-key_press_callback
-key_press_callback
-key_press_callback
-key_press_callback
+Exit main menu...

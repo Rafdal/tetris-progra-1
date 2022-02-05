@@ -49,7 +49,7 @@ void rpi_text_set(const char* str, rpi_text_block_t *block)
 		int i, j;
 		for (i=0; i < RPI_TEXT_HEIGHT; i++)
 		{
-			for (j=0; j < block->string.width ; j++)
+			for (j=0; j < block->str_max_size*RPI_TEXT_SPACING; j++)
 			{
 				block->string.data[i][j] = (uint8_t)0;
 			}
