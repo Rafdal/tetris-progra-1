@@ -26,8 +26,5 @@ bool keyb_is_longpressed(uint8_t key); // devuelve true si el boton fue presiona
 
 void keyb_on_press(keyb_callback_t callback);  // Setear callback click de tecla
 
-#ifdef DEBUG
-void keyb_debug(void); // mostrar los estados de teclas
-#endif
 
 #endif // _KEYBOARD_H_

@@ -137,6 +137,7 @@ int main (void){
     menu_set_event_listener_display(read_events, display_menu_display);
     game_set_delrow_callback(animation_row_compleate);
    
+    printf("Run\n");
     menu_run(principal_menu);
    //main_game_start();
     
@@ -263,12 +264,11 @@ void read_events(void){
     ALLEGRO_EVENT ev;
     if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola
     {
-        keyb_run(&ev); // paso como parametro a
-
         if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
             game_quit();
         }
     }
+    keyb_run(&ev); // paso como parametro a
 }
 
 

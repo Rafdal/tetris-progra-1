@@ -2,6 +2,7 @@
 #define SCREEN_H  480
 
 #include <stdio.h>
+#include <stdlib.h>
 // #include <assert.h>
 #include "easy_timer.h"
 #include "keyboard.h"
@@ -17,6 +18,18 @@ static keyb_callback_t on_press;
 static uint64_t lastMillis;
 
 
+/* static void keyb_debug_print(void);
+
+static void keyb_debug_print(void){
+    int i;
+    for(i=0; i<KEYB_KEYS; i++){
+        if(i != KEYB_DOWN)
+            continue;
+        printf("key[%u] =  long_press: %u, use_cback: %u\n", i, keyb_is_longpressed(i), use_press_callback_for_longpress[i]);
+    }
+} */
+
+
 void keyb_on_press(keyb_callback_t f){
     on_press = f;
 }
@@ -30,6 +43,10 @@ bool keyb_is_longpressed(uint8_t key_id){
 }
 
 void keyb_use_press_callback_for_longpress(uint8_t key){
+    if(event_queue == NULL){
+        printf(__FILE__": La libreria no esta inicializada!\n");
+        exit(1);
+    }
     use_press_callback_for_longpress[key] = true;
 }
 
@@ -53,14 +70,6 @@ bool keyb_init(ALLEGRO_EVENT_QUEUE *queue){
     return true;
 }
 
-#ifdef DEBUG
-void keyb_debug(void){
-    uint8_t i;
-    for(i=0; i< KEYB_KEYS; i++){
-        
-    }
-}
-#endif 
 
 // Va dentro de if(al_get_next_event(event_queue, pev) ) { ACA }
 void keyb_run(ALLEGRO_EVENT* pev){
@@ -136,6 +145,7 @@ void keyb_run(ALLEGRO_EVENT* pev){
     }
     int i;
     if(pev->type == ALLEGRO_EVENT_KEY_DOWN || pev->type == ALLEGRO_EVENT_KEY_UP){
+        // keyb_debug_print();
         for(i=0; i<KEYB_KEYS; i++){
 
             if(key_state[i] != last_keystate[i]){
@@ -151,10 +161,13 @@ void keyb_run(ALLEGRO_EVENT* pev){
             }
         }
     }
+
     int id;
     if(easytimer_get_millis()-lastMillis >= KEYB_LONGPRESS_DELAY){
+        // keyb_debug_print();
         for(id=0; id< KEYB_KEYS; id++){
             if(use_press_callback_for_longpress[id] && keyb_is_longpressed(id)){
+                // printf("LONG PRESS\n");
                 if(on_press != NULL)        // Si el callback esta seteado
                     on_press(id);
                 
