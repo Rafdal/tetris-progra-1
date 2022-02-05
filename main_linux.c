@@ -117,12 +117,14 @@ int main (void){
 
     easytimer_set_realTimeLoop(read_events); // Leer eventos durante delays
 
+	int error = initialize_alleg(); //inicializo Allegro
+
+    
     keyb_on_press(keypress_callback);
     keyb_use_press_callback_for_longpress(KEYB_DOWN);
     keyb_use_press_callback_for_longpress(KEYB_LEFT);
     keyb_use_press_callback_for_longpress(KEYB_RIGHT);
 
-	int error = initialize_alleg(); //inicializo Allegro
 //	int init_audio();
     if(error){
         printf("Error al iniciar");
