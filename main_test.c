@@ -71,7 +71,7 @@ menu_t *pause_menu = NULL;
 rpi_text_block_t* text_stat = NULL; // Puntero para los bloques de texto estaticos
 rpi_text_block_t* text_anim = NULL; // Puntero para texto deslizante con anumacion
 
-static uint8_t game_level = 1;
+static uint8_t last_game_level = 1;
 
 
 
@@ -93,8 +93,6 @@ int main(void){
     easytimer_set_realTimeLoop(dpad_read);
 
 	// init_audio(1);  //Inicializo el audio
-
-
 
 	//Defino los callback for longpress
     dpad_on_press(key_press_callback);
@@ -413,11 +411,11 @@ _Noreturn void * animation_text ()
 {
 	game_data_t game_data = game_get_data();
 
-	if (game_level != game_data.game_level)
+	if (last_game_level != game_data.game_level)
 	{
-		game_level = game_data.game_level;
+		last_game_level = game_data.game_level;
 		char level_string[16];
-		sprintf(level_string, "LEVEL %d", game_level);
+		sprintf(level_string, "LEVEL %d", last_game_level);
 
         rpi_text_set_offset(text_anim, 0, 0, 0, 0);
 		rpi_text_slide(text_anim, 50);
@@ -553,7 +551,7 @@ void animation_game_start (void)
 	rpi_clear_display();
 
 	rpi_text_set("TETRIS", text_anim);
-	rpi_text_slide(text_anim, 150);
+	rpi_text_slide(text_anim, 100);
 	rpi_text_set_offset(text_anim, RPI_WIDTH, RPI_TEXT_SPACING + 1, 0, 0);
 
 	while (text_anim->state == RPI_TEXT_STATE_SLIDE)
