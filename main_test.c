@@ -88,7 +88,6 @@ int main(void){
     #endif
 
     dpad_init();	//Inicializo el pad (joystick usado como pad direccional de 4 botones)
-    game_init();	//Inicializa el juego
 
     easytimer_set_realTimeLoop(dpad_read);
 
@@ -170,7 +169,6 @@ void exit_game(void){
 void restart_game(void){
 	rpi_clear_display(); //limpio el display
     menu_force_close(pause_menu); // Cerrar menu pausa
-	game_init();	//Inicio el juego
     game_start(); 	//Corre el juego
 }
 
@@ -308,7 +306,6 @@ void key_press_callback(uint8_t key){
 // ***********************************************
 void main_game_start(void){
 
-	game_init();	//Inicio el juego
 	rpi_clear_display(); //Limpio el display
 
     game_data_t game_data;
@@ -355,14 +352,14 @@ void update_game_display(void){
 
 	// Actualizo la matriz del juego y la cargo en la matriz a imprimir
 	matrix_hand_t mat_handler;
-	assert(mat_init(&mat_handler, HEIGHT, WIDTH));
-	MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, HEIGHT, WIDTH);
+	assert(mat_init(&mat_handler, GAME_HEIGHT, GAME_WIDTH));
+	MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, GAME_HEIGHT, GAME_WIDTH);
 	rpi_copyToDis(&mat_handler, 0, 0);
 
 	//Actualizo la matriz de la pieza siguiente y la cargo en la matriz a imprimir
 	matrix_hand_t public_next_mat;
 	assert(mat_init(&public_next_mat, 11, 4));
-	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, next_block_public_matrix, 11,4);
+	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, game_next_block_public_matrix, 11,4);
 	rpi_copyToDis(&public_next_mat, 0, 11);
 
 	rpi_run_display(); //Actualizo el display
@@ -376,14 +373,14 @@ void update_game_animation(uint8_t x_init, uint8_t y_init)
 {
 	// Actualizo la matriz del juego y la cargo en la matriz a imprimir
 	matrix_hand_t mat_handler;
-	assert(mat_init(&mat_handler, HEIGHT, WIDTH));
-	MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, HEIGHT, WIDTH);
+	assert(mat_init(&mat_handler, GAME_HEIGHT, GAME_WIDTH));
+	MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, GAME_HEIGHT, GAME_WIDTH);
 	rpi_copyToDis_area(&mat_handler, x_init, 0, y_init, 0);
 
 	//Actualizo la matriz de la pieza siguiente y la cargo en la matriz a imprimir
 	matrix_hand_t public_next_mat;
 	assert(mat_init(&public_next_mat, 12, 4));
-	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, next_block_public_matrix, 12,4);
+	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, game_next_block_public_matrix, 12,4);
 	rpi_copyToDis_area(&public_next_mat, x_init, 11, y_init, 0);
 
 	rpi_run_display(); //Actualizo el display
@@ -393,7 +390,7 @@ void update_game_animation(uint8_t x_init, uint8_t y_init)
 
 void animation_row_complete (void)
 {
-	if(row_complete[0] != 0 ) //Si existe fila completa entro a la animacion
+	if(game_row_complete[0] != 0 ) //Si existe fila completa entro a la animacion
 	{
 
 		pthread_t tid1,tid2;
@@ -433,11 +430,11 @@ _Noreturn void * animation_text ()
 _Noreturn void * animation_deleate_row()
 {
 	int i, j;
-	for(j=0; j < WIDTH; j++) // Me muevo por columnas
+	for(j=0; j < GAME_WIDTH; j++) // Me muevo por columnas
 	{
-		for( i=0; row_complete[i] != 0 && i< WIDTH ; i++) //Me muevo por filas
+		for( i=0; game_row_complete[i] != 0 && i< GAME_WIDTH ; i++) //Me muevo por filas
 		{
-			delete_pixel(row_complete[i], j);
+			delete_pixel(game_row_complete[i], j);
 		}
 		easytimer_delay(125); //Delay
 		rpi_run_display();
@@ -446,10 +443,10 @@ _Noreturn void * animation_deleate_row()
 
 	for(i=0; i < 4 ; i++) //Elimino las filas completas
 	{
-		if(row_complete[i] != 0)
+		if(game_row_complete[i] != 0)
 		{
-			delete_row(row_complete[i]);
-			row_complete[i]= 0; //Coloco en cero el arreglo
+			delete_row(game_row_complete[i]);
+			game_row_complete[i]= 0; //Coloco en cero el arreglo
 		}
 	}
 }

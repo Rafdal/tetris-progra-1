@@ -18,7 +18,6 @@ int main(void){
     rpi_init_display();
     rpi_run_display();
 
-    game_init();
 
     dpad_init();
     dpad_on_press(key_press_callback);
@@ -37,7 +36,7 @@ int main(void){
 
         if(game_data.state == GAME_RUN && easytimer_get_millis()-lastMillis >= game_data.speed_interval){
             if(game_data.id == 0)
-                game_insert_block(id_next_block[0]);
+                game_insert_block();
 
             else
                 game_move_down();
@@ -56,14 +55,14 @@ int main(void){
 
 void update_display(void){
     matrix_hand_t mat_handler;
-    assert(mat_init(&mat_handler, HEIGHT, WIDTH));
-    MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, HEIGHT, WIDTH);
+    assert(mat_init(&mat_handler, GAME_HEIGHT, GAME_WIDTH));
+    MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, GAME_HEIGHT, GAME_WIDTH);
     printf("MAT_HANDLER:\n");
     rpi_copyToDis(&mat_handler, 0, 0);
 
 	matrix_hand_t public_next_mat;
 	assert(mat_init(&public_next_mat, 12, 4));
-	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, next_block_public_matrix, 12,4);
+	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, game_next_block_public_matrix, 12,4);
 	rpi_copyToDis(&public_next_mat, 0, 11);
 	mat_print(&public_next_mat);
 
@@ -80,7 +79,7 @@ void key_press_callback(uint8_t key){
 
         case DPAD_DOWN:
             if(game_get_data().id == 0)
-                game_insert_block(id_next_block[0]);
+                game_insert_block();
             else
                 game_move_down();
             printf("DOWN\n");
