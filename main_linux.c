@@ -318,10 +318,6 @@ switch (key)
                 break;
 
             case KEYB_SPACE:
-                menu_go_select();
-                printf("menu BTN\n");
-                break;
-
             case KEYB_ENTER:
                 menu_go_select();
                 printf("menu BTN\n");
