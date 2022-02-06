@@ -73,6 +73,7 @@ void display_menu_display(void);
 void animation_row_compleate(void);
 void main_game_start(void);
 void how_to_play (void);
+uint8_t param_lvl_fetch (void);
 //int init_audio(void);
 
 // ******************************
@@ -394,6 +395,7 @@ switch (key)
 
 void update_display(void) {
 
+    uint8_t parametro_nivel = param_lvl_fetch();
 	uint8_t x, y;
 	for(x=0; x<WIDTH ; x++)
 	{
@@ -405,12 +407,15 @@ void update_display(void) {
 	}
     for(x=0; x<4 ; x++)
 	{
-		for(y=0; y<10 ; y++)
+		for(y=0; y<parametro_nivel ; y++)
 		{
             float val= (float) next_block_public_matrix[y][x];
             al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+3+x), BLOCKSZ*(y+1), BLOCKSZ, BLOCKSZ, 0);
             
         }
+        for(y=parametro_nivel; y<10; y++){
+            al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+3+x), BLOCKSZ*(y+1), BLOCKSZ, BLOCKSZ, 0);
+        }//tapo los casilleros vacios
     }//DIBUJO PIEZA SIGUIENTE
 
     text_score_drawer(score, game_get_data().score);
@@ -652,7 +657,31 @@ void end_program (void){
     //al_shutdown_image_addon(); VER DOCUMENTACION ES LLAMADO AUTOMATICAMENTE AL SALIR DEL PROGRAMA
     printf("Game Ended\n");
 }
+uint8_t param_lvl_fetch (void){
+    uint8_t temporal=game_get_data().game_level; 
+    switch (temporal)
+    {
+    case 1:
+        temporal=10;
+        break;
+/*        temporal=7;
+        break;
+        temporal=4;
+        break;*/
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+        temporal=0;
+        break;
 
+    default:
+        temporal=10;
+        break;
+    }
+    return temporal;
+}
 /*void deleteline (int numfil){
     int x;
     int reductor;
