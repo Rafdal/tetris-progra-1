@@ -371,6 +371,7 @@ void update_game_display(void){
 	printf("LEVEL: %d\n", game_get_data().game_level);
 }
 
+// (Para la animacion de borrar filas)
 void update_game_animation(uint8_t x_init, uint8_t y_init)
 {
 	// Actualizo la matriz del juego y la cargo en la matriz a imprimir

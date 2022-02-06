@@ -25,7 +25,7 @@
 #define BLOCKSZ 50
 #define ANCHO   10
 #define ALTO    16
-#define PATH_TTF "./frontend/images/Tetris.ttf"
+#define PATH_TTF "./frontend/images/Arcade Regular.ttf"
 #define YPOS_SCORE BLOCKSZ*12
 #define YPOS_NIVEL BLOCKSZ*14
 
@@ -73,6 +73,7 @@ void display_menu_display(void);
 void animation_row_compleate(void);
 void main_game_start(void);
 void how_to_play (void);
+uint8_t param_lvl_fetch (void);
 //int init_audio(void);
 
 // ******************************
@@ -252,7 +253,7 @@ void display_menu_display(void){
     al_clear_to_color(al_map_rgb(0,0,0));   //fondo negro
     al_draw_scaled_bitmap(tetris_cartel, 0, 0, al_get_bitmap_width(tetris_cartel), al_get_bitmap_height(tetris_cartel),BLOCKSZ*3, BLOCKSZ, al_get_display_width(display)-BLOCKSZ*6, BLOCKSZ*8, 0);
     
-    blocktext_t * menuprin = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 45, menu_data.title, PATH_TTF, al_get_display_width(display)/2, al_get_display_height(display)/2+BLOCKSZ*2, CENTRADO );
+    blocktext_t * menuprin = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 55, menu_data.title, PATH_TTF, al_get_display_width(display)/2, al_get_display_height(display)/2+BLOCKSZ*2, CENTRADO );
     if(text_global_font_changer(menuprin))
     {
         printf("error con text_global_font_changer");
@@ -394,6 +395,7 @@ switch (key)
 
 void update_display(void) {
 
+    uint8_t parametro_nivel = param_lvl_fetch();
 	uint8_t x, y;
 	for(x=0; x<WIDTH ; x++)
 	{
@@ -405,12 +407,15 @@ void update_display(void) {
 	}
     for(x=0; x<4 ; x++)
 	{
-		for(y=0; y<10 ; y++)
+		for(y=0; y<parametro_nivel ; y++)
 		{
             float val= (float) next_block_public_matrix[y][x];
             al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+3+x), BLOCKSZ*(y+1), BLOCKSZ, BLOCKSZ, 0);
             
         }
+        for(y=parametro_nivel; y<10; y++){
+            al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+3+x), BLOCKSZ*(y+1), BLOCKSZ, BLOCKSZ, 0);
+        }//tapo los casilleros vacios
     }//DIBUJO PIEZA SIGUIENTE
 
     text_score_drawer(score, game_get_data().score);
@@ -529,9 +534,9 @@ int initialize_alleg(void) {
 }
     
 void  initialize_display_game (void){
-    blocktext_t * pieza_sig = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 25, "PIEZA  SIGUIENTE", PATH_TTF, BLOCKSZ*(ANCHO+2.5), BLOCKSZ/4, ALINEADO_IZQUIERDA );
-    blocktext_t * puntaje = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "PUNTAJE:", PATH_TTF, BLOCKSZ*(ANCHO+2.5), YPOS_SCORE, ALINEADO_IZQUIERDA );
-    blocktext_t * lvl_game = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "NIVEL:", PATH_TTF, BLOCKSZ*(ANCHO+2.5), YPOS_NIVEL, ALINEADO_IZQUIERDA );
+    blocktext_t * pieza_sig = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "PIEZA  SIGUIENTE", PATH_TTF, BLOCKSZ*(ANCHO+2.5), BLOCKSZ/4, ALINEADO_IZQUIERDA );
+    blocktext_t * puntaje = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 40, "PUNTAJE:", PATH_TTF, BLOCKSZ*(ANCHO+2.5), YPOS_SCORE, ALINEADO_IZQUIERDA );
+    blocktext_t * lvl_game = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 40, "NIVEL:", PATH_TTF, BLOCKSZ*(ANCHO+2.5), YPOS_NIVEL, ALINEADO_IZQUIERDA );
     
     score = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "", PATH_TTF, BLOCKSZ*(ANCHO+2.5), YPOS_SCORE+BLOCKSZ, ALINEADO_IZQUIERDA );
     nivel = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "", PATH_TTF, BLOCKSZ*(ANCHO+2.5), YPOS_NIVEL+BLOCKSZ, ALINEADO_IZQUIERDA );
@@ -652,7 +657,31 @@ void end_program (void){
     //al_shutdown_image_addon(); VER DOCUMENTACION ES LLAMADO AUTOMATICAMENTE AL SALIR DEL PROGRAMA
     printf("Game Ended\n");
 }
+uint8_t param_lvl_fetch (void){
+    uint8_t temporal=game_get_data().game_level; 
+    switch (temporal)
+    {
+    case 1:
+        temporal=10;
+        break;
+/*        temporal=7;
+        break;
+        temporal=4;
+        break;*/
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+        temporal=0;
+        break;
 
+    default:
+        temporal=10;
+        break;
+    }
+    return temporal;
+}
 /*void deleteline (int numfil){
     int x;
     int reductor;
