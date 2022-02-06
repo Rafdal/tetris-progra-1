@@ -260,23 +260,29 @@ void _undo_movement(void){
 
 // Chequea la validez de las coordenadas para la matriz general. Si da error, corrige las coordenadas y devuelve cero
 int _can_write(uint8_t y, uint8_t x){
+    int ret=0;
     if(x >= 0 && x < GAME_WIDTH && y >= 0 && y < GAME_HEIGHT){
-
         if(static_matrix[y][x] > 0){
-            printf("Colision?\n");
-            colision = true;
-            return 0;
+            printf("Colision x: %u, y: %u\n", x,y);
+            if(y < 2){
+                game_data.state = GAME_LOSE;
+                ret = 0;
+            }
+            else{
+                colision = true;
+                ret = 0;
+            }
         }
-
-        return 1;
-    }else
-	{
-        if(y>=255)
+        else
+            ret = 1; // todo OK
+    }else{
+        if(y==255)
             game_data.state = GAME_LOSE;
 
         printf("Error! se intento escribir matriz[%u][%u]\n", y, x);
-        return 0;
+        ret = 0;
     }
+    return ret;
 }
 
 // Ejecucion del Juego
@@ -552,10 +558,15 @@ void _update_level (void)
 		game_data.game_level = 5;
 		game_data.speed_interval = GAME_LEVEL5_SPEED;
 	}
-	else if (game_data.score > GAME_LEVEL6_SCORE)
+	else if( game_data.score >GAME_LEVEL6_SCORE && game_data.score <= GAME_LEVEL7_SCORE)
 	{
 		game_data.game_level = 6;
 		game_data.speed_interval = GAME_LEVEL6_SPEED;
+	}
+	else if (game_data.score > GAME_LEVEL7_SCORE)
+	{
+		game_data.game_level = 7;
+		game_data.speed_interval = GAME_LEVEL7_SPEED;
 	}
 }
 

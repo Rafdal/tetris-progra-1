@@ -12,11 +12,12 @@ char game_next_block_public_matrix[12][4];	        //Matriz publica de la pieza 
 uint8_t game_row_complete[4];                       // Filas completadas
 
 #define GAME_LEVEL1_SCORE 0
-#define GAME_LEVEL2_SCORE 500
+#define GAME_LEVEL2_SCORE 1000
 #define GAME_LEVEL3_SCORE 2000
 #define GAME_LEVEL4_SCORE 3000
 #define GAME_LEVEL5_SCORE 5000
-#define GAME_LEVEL6_SCORE 10000
+#define GAME_LEVEL6_SCORE 8000
+#define GAME_LEVEL7_SCORE 12000
 
 #define GAME_LEVEL1_SPEED 2000
 #define GAME_LEVEL2_SPEED 1200
@@ -24,6 +25,7 @@ uint8_t game_row_complete[4];                       // Filas completadas
 #define GAME_LEVEL4_SPEED 600
 #define GAME_LEVEL5_SPEED 400
 #define GAME_LEVEL6_SPEED 200
+#define GAME_LEVEL7_SPEED 150
 
 typedef enum {GAME_INSERT_BLOCK, GAME_RUN, GAME_QUIT, GAME_LOSE} game_state_t;
 
