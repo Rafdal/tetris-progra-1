@@ -298,12 +298,11 @@ void read_events(void){
     ALLEGRO_EVENT ev;
     if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola
     {
-        keyb_run(&ev); // paso como parametro a
-
         if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
             game_quit();
         }
     }
+    keyb_run(&ev); // Siempre debe ejecutarse el keyb_run
 }
 
 
