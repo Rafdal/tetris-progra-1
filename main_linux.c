@@ -671,7 +671,7 @@ uint8_t param_lvl_fetch (void){
     case 4:
     case 5:
     case 6:
-        temporal=0;
+        temporal=7;
         break;
 
     default:
