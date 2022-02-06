@@ -39,6 +39,7 @@ ALLEGRO_BITMAP *muroV = NULL;
 ALLEGRO_BITMAP *pieza_blanca = NULL;
 ALLEGRO_BITMAP *tetris_cartel = NULL;
 ALLEGRO_BITMAP *diagrama_teclado = NULL;
+ALLEGRO_BITMAP *jugabilidad_diagrama = NULL;
 
 //UTILIDADES ALLEGRO
 ALLEGRO_DISPLAY *display = NULL;
@@ -103,11 +104,25 @@ void resume_game(void)
 //CALLBACK DE CONTROLES/INSTRUCCIONES
 void how_to_play (void){
     easytimer_delay(300);
+    int actual=1;
     al_draw_scaled_bitmap(diagrama_teclado, 0, 0, al_get_bitmap_width(diagrama_teclado), al_get_bitmap_height(diagrama_teclado), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
     al_flip_display();
-    while ((!keyb_is_pressed(KEYB_ENTER)) && (!keyb_is_pressed(KEYB_ESC)) && (!keyb_is_pressed(KEYB_SPACE)))
+    while (!keyb_is_pressed(KEYB_ESC) )
     {
         read_events();
+        if((keyb_is_pressed(KEYB_LEFT) || keyb_is_pressed(KEYB_RIGHT)) && (actual==2)){
+            al_draw_scaled_bitmap(diagrama_teclado, 0, 0, al_get_bitmap_width(diagrama_teclado), al_get_bitmap_height(diagrama_teclado), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
+            al_flip_display();
+            actual=1;
+            easytimer_delay(150);
+        }
+        else if((keyb_is_pressed(KEYB_LEFT) || keyb_is_pressed(KEYB_RIGHT)) && (actual==1)){
+            al_draw_scaled_bitmap(jugabilidad_diagrama, 0, 0, al_get_bitmap_width(jugabilidad_diagrama), al_get_bitmap_height(jugabilidad_diagrama), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
+            al_flip_display();
+            actual=2;
+            easytimer_delay(150);
+        }
+
     }
     
 }
@@ -151,7 +166,6 @@ int main (void){
 	menu_set_option(pausa_menu, 0, "REANUDAR", resume_game);
     menu_set_option(pausa_menu, 1, "REINICIAR", restart_game);
     menu_set_option(pausa_menu, 2, "SALIR", exit_game);
-
 
 
     menu_set_event_listener_display(read_events, display_menu_display);
@@ -502,7 +516,7 @@ int initialize_alleg(void) {
         al_destroy_event_queue(event_queue);
         return -1;
     }
-    diagrama_teclado = al_load_bitmap("./frontend/images/howtoplay3.png");
+    diagrama_teclado = al_load_bitmap("./frontend/images/control3s.png");
     if (!tetris_cartel) {
         printf("failed to load diagrama_cartel !\n");
         al_destroy_bitmap(image);
@@ -510,6 +524,18 @@ int initialize_alleg(void) {
         al_destroy_bitmap(muroV);
         al_destroy_bitmap(pieza_blanca);
         al_destroy_bitmap(tetris_cartel);
+        al_destroy_event_queue(event_queue);
+        return -1;
+    }
+    jugabilidad_diagrama = al_load_bitmap("./frontend/images/jugabilidad_tetris.png");
+    if (!tetris_cartel) {
+        printf("failed to load diagrama_cartel !\n");
+        al_destroy_bitmap(image);
+        al_destroy_bitmap(muroH);
+        al_destroy_bitmap(muroV);
+        al_destroy_bitmap(pieza_blanca);
+        al_destroy_bitmap(tetris_cartel);
+        al_destroy_bitmap(diagrama_teclado);
         al_destroy_event_queue(event_queue);
         return -1;
     }
@@ -639,6 +665,7 @@ void end_program (void){
     al_destroy_bitmap(pieza_blanca);    
     al_destroy_bitmap(tetris_cartel);
     al_destroy_bitmap(diagrama_teclado);
+    al_destroy_bitmap(jugabilidad_diagrama);
 
 // DESTRUCCION DE UTILIDADES ALLEGRO
     al_destroy_display(display);
