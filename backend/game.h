@@ -3,17 +3,31 @@
 
 #include <stdint.h>
 
-#define HEIGHT  16
-#define WIDTH   10
+#define GAME_HEIGHT  16
+#define GAME_WIDTH   10
 
-#define GAME_DEFAULT_SPEED_INTERVAL 2000  // milisegundos
+// ARREGLOS PUBLICOS
+char game_public_matrix [GAME_HEIGHT][GAME_WIDTH];  //Matriz publica del juego
+char game_next_block_public_matrix[12][4];	        //Matriz publica de la pieza siguiente
+uint8_t game_row_complete[4];                       // Filas completadas
 
-char game_public_matrix [HEIGHT][WIDTH]; //Matriz publica del juego
-char next_block_public_matrix[12][4];	//Matriz publica de la pieza siguiente
+#define GAME_LEVEL1_SCORE 0
+#define GAME_LEVEL2_SCORE 1000
+#define GAME_LEVEL3_SCORE 2000
+#define GAME_LEVEL4_SCORE 3000
+#define GAME_LEVEL5_SCORE 5000
+#define GAME_LEVEL6_SCORE 8000
+#define GAME_LEVEL7_SCORE 12000
 
-uint8_t row_complete[4]; 	//Arreglo de las filas siguientes
+#define GAME_LEVEL1_SPEED 2000
+#define GAME_LEVEL2_SPEED 1200
+#define GAME_LEVEL3_SPEED 800
+#define GAME_LEVEL4_SPEED 600
+#define GAME_LEVEL5_SPEED 400
+#define GAME_LEVEL6_SPEED 200
+#define GAME_LEVEL7_SPEED 150
 
-typedef enum {GAME_IDLE, GAME_RUN, GAME_PAUSE, GAME_QUIT, GAME_LOSE} game_state_t;
+typedef enum {GAME_INSERT_BLOCK, GAME_RUN, GAME_QUIT, GAME_LOSE} game_state_t;
 
 //Estructura de la pieza
 typedef struct{
@@ -33,21 +47,17 @@ typedef struct {
 	uint8_t game_level;
 }game_data_t;
 
-// Variable en donde se van a guardar las proximas piezas
-uint8_t id_next_block[4];
-BLOCK_t arr_next_block[4];
 
 // Funciones del juego
-void game_init(void);   // inicia la libreria
 void game_start(void);  // inicia el juego en blanco
 void game_run(void);    // ejecuta el juego
 void game_restart(void);// reinicia el juego
 void game_quit(void);   // sale del juego
 
-
+void game_debug(void); // DEBUG
 
 // Inserta un nuevo bloque arriba
-void game_insert_block(uint8_t id);
+void game_insert_block(void);
 
 // Desciende las coordenadas del bloque
 void game_move_down (void);
@@ -57,9 +67,6 @@ void game_rotate (int direction);
 
 // mueve el bloque en horizontal (1 = derecha, 0 = izquierda)
 void game_move_horizontal(int direction);
-
-//Devuelve un ID de bloque aleatorio
-uint8_t game_get_next_block (void);
 
 // Obtiene todos los datos del juego
 game_data_t game_get_data(void);

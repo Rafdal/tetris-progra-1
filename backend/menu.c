@@ -10,7 +10,7 @@ static menu_callback_t display_animations = NULL; // Callback ejecutada en tiemp
 static menu_t *current_menu = NULL;    // Puntero al menu del contexto actual (en ejecucion)
 
 
-// Inicializar menu (retorna NULL en caso de error)
+// Inicializar un menu (retorna NULL en caso de error)
 menu_t* menu_init(uint8_t options, char* title, menu_callback_t on_exit, menu_action_t action){
     menu_t *menu = (menu_t*) calloc(1, sizeof(menu_t)); // Asignar memoria a la estructura
     if(menu != NULL && options > 0){
