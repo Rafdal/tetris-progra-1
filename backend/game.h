@@ -11,7 +11,21 @@ char game_public_matrix [GAME_HEIGHT][GAME_WIDTH];  //Matriz publica del juego
 char game_next_block_public_matrix[12][4];	        //Matriz publica de la pieza siguiente
 uint8_t game_row_complete[4];                       // Filas completadas
 
-typedef enum {GAME_IDLE, GAME_RUN, GAME_PAUSE, GAME_QUIT, GAME_LOSE} game_state_t;
+#define GAME_LEVEL1_SCORE 0
+#define GAME_LEVEL2_SCORE 500
+#define GAME_LEVEL3_SCORE 2000
+#define GAME_LEVEL4_SCORE 3000
+#define GAME_LEVEL5_SCORE 5000
+#define GAME_LEVEL6_SCORE 10000
+
+#define GAME_LEVEL1_SPEED 2000
+#define GAME_LEVEL2_SPEED 1200
+#define GAME_LEVEL3_SPEED 800
+#define GAME_LEVEL4_SPEED 600
+#define GAME_LEVEL5_SPEED 400
+#define GAME_LEVEL6_SPEED 200
+
+typedef enum {GAME_INSERT_BLOCK, GAME_RUN, GAME_QUIT, GAME_LOSE} game_state_t;
 
 //Estructura de la pieza
 typedef struct{
@@ -38,7 +52,7 @@ void game_run(void);    // ejecuta el juego
 void game_restart(void);// reinicia el juego
 void game_quit(void);   // sale del juego
 
-
+void game_debug(void); // DEBUG
 
 // Inserta un nuevo bloque arriba
 void game_insert_block(void);
