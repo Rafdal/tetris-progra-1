@@ -317,9 +317,9 @@ void key_press_callback(uint8_t key){
 void main_game_start(void){
 	printf("Menu status: %d\n", musicStatus());
 	pauseAudio();
-	endAudio();
 
 	playSound(GAME_AUDIO, SDL_MIX_MAXVOLUME);
+
 	rpi_clear_display(); //Limpio el display
 
 	game_data_t game_data;
