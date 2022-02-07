@@ -319,7 +319,7 @@ void main_game_start(void){
 	pauseAudio();
 	printf("Menu status: %d\n", musicStatus());
 
-	playSound(GAME_AUDIO, SDL_MIX_MAXVOLUME);
+	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
 	printf("Menu status: %d\n", musicStatus());
 
 	unpauseAudio();
