@@ -316,13 +316,9 @@ void key_press_callback(uint8_t key){
 // ***********************************************
 void main_game_start(void){
 	printf("Menu status: %d\n", musicStatus());
-	pauseAudio();
-	printf("Menu status: %d\n", musicStatus());
 
-	playSound(GAME_AUDIO, SDL_MIX_MAXVOLUME);
-	printf("Menu status: %d\n", musicStatus());
+	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
 
-	unpauseAudio();
 	printf("Menu status: %d\n", musicStatus());
 
 	rpi_clear_display(); //Limpio el display
