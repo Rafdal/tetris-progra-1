@@ -242,7 +242,6 @@ void key_press_callback(uint8_t key){
                 break;
 
             case DPAD_BTN:
-				pauseAudio();
 				menu_go_select();
                 printf("menu BTN\n");
                 break;
@@ -287,10 +286,16 @@ void key_press_callback(uint8_t key){
             case DPAD_BTN:
                 easytimer_delay(200); // Delay para evitar salir del menu al entrar
 				rpi_clear_display();
-				pauseAudio();
-				playMusic(PAUSE_AUDIO, SDL_MIX_MAXVOLUME);
+				printf("Pause menu status: %d\n", musicStatus());
 
-                menu_run(pause_menu);
+				pauseAudio();
+				printf("Pause menu status: %d\n", musicStatus());
+
+				playMusic(PAUSE_AUDIO, SDL_MIX_MAXVOLUME);
+				printf("Pause menu status: %d\n", musicStatus());
+
+
+				menu_run(pause_menu);
 				rpi_clear_display();
                 printf("game BTN\n");
                 break;
@@ -310,10 +315,14 @@ void key_press_callback(uint8_t key){
 // *	F U N C I O N E S	 D E L    J U E G O	 *
 // ***********************************************
 void main_game_start(void){
+	printf("Menu status: %d\n", musicStatus());
+	pauseAudio();
+	printf("Menu status: %d\n", musicStatus());
 
-	endAudio();	//Pauso el audio del menu
+	playSound(GAME_AUDIO, SDL_MIX_MAXVOLUME);
+	printf("Menu status: %d\n", musicStatus());
+
 	rpi_clear_display(); //Limpio el display
-	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME); //Reproduzco el audio del juego
 
 	game_data_t game_data;
     uint64_t lastMillis;
@@ -334,7 +343,7 @@ void main_game_start(void){
         }
 
         if(game_data.state == GAME_LOSE){
-			endAudio();
+			pauseAudio();
 			playMusic(LOSE_AUDIO, SDL_MIX_MAXVOLUME);
 
 			animation_game_finish();

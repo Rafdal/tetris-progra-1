@@ -155,6 +155,8 @@ void exit_game(void){
 
 //CALLBACK DE GAMEOVER
 void volver_al_main_menu (void){
+    manage_music(game, stop);
+	manage_music(lose, start);
     game_quit();
     menu_force_close(gameover_menu);
 }
@@ -163,6 +165,8 @@ void volver_al_main_menu (void){
 void restart_game(void){
 	initialize_display_game(); //inicio el display del juego
     menu_force_close_current(); // Cerrar menu pausa
+	manage_music(pausa, stop);
+	manage_music(game, start);
     game_start(); 	//Corre el juego
 }
 
@@ -194,14 +198,11 @@ void main_game_start(void){
         }
 
         if(game_data.state == GAME_LOSE){
-			manage_music(game, stop);
-		//	manage_music(lose, start);
+
             printf("Perdiste! The Game\n");
             menu_run(gameover_menu);
-
-/*            break;
-            #warning BREAK HARDCODEADO
-            // Aca deberia ir alguna funcion de mostrar score o guardarlo, etc (MAS ADELANTE LO VEMOS)*/
+			manage_music(game, stop);
+			manage_music(lose, start);
         }
     }
     printf("Leaving game...\n");
@@ -233,13 +234,25 @@ void animation_row_compleate(void)
                     easytimer_delay(3);
                     contador_filas_destruidas++; //incremento contador
                     if(contador_filas_destruidas==4 && !indicador){
+						manage_music(TETRIS, start);
                         al_draw_text(text_font_pointer_fetcher(),al_map_rgb(0,120,120), BLOCKSZ*6,BLOCKSZ*4,CENTRADO,"T E T R I S !");
                         al_flip_display();
                         indicador++;
-                        }
+                    }
                 }
+				}
                 reductor-=decremento;
-            }
+        }
+		switch (contador_filas_destruidas) {
+			case 1:
+				manage_music(clr_lane_1, start);
+				break;
+			case 2:
+				manage_music(clr_lane_2, start);
+				break;
+			case 3:
+				manage_music(clr_lane_3, start);
+				break;
 
         }
         for(i=0; game_row_complete[i] != 0 && i< GAME_WIDTH ; i++){
@@ -383,7 +396,7 @@ void keypress_callback(uint8_t key){
         return;
     }
     if(menu_is_current_available()){
-		manage_music(chime, start);
+		manage_music(clr_lane_1, start);
         switch (key)
         {
             case KEYB_UP:
