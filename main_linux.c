@@ -296,7 +296,7 @@ void display_menu_display(void){
         al_clear_to_color(al_map_rgb(0,0,0));   //fondo negro
         al_draw_scaled_bitmap(tetris_cartel, 0, 0, al_get_bitmap_width(tetris_cartel), al_get_bitmap_height(tetris_cartel),BLOCKSZ*3, BLOCKSZ, al_get_display_width(display)-BLOCKSZ*6, BLOCKSZ*8, 0);
         //dibujo el cartel del tetris
-        blocktext_t * menuprin = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 70, menu_data.title, PATH_TTF, al_get_display_width(display)/2, al_get_display_height(display)/2+BLOCKSZ*2, CENTRADO );
+        blocktext_t * menuprin = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 80, menu_data.title, PATH_TTF, al_get_display_width(display)/2, al_get_display_height(display)/2+BLOCKSZ*2, CENTRADO );
         if(text_drawer(menuprin)){
             text_destroy(menuprin);
             end_program(); // si hay problemas con la fuente salgo del programa
@@ -307,7 +307,7 @@ void display_menu_display(void){
         for(id=0; id<menu_data.n_options; id++)
         {
             if(menu_data.current_option == id){
-                blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(0,255,0), 40, menu_data.option_titles[id], PATH_TTF, al_get_display_width(display)/2,(al_get_display_height(display)/2)+(BLOCKSZ*(4+id)), CENTRADO );
+                blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(0,255,0), 60, menu_data.option_titles[id], PATH_TTF, al_get_display_width(display)/2,(al_get_display_height(display)/2)+(BLOCKSZ*(4+id)), CENTRADO );
                 if(text_drawer(menuop)){
                     text_destroy(menuop);
                     end_program(); // si hay problemas con la fuente salgo del programa
@@ -316,7 +316,7 @@ void display_menu_display(void){
             }// si es la que esta siendo apuntada, la dibujo en verde
 
             else{
-                blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 40, menu_data.option_titles[id], PATH_TTF, al_get_display_width(display)/2, (al_get_display_height(display)/2)+(BLOCKSZ*(4+id)), CENTRADO );
+                blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 60, menu_data.option_titles[id], PATH_TTF, al_get_display_width(display)/2, (al_get_display_height(display)/2)+(BLOCKSZ*(4+id)), CENTRADO );
                 if(text_drawer(menuop)){
                     text_destroy(menuop);
                     end_program(); // si hay problemas con la fuente salgo del programa
@@ -333,7 +333,7 @@ void display_menu_display(void){
         al_clear_to_color(al_map_rgb(0,0,0));   //fondo negro
         al_draw_scaled_bitmap(tetris_cartel, 0, 0, al_get_bitmap_width(tetris_cartel), al_get_bitmap_height(tetris_cartel), BLOCKSZ*3, BLOCKSZ, al_get_display_width(display)-BLOCKSZ*8, BLOCKSZ*6, 0);
         //dibujo el cartel del tetris
-        blocktext_t * menuprin = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 70, menu_data.title, PATH_TTF, al_get_display_width(display)/2, al_get_display_height(display)/2, CENTRADO );
+        blocktext_t * menuprin = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 80, menu_data.title, PATH_TTF, al_get_display_width(display)/2, al_get_display_height(display)/2, CENTRADO );
 
         if(text_drawer(menuprin)){
             text_destroy(menuprin);
@@ -345,7 +345,7 @@ void display_menu_display(void){
             for(id=0; id<menu_data.n_options; id++)
         {
             if(menu_data.current_option == id){
-                blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(0,255,0), 40, menu_data.option_titles[id], PATH_TTF, al_get_display_width(display)/2,(al_get_display_height(display)/2)+(BLOCKSZ*(4+id)), CENTRADO );
+                blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(0,255,0), 60, menu_data.option_titles[id], PATH_TTF, al_get_display_width(display)/2,(al_get_display_height(display)/2)+(BLOCKSZ*(4+id)), CENTRADO );
                 if(text_drawer(menuop)){
                     text_destroy(menuop);
                     end_program(); // si hay problemas con la fuente salgo del programa
@@ -353,7 +353,7 @@ void display_menu_display(void){
                 text_destroy(menuop);//destruyo estructura
             }// si es la que esta siendo apuntada, la dibujo en verde
             else{
-                blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 40, menu_data.option_titles[id], PATH_TTF, al_get_display_width(display)/2, (al_get_display_height(display)/2)+(BLOCKSZ*(4+id)), CENTRADO );
+                blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 60, menu_data.option_titles[id], PATH_TTF, al_get_display_width(display)/2, (al_get_display_height(display)/2)+(BLOCKSZ*(4+id)), CENTRADO );
                 if(text_drawer(menuop)){
                     text_destroy(menuop);
                     end_program(); // si hay problemas con la fuente salgo del programa
@@ -504,11 +504,16 @@ void update_display(void) {
         }//tapo los casilleros vacios
     }//DIBUJO PIEZA SIGUIENTE
 
-    text_number_drawer(score, game_get_data().score);
-	al_flip_display(); //despues de esribir toda la matriz muestro lo que escribi
+    if(text_number_drawer(score, game_get_data().score)){
+        end_program();
+    }
 	printf("SCORE:\n%u\n", game_get_data().score);
-    text_number_drawer(nivel, game_get_data().game_level);
+    
+    if(text_number_drawer(nivel, game_get_data().game_level)){
+        end_program();
+    }
 
+	al_flip_display(); //despues de esribir toda la matriz muestro lo que escribi
     printf("Update Display Out\n");
 }
 

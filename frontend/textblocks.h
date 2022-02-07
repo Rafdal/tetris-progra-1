@@ -59,10 +59,11 @@ ALLEGRO_FONT * text_font_pointer_fetcher(void);
 //DESCRIPCION: Devuelve el puntero a ALLEGRO_FONT que se esta utilizando actualmente
 //No recibe ningun parametro. En caso de que no se haya inicializado la fuente, devuelve NULL
 
-void text_number_drawer (blocktext_t * bloque, uint32_t puntos);
+int text_number_drawer (blocktext_t * bloque, uint32_t puntos);
 //DESCRIPCION: Dibuja en el display una variable al lado del titulo de la opcion. 
 // - [bloque]: puntero a estructura que se quiere destruir
 // - [puntos]: Variable que se desea dibujar en pantalla
+//RETURN: DEVUELVE 0 SI ES EXITOSO, 1 SI EL PUNTERO ES NULO
 //ATENCION: NO FLIPEA EL DISPLAY, ESO SE HACE A MANO
 
 void font_destroyer (void);

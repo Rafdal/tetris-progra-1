@@ -8,7 +8,7 @@ linux: main_linux.o game.o l_easy_timer.o keyboard.o textblocks.o menu.o audio_l
 	gcc -Wall main_linux.o easy_timer.o keyboard.o game.o textblocks.o menu.o audio_lib.o -o linux `pkg-config --libs allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5 allegro_font-5`
 
 rasp: rpi_text.o menu.o main_rasp.o r_easy_timer.o joystick.o rpi_display.o game.o matrix_handler.o
-	gcc -Wall rpi_text.o menu.o main_rasp.o joystick.o easy_timer.o rpi_display.o game.o matrix_handler.o ./libs/joydrv.o ./libs/disdrv.o -o rasp -lpthread
+	gcc -Wall rpi_text.o menu.o main_rasp.o joystick.o easy_timer.o rpi_display.o game.o matrix_handler.o ./libs/libAudioSDL2.o ./libs/joydrv.o ./libs/disdrv.o -L/usr/local/lib -lSDL2 -o rasp
 
 push:
 	git add . && git commit -m "make" && git push
@@ -77,13 +77,13 @@ audio_lib.o: ./testing/audiotest/audio_lib.c ./testing/audiotest/audio_lib.h
 debug.o: ./debug/debug.c ./debug/debug.h
 	gcc -c -Wall ./debug/debug.c
 
-t_matrix_handler.o: ./testing/matrix_handler.c ./testing/matrix_handler.h
+t_matrix_handler.o: libs/matrix_handler.c libs/matrix_handler.h
 	gcc -c -Wall ./testing/matrix_handler.c
 
 t_easy_timer.o: ./testing/easy_timer.c ./testing/easy_timer.h
 	gcc -c -Wall ./testing/easy_timer.c
 
-t_rpi_display.o: ./testing/rpi_display.c ./testing/rpi_display.h
+t_rpi_display.o: libs/rpi_display.c libs/rpi_display.h
 	gcc -c -Wall ./testing/rpi_display.c
 
 teclado_trucho.o: ./testing/joystick.c ./testing/joystick.h
@@ -95,7 +95,7 @@ dispEmu.o: ./testing/disdrv.c ./testing/disdrv.h
 rpi_text.o: ./libs/rpi_text.c ./libs/rpi_text.h
 	gcc -c -Wall ./libs/rpi_text.c
 
-t_rpi_text.o: ./testing/rpi_text.c ./testing/rpi_text.h
+t_rpi_text.o: libs/rpi_text.c libs/rpi_text.h
 	gcc -c -Wall ./testing/rpi_text.c
 
 clean:

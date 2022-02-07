@@ -5,9 +5,9 @@
 #include "./backend/menu.h"
 #include "./testing/joystick.h"
 #include "./testing/easy_timer.h"
-#include "./testing/matrix_handler.h"
-#include "./testing/rpi_display.h"
-#include "./testing/rpi_text.h"
+#include "libs/matrix_handler.h"
+#include "libs/rpi_display.h"
+#include "libs/rpi_text.h"
 #include "./frontend/keyboard.h"
 
 // LIBRERIAS ALEGRO
@@ -41,7 +41,6 @@ void animation_row_complete (void);  //Ejecuta la animacion de fila completa
 
 void key_press_callback(uint8_t key); // Define los Callbacks de las teclas
 
-// int init_audio(char); //Inicializa el audio
 
 void update_game_animation(uint8_t x_init, uint8_t y_init);
 

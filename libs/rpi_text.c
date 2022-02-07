@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "easy_timer.h"
+#include "../testing/easy_timer.h"
 
 static void __rpi_text_print(rpi_text_block_t *block); // Funcion privada. Print sin cambiar block->state
 
