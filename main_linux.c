@@ -158,7 +158,7 @@ void volver_al_main_menu (void){
     manage_music(game, stop);
 	manage_music(lose, start);
     game_quit();
-    menu_force_close_current();
+    menu_force_close(gameover_menu);
 }
 
 //CALLBACK DE REINICIO DE JUEGO
@@ -416,6 +416,7 @@ void keypress_callback(uint8_t key){
 
             case KEYB_SPACE:
             case KEYB_ENTER:
+                printf("menu BTN...\n");
 				manage_music(menu, stop);
                 menu_go_select();
                 printf("menu BTN\n");
@@ -479,6 +480,7 @@ void keypress_callback(uint8_t key){
         default:
         break;
     }
+    printf("game run\n");
     game_run();
     update_display(); // estamos viendo si esto buguea la eliminacion de filas
     }
@@ -644,7 +646,7 @@ int initialize_alleg(void) {
     al_register_event_source(event_queue, al_get_display_event_source(display));
     return 0;
 }
-    
+
 void  initialize_display_game (void){
     blocktext_t * pieza_sig = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, "PIEZA  SIGUIENTE", PATH_TTF, BLOCKSZ*(ANCHO+2.5), BLOCKSZ/4, ALINEADO_IZQUIERDA );
     blocktext_t * puntaje = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 40, "PUNTAJE:", PATH_TTF, BLOCKSZ*(ANCHO+2.5), YPOS_SCORE, ALINEADO_IZQUIERDA );
