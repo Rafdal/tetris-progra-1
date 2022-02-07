@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <assert.h>
-#include <pthread.h>
 
 #include "./backend/game.h"
 #include "./backend/menu.h"
@@ -44,10 +43,6 @@ void key_press_callback(uint8_t key); // Define los Callbacks de las teclas
 
 // int init_audio(char); //Inicializa el audio
 
-_Noreturn void * animation_deleate_row(); //Elimina las filas completas de forma animada
-
-_Noreturn void * animation_text (); //Muestra un texto en pantalla
-
 void update_game_animation(uint8_t x_init, uint8_t y_init);
 
 void animation_game_finish(void);
@@ -83,13 +78,17 @@ int main(void){
 
     rpi_init_display(); //Inicializo el display
 
+	// RESERVA DE MEMORIA PARA EL BLOQUE DE TEXTOS DESLIZANTES Y LOS ESTATICOS
+    text_stat = rpi_text_reserve(STR_SIZES);
+    text_anim = rpi_text_reserve(STR_SIZES);
+
+    dpad_init();	//Inicializo el pad (joystick usado como pad direccional de 4 botones)
+    easytimer_set_realTimeLoop(dpad_read);
+
+
     #ifdef USAR_DEBUG
     debug_new_file("debug.txt");
     #endif
-
-    dpad_init();	//Inicializo el pad (joystick usado como pad direccional de 4 botones)
-
-    easytimer_set_realTimeLoop(dpad_read);
 
 	// init_audio(1);  //Inicializo el audio
 
@@ -117,9 +116,6 @@ int main(void){
     menu_set_option(pause_menu, 1, "RESTART", restart_game);
     menu_set_option(pause_menu, 2, "EXIT", exit_game);
 
-	// RESERVA DE MEMORIA PARA EL BLOQUE DE TEXTOS DESLIZANTES Y LOS ESTATICOS
-    text_stat = rpi_text_reserve(STR_SIZES);
-    text_anim = rpi_text_reserve(STR_SIZES);
 
     // Setear los callbacks que controlaran el menu
     menu_set_event_listener_display(dpad_read, update_menu_display);
@@ -128,10 +124,11 @@ int main(void){
 	//Setear callback de animacion de eliminar fila
 	game_set_delrow_callback(animation_row_complete);
 
-	animation_game_start();
 
+	animation_game_start();
     // Ejecutar menu principal
     DEBUG("Running main menu...");
+	
     menu_run(main_menu);
     DEBUG("Exit main menu...");
 
@@ -321,7 +318,6 @@ void main_game_start(void){
         if(game_data.state == GAME_RUN && easytimer_get_millis()-lastMillis >= game_data.speed_interval){
             game_move_down();
             game_run();	//Corro el juego
-			//animation_row_complete();	//Analizo si se completo una fila y corro lo animacion
             update_game_display();  //Actualizo el display
 
             lastMillis = easytimer_get_millis();
@@ -392,64 +388,56 @@ void animation_row_complete (void)
 {
 	if(game_row_complete[0] != 0 ) //Si existe fila completa entro a la animacion
 	{
+		game_data_t game_data = game_get_data();
 
-		pthread_t tid1,tid2;
-
-		pthread_create(&tid1,NULL,animation_text,NULL);
-		pthread_create(&tid2,NULL,animation_deleate_row,NULL);
-
-
-		pthread_join(tid1,NULL);
-		pthread_join(tid2,NULL);
-
-	}
-}
-
-_Noreturn void * animation_text ()
-{
-	game_data_t game_data = game_get_data();
-
-	if (last_game_level != game_data.game_level)
-	{
-		last_game_level = game_data.game_level;
 		char level_string[16];
-		sprintf(level_string, "LEVEL %d", last_game_level);
+		bool level_up = false;
+		if (last_game_level != game_data.game_level)
+		{
+			level_up = true;
+			last_game_level = game_data.game_level;
+			sprintf(level_string, "LEVEL %d", last_game_level);
 
-        rpi_text_set_offset(text_anim, 0, 0, 0, 0);
-		rpi_text_slide(text_anim, 50);
-		rpi_text_set(level_string, text_anim);
+			rpi_text_set_offset(text_anim, 0, 0, 0, 0);
+			rpi_text_slide(text_anim, 50);
+			rpi_text_set(level_string, text_anim);
 
-		rpi_clear_area(0, 0, 5, RPI_WIDTH);
-
+			rpi_clear_area(0, 0, 5, RPI_WIDTH);
+		}
+		uint64_t lastMs;
 		// rpi_text_slide(text_anim, 100);
-		while(text_anim->state == RPI_TEXT_STATE_SLIDE)
-			rpi_text_one_slide(text_anim);
+		int i,j=0;
+		while(j<GAME_WIDTH){
+			if(level_up)
+				rpi_text_one_slide(text_anim);
+
+			if(easytimer_get_millis()-lastMs > 125){
+				if(j<GAME_WIDTH){
+					for(i=0; game_row_complete[i] != 0 && i < 4 ; i++) //Me muevo por filas
+						delete_pixel(game_row_complete[i], j);
+					
+					rpi_run_display();
+					update_game_animation(0, 5); //Actualizo el display
+
+					j++;
+				}
+				lastMs = easytimer_get_millis();
+			}
+		}
+		for(i=0; i < 4 ; i++) //Elimino las filas completas
+		{
+			if(game_row_complete[i] != 0)
+			{
+				delete_row(game_row_complete[i]);
+				game_row_complete[i]= 0; //Coloco en cero el arreglo
+			}
+		}
+
 	}
 }
 
-_Noreturn void * animation_deleate_row()
-{
-	int i, j;
-	for(j=0; j < GAME_WIDTH; j++) // Me muevo por columnas
-	{
-		for( i=0; game_row_complete[i] != 0 && i< GAME_WIDTH ; i++) //Me muevo por filas
-		{
-			delete_pixel(game_row_complete[i], j);
-		}
-		easytimer_delay(125); //Delay
-		rpi_run_display();
-		update_game_animation(0, 5); //Actualizo el display
-	}
 
-	for(i=0; i < 4 ; i++) //Elimino las filas completas
-	{
-		if(game_row_complete[i] != 0)
-		{
-			delete_row(game_row_complete[i]);
-			game_row_complete[i]= 0; //Coloco en cero el arreglo
-		}
-	}
-}
+
 
 int init_audio(char destroy) {
 	ALLEGRO_DISPLAY *display = NULL;

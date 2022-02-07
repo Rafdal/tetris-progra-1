@@ -135,14 +135,18 @@ void __rpi_text_print(rpi_text_block_t *block){
 
 // Imprime un bloque de texto de manera estatica (sin animacion)
 void rpi_text_print(rpi_text_block_t *block){
-    __rpi_text_print(block);
-    block->state=RPI_TEXT_STATE_STATIC;
+    if(block != NULL){
+        __rpi_text_print(block);
+        block->state=RPI_TEXT_STATE_STATIC;
+    }
 }
 
 // Coloca el estado del bloque en "TEXTO DELIZANTE"
 void rpi_text_slide(rpi_text_block_t *block, uint64_t speed_interval){
-    block->interval = speed_interval;
-    block->state = RPI_TEXT_STATE_SLIDE;
+    if(block != NULL){
+        block->interval = speed_interval;
+        block->state = RPI_TEXT_STATE_SLIDE;
+    }
 }
 
 // Funcion para deslizar el bloque (si corresponde)
@@ -170,10 +174,12 @@ void rpi_text_run(rpi_text_block_t *block){
 //Modifica los offset y las posiciones de impresion del bloque de texto
 void rpi_text_set_offset ( rpi_text_block_t* block , int8_t x_offset, int8_t y_offset, int8_t x , int8_t y)
 {
-	block->x_offset = x_offset;
-	block->y_offset = y_offset;
-	block->x = x;
-	block->y = y;
+    if(block != NULL){
+        block->x_offset = x_offset;
+        block->y_offset = y_offset;
+        block->x = x;
+        block->y = y;
+    }
 }
 
 //Funcion que muestra el texto deslizante solo una vez

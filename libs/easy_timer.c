@@ -2,8 +2,7 @@
 #include <sys/time.h>
 #include "easy_timer.h"
 
-typedef void (*void_callback_t)(void);
-static void_callback_t rtl_loop = NULL;
+static void (*rtl_loop)(void);
 static bool delay_active = false;
 
 // Setear una funcion que se ejecuta durante los delays

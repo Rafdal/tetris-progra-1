@@ -1,4 +1,4 @@
-test: debug.o main_test.o menu.o dispEmu.o t_rpi_display.o t_easy_timer.o t_matrix_handler.o teclado_trucho.o game.o rpi_text.o
+test: debug.o main_test.o menu.o dispEmu.o t_rpi_display.o t_easy_timer.o t_matrix_handler.o teclado_trucho.o game.o t_rpi_text.o
 	gcc -Wall debug.o main_test.o menu.o dispEmu.o easy_timer.o rpi_display.o teclado_trucho.o game.o matrix_handler.o rpi_text.o -o test `pkg-config --libs allegro-5 allegro_audio-5 allegro_acodec-5` -lpthread
 
 back: main_back.o game.o easy_timer.o teclado_trucho.o
@@ -7,8 +7,11 @@ back: main_back.o game.o easy_timer.o teclado_trucho.o
 linux: main_linux.o game.o l_easy_timer.o keyboard.o textblocks.o menu.o
 	gcc -Wall main_linux.o easy_timer.o keyboard.o game.o textblocks.o menu.o -o linux `pkg-config --libs allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5 allegro_font-5` 
 
-rasp: main_rasp.o easy_timer.o joystick.o rpi_display.o game.o matrix_handler.o
-	gcc -Wall main_rasp.o joystick.o easy_timer.o rpi_display.o game.o matrix_handler.o ./libs/joydrv.o ./libs/disdrv.o -o rasp
+rasp: rpi_text.o menu.o main_rasp.o r_easy_timer.o joystick.o rpi_display.o game.o matrix_handler.o
+	gcc -Wall rpi_text.o menu.o main_rasp.o joystick.o easy_timer.o rpi_display.o game.o matrix_handler.o ./libs/joydrv.o ./libs/disdrv.o -o rasp -lpthread
+
+push:
+	git add . && git commit -m "make" && git push
 
 db: main_db.o
 	gcc -Wall main_db.o -o db
@@ -21,7 +24,7 @@ main_test.o: main_test.c
 	gcc -c -Wall main_test.c `pkg-config --cflags allegro-5` -lpthread
 
 main_rasp.o: main_rasp.c
-	gcc -c -Wall main_rasp.c
+	gcc -c -Wall main_rasp.c -lpthread
 
 main_linux.o: main_linux.c
 	gcc -c -Wall main_linux.c `pkg-config --cflags allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5 allegro_font-5` 
@@ -43,14 +46,14 @@ menu.o:	./backend/menu.c ./backend/menu.h
 	gcc -c -Wall ./backend/menu.c
 
 
-easy_timer.o: ./testing/easy_timer.c ./testing/easy_timer.h
-	gcc -c -Wall ./testing/easy_timer.c
-
-textblocks.o: ./frontend/textblocks.c ./frontend/textblocks.h
-	gcc -c -Wall ./frontend/textblocks.c `pkg-config --cflags  allegro_ttf-5  allegro_primitives-5 allegro_font-5`
+r_easy_timer.o: ./libs/easy_timer.c ./libs/easy_timer.h
+	gcc -c -Wall ./libs/easy_timer.c
 
 l_easy_timer.o: ./frontend/easy_timer.c ./frontend/easy_timer.h
 	gcc -c -Wall ./frontend/easy_timer.c
+
+textblocks.o: ./frontend/textblocks.c ./frontend/textblocks.h
+	gcc -c -Wall ./frontend/textblocks.c `pkg-config --cflags  allegro_ttf-5  allegro_primitives-5 allegro_font-5`
 
 keyboard.o: ./frontend/keyboard.c ./frontend/keyboard.h
 	gcc -c -Wall ./frontend/keyboard.c `pkg-config --cflags allegro-5`
@@ -86,9 +89,12 @@ teclado_trucho.o: ./testing/joystick.c ./testing/joystick.h
 dispEmu.o: ./testing/disdrv.c ./testing/disdrv.h
 	gcc -c -Wall ./testing/disdrv.c -o dispEmu.o
 
-rpi_text.o: ./testing/rpi_text.c ./testing/rpi_text.h ./testing/rpi_chars.h
+rpi_text.o: ./libs/rpi_text.c ./libs/rpi_text.h
+	gcc -c -Wall ./libs/rpi_text.c
+
+t_rpi_text.o: ./testing/rpi_text.c ./testing/rpi_text.h
 	gcc -c -Wall ./testing/rpi_text.c
-	
+
 clean:
 	rm *.o
 
