@@ -357,6 +357,7 @@ void update_game_display(void){
 	assert(mat_init(&public_next_mat, 11, 4));
 	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, game_next_block_public_matrix, 11,4);
 	rpi_copyToDis(&public_next_mat, 0, 12);
+	mat_print(public_next_mat);
 
 	//Cargo la linea divisora
 	matrix_hand_t divisor_line;
