@@ -160,7 +160,8 @@ int main(void){
 // **************************************
 //CALLBACK DE EXIT GAME
 void exit_game(void){
-    game_quit();                  // Finalizar juego
+	playMusic(PAUSE_AUDIO, SDL_MIX_MAXVOLUME);
+	game_quit();                  // Finalizar juego
     menu_force_close(pause_menu); // Cerrar menu pausa
 }
 
@@ -168,7 +169,8 @@ void exit_game(void){
 void restart_game(void){
 	rpi_clear_display(); //limpio el display
     menu_force_close(pause_menu); // Cerrar menu pausa
-    game_start(); 	//Corre el juego
+	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
+	game_start(); 	//Corre el juego
 }
 
 //CALLBACK DE RENAUDAR JUEGO
@@ -176,6 +178,7 @@ void resume_game(void)
 {
 	rpi_clear_display(); 	//Limpia el display
 	menu_force_close(pause_menu); //Cierra el menu de pausa
+	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
 	game_run();	//Corre el juego
 }
 
@@ -340,6 +343,10 @@ void main_game_start(void){
 
 			animation_game_finish();
 			rpi_clear_display();
+			while (musicStatus() != FINISHED)
+			{
+
+			}
 			game_quit();
         }
     }
