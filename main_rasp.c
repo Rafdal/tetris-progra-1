@@ -21,7 +21,7 @@
 #define STR_SIZES 64
 #define S2WAIT 180
 
-static const char MENU_AUDIO[] = "./audios/main_title.wav";
+#define MENU_AUDIO "./audios/main_title.wav"
 #define PAUSE_AUDIO "./audios/pausa.wav"
 #define GAME_AUDIO "./audios/tetris.wav"
 #define LOSE_AUDIO "./audios/game_over.wav"
@@ -74,7 +74,7 @@ static uint8_t line[16][1]={{1},{1},{1},{1}, {1},{1},{1},{1} , {1},{1},{1},{1} ,
 Audio *game_audio = createAudio(GAME_AUDIO,1, SDL_MIX_MAXVOLUME);
 Audio *lose_audio = createAudio(LOSE_AUDIO, 1, SDL_MIX_MAXVOLUME);
 Audio *pause_audio = createAudio(PAUSE_AUDIO,1,  SDL_MIX_MAXVOLUME);
-Audio *menu_audio = createAudio(MENU_AUDIO, 1 ,SDL_MIX_MAXVOLUME);
+Audio *menu_audio = createAudio("./audios/main_title.wav", 1 ,SDL_MIX_MAXVOLUME);
 
 // ******************
 // *	M A I N		*
