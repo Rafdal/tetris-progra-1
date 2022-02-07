@@ -278,12 +278,14 @@ void key_press_callback(uint8_t key){
                 break;
 
             case DPAD_UPRIGHT:
-                game_rotate(1);
+				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
+				game_rotate(1);
                 printf("game UPRIGHT\n");
                 break;
 
             case DPAD_UPLEFT:
-                game_rotate(0);
+				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
+				game_rotate(0);
                 printf("game UPLEFT\n");
                 break;
 
