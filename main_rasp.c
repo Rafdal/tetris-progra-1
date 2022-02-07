@@ -21,7 +21,7 @@
 #define STR_SIZES 64
 #define S2WAIT 180
 
-#define MENU_AUDIO "./audios/main_title.wav"
+static const char MENU_AUDIO[] = "./audios/main_title.wav";
 #define PAUSE_AUDIO "./audios/pausa.wav"
 #define GAME_AUDIO "./audios/tetris.wav"
 #define LOSE_AUDIO "./audios/game_over.wav"
