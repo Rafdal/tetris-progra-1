@@ -326,13 +326,6 @@ void main_game_start(void){
 void update_game_display(void){
 	game_data_t game_data = game_get_data();
 
-    rpi_text_set_offset(text_stat,12,11,0,0);
-
-	char buffer[32];
-	sprintf(buffer, "%d", game_data.game_level);
-	rpi_text_set(buffer, text_stat);
-	rpi_text_print(text_stat);
-
 	// Actualizo la matriz del juego y la cargo en la matriz a imprimir
 	matrix_hand_t mat_handler;
 	assert(mat_init(&mat_handler, GAME_HEIGHT, GAME_WIDTH));
@@ -344,6 +337,13 @@ void update_game_display(void){
 	assert(mat_init(&public_next_mat, 11, 4));
 	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, game_next_block_public_matrix, 11,4);
 	rpi_copyToDis(&public_next_mat, 0, 11);
+
+    // MOSTRAR SCORE
+    rpi_text_set_offset(text_stat,12,11,0,0);
+	char buffer[32];
+	sprintf(buffer, "%d", game_data.game_level);
+	rpi_text_set(buffer, text_stat);
+	rpi_text_print(text_stat);
 
 	rpi_run_display(); //Actualizo el display
 
