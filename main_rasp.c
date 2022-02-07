@@ -269,6 +269,7 @@ void key_press_callback(uint8_t key){
                 break;
 
             case DPAD_BTN:
+                easytimer_delay(200); // Delay para evitar salir del menu al entrar
 				rpi_clear_display();
                 menu_run(pause_menu);
 				rpi_clear_display();
