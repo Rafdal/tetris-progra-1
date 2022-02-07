@@ -21,8 +21,8 @@
 #define STR_SIZES 64
 #define S2WAIT 180
 
-#define MENU_AUDIO "./audios/main_title.wav"
-#define PAUSE_AUDIO "./audios/pausa.wav"
+//#define MENU_AUDIO "./audios/main_title.wav"
+//#define PAUSE_AUDIO "./audios/pausa.wav"
 #define GAME_AUDIO "./audios/tetris.wav"
 #define LOSE_AUDIO "./audios/game_over.wav"
 #define MOVE_AUDIO "./audios/chime.wav"
@@ -71,6 +71,8 @@ static uint8_t last_game_level = 1;
 
 static uint8_t line[16][1]={{1},{1},{1},{1}, {1},{1},{1},{1} , {1},{1},{1},{1} , {1},{1},{1},{1}};
 
+const char *MENU_AUDIO = "./audios/main_title.wav";
+const char PAUSE_AUDIO[] = "./audios/pausa.wav";
 
 Audio* menu_audio = createAudio(MENU_AUDIO, 1 , SDL_MIX_MAXVOLUME);
 Audio* pause_audio = createAudio(PAUSE_AUDIO, 1 , SDL_MIX_MAXVOLUME);
