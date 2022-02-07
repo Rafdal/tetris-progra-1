@@ -71,7 +71,8 @@ static char matrix[GAME_HEIGHT][GAME_WIDTH]; // Privada
 static char static_matrix[GAME_HEIGHT][GAME_WIDTH]; // Privada
 
 // datos del juego (coordenadas x,y, rotacion, estado del juego, etc)
-static game_data_t game_data;
+static game_data_t game_data = {0,0,0,0,0,GAME_IDLE,GAME_LEVEL1_SPEED,0,};
+
 
 // Variable en donde se van a guardar las proximas piezas
 static uint8_t id_next_block[4];
