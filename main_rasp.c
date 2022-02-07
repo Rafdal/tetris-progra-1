@@ -322,6 +322,9 @@ void main_game_start(void){
 	playSound(GAME_AUDIO, SDL_MIX_MAXVOLUME);
 	printf("Menu status: %d\n", musicStatus());
 
+	unpauseAudio();
+	printf("Menu status: %d\n", musicStatus());
+
 	rpi_clear_display(); //Limpio el display
 
 	game_data_t game_data;
