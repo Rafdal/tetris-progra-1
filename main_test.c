@@ -41,7 +41,6 @@ void animation_row_complete (void);  //Ejecuta la animacion de fila completa
 
 void key_press_callback(uint8_t key); // Define los Callbacks de las teclas
 
-// int init_audio(char); //Inicializa el audio
 
 void update_game_animation(uint8_t x_init, uint8_t y_init);
 

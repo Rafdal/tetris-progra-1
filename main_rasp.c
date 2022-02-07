@@ -69,6 +69,8 @@ rpi_text_block_t* text_anim = NULL; // Puntero para texto deslizante con anumaci
 
 static uint8_t last_game_level = 1;
 
+static uint8_t line[16][1]={{1},{1},{1},{1}, {1},{1},{1},{1} , {1},{1},{1},{1} , {1},{1},{1},{1}};
+
 
 
 // ******************
@@ -356,7 +358,13 @@ void update_game_display(void){
 	matrix_hand_t public_next_mat;
 	assert(mat_init(&public_next_mat, 11, 4));
 	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, game_next_block_public_matrix, 11,4);
-	rpi_copyToDis(&public_next_mat, 0, 11);
+	rpi_copyToDis(&public_next_mat, 0, 12);
+
+	//Cargo la linea divisora
+	matrix_hand_t divisor_line;
+	assert(mat_init(&divisor_line, 16, 1));
+	MAT_COPY_FROM_2D_ARRAY(&divisor_line, line, 16, 1);
+	rpi_copyToDis(&divisor_line, 0, 10);
 
     // MOSTRAR SCORE
     rpi_text_set_offset(text_stat,12,11,0,0);
