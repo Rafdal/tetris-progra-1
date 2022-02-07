@@ -311,9 +311,9 @@ void key_press_callback(uint8_t key){
 // ***********************************************
 void main_game_start(void){
 
-	//pauseAudio();	//Pauso el audio del menu
+	endAudio();	//Pauso el audio del menu
 	rpi_clear_display(); //Limpio el display
-	//playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME); //Reproduzco el audio del juego
+	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME); //Reproduzco el audio del juego
 
 	game_data_t game_data;
     uint64_t lastMillis;
@@ -334,7 +334,7 @@ void main_game_start(void){
         }
 
         if(game_data.state == GAME_LOSE){
-			pauseAudio();
+			endAudio();
 			playMusic(LOSE_AUDIO, SDL_MIX_MAXVOLUME);
 
 			animation_game_finish();
