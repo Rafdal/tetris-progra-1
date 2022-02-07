@@ -71,10 +71,7 @@ static uint8_t last_game_level = 1;
 
 static uint8_t line[16][1]={{1},{1},{1},{1}, {1},{1},{1},{1} , {1},{1},{1},{1} , {1},{1},{1},{1}};
 
-Audio *game_audio = createAudio(GAME_AUDIO,1, SDL_MIX_MAXVOLUME);
-Audio *lose_audio = createAudio(LOSE_AUDIO, 1, SDL_MIX_MAXVOLUME);
-Audio *pause_audio = createAudio(PAUSE_AUDIO,1,  SDL_MIX_MAXVOLUME);
-Audio *menu_audio = createAudio("./audios/main_title.wav", 1 ,SDL_MIX_MAXVOLUME);
+
 
 // ******************
 // *	M A I N		*
@@ -131,7 +128,7 @@ int main(void){
 	//Setear callback de animacion de eliminar fila
 	game_set_delrow_callback(animation_row_complete);
 
-	playMusicFromMemory(menu_audio, SDL_MIX_MAXVOLUME);
+	playMusic(MENU_AUDIO, SDL_MIX_MAXVOLUME);
 	animation_game_start();
 
     // Ejecutar menu principal
@@ -291,7 +288,7 @@ void key_press_callback(uint8_t key){
                 easytimer_delay(200); // Delay para evitar salir del menu al entrar
 				rpi_clear_display();
 				pauseAudio();
-				playMusicFromMemory(pause_audio, SDL_MIX_MAXVOLUME);
+				playMusic(PAUSE_AUDIO, SDL_MIX_MAXVOLUME);
 
                 menu_run(pause_menu);
 				rpi_clear_display();
@@ -313,10 +310,16 @@ void key_press_callback(uint8_t key){
 // *	F U N C I O N E S	 D E L    J U E G O	 *
 // ***********************************************
 void main_game_start(void){
+	printf("Menu status: %d\n", musicStatus());
+	pauseAudio();
+	printf("P/ Menu status: %d\n", musicStatus());
+	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
+	printf("New song/ Menu status: %d\n", musicStatus());
+
 
 	endAudio();	//Pauso el audio del menu
 	rpi_clear_display(); //Limpio el display
-	playMusicFromMemory(game_audio, SDL_MIX_MAXVOLUME); //Reproduzco el audio del juego
+	//playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME); //Reproduzco el audio del juego
 
 	game_data_t game_data;
     uint64_t lastMillis;
@@ -337,7 +340,7 @@ void main_game_start(void){
         }
 
         if(game_data.state == GAME_LOSE){
-			endAudio();
+			pauseAudio();
 			playMusic(LOSE_AUDIO, SDL_MIX_MAXVOLUME);
 
 			animation_game_finish();
