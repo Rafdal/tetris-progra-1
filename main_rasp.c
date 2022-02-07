@@ -36,7 +36,7 @@ void update_game_display(void); // Actualiza la matriz del juego
 
 void destroy_text (void); //Destruye los bloques de textos deslizantes
 
-void run_menu_effects(void);	// Ejecuta los efectos del display de la RPI
+void run_menu_effects(void); // Ejecuta los efectos del display de la RPI
 
 void update_menu_display(void);	//Actualiza el display del menu
 
@@ -130,11 +130,9 @@ int main(void){
 
 	playMusic(MENU_AUDIO, SDL_MIX_MAXVOLUME);
 	animation_game_start();
+
     // Ejecutar menu principal
-    DEBUG("Running main menu...");
-	
     menu_run(main_menu);
-    DEBUG("Exit main menu...");
 
 	// **************************
 	// *	D E S T R O Y		*
@@ -252,9 +250,8 @@ void key_press_callback(uint8_t key){
             default:
                 break;
         }
-            // DEBUG
-            // menu_t data = menu_get_current_menu_data();
-            // printf("menu: %s, option: %u %s\n", data.title, data.current_option, data.option_titles[data.current_option]);
+
+
     }else if(game_get_data().state == GAME_RUN){
         switch (key)
         {
@@ -314,9 +311,9 @@ void key_press_callback(uint8_t key){
 // ***********************************************
 void main_game_start(void){
 
-	pauseAudio();	//Pauso el audio del menu
+	//pauseAudio();	//Pauso el audio del menu
 	rpi_clear_display(); //Limpio el display
-	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME); //Reproduzco el audio del juego
+	//playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME); //Reproduzco el audio del juego
 
 	game_data_t game_data;
     uint64_t lastMillis;
