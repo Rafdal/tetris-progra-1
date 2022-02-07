@@ -390,7 +390,7 @@ void animation_row_complete (void)
 			sprintf(level_string, "LEVEL %d", last_game_level);
 
 			rpi_text_set_offset(text_anim, 0, 0, 0, 0);
-			rpi_text_slide(text_anim, 50);
+			rpi_text_slide(text_anim, 25);
 			rpi_text_set(level_string, text_anim);
 
 			rpi_clear_area(0, 0, 5, RPI_WIDTH);
@@ -402,7 +402,7 @@ void animation_row_complete (void)
 			if(level_up)
 				rpi_text_one_slide(text_anim);
 
-			if(easytimer_get_millis()-lastMs > 125){
+			if(easytimer_get_millis()-lastMs > 100){
 				if(j<GAME_WIDTH){
 					for(i=0; game_row_complete[i] != 0 && i < 4 ; i++) //Me muevo por filas
 						delete_pixel(game_row_complete[i], j);
