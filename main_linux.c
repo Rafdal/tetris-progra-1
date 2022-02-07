@@ -274,9 +274,9 @@ void animation_row_compleate(void)
 
 
 void display_menu_display(void){
+    menu_t menu_data = menu_get_current_menu_data();    //consigo los datos del menu actual
 
     if((menu_is_available(principal_menu)) || (menu_is_available(pausa_menu))){
-        menu_t menu_data = menu_get_current_menu_data();    //consigo los datos del menu actual
         uint8_t id;
         al_clear_to_color(al_map_rgb(0,0,0));   //fondo negro
         al_draw_scaled_bitmap(tetris_cartel, 0, 0, al_get_bitmap_width(tetris_cartel), al_get_bitmap_height(tetris_cartel),BLOCKSZ*3, BLOCKSZ, al_get_display_width(display)-BLOCKSZ*6, BLOCKSZ*8, 0);
@@ -314,7 +314,6 @@ void display_menu_display(void){
     }
     
     else if (menu_is_available(gameover_menu)){
-        menu_t menu_data = menu_get_current_menu_data();    //consigo los datos del menu actual
         uint8_t id;
         al_clear_to_color(al_map_rgb(0,0,0));   //fondo negro
         al_draw_scaled_bitmap(tetris_cartel, 0, 0, al_get_bitmap_width(tetris_cartel), al_get_bitmap_height(tetris_cartel), BLOCKSZ*3, BLOCKSZ, al_get_display_width(display)-BLOCKSZ*8, BLOCKSZ*6, 0);
