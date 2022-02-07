@@ -20,7 +20,7 @@
 #include "./frontend/textblocks.h"
 #include "./backend/menu.h"
 #include "./backend/menu.h"
-#include "./testing/audiotest/audio_lib.h"
+#include "./frontend/audio_lib.h"
 
 #define BLOCKSZ 50
 #define ANCHO   10
@@ -155,10 +155,12 @@ void exit_game(void){
 
 //CALLBACK DE GAMEOVER
 void volver_al_main_menu (void){
+    printf("volviendo al ma");
     manage_music(game, stop);
 	manage_music(lose, start);
     game_quit();
     menu_force_close(gameover_menu);
+    printf("in menu...\n");
 }
 
 //CALLBACK DE REINICIO DE JUEGO
@@ -299,6 +301,10 @@ void display_menu_display(void){
 		manage_music(menu, start);
 	if (menu_is_available(pausa_menu))
 		manage_music(pausa, start);
+    if (menu_is_available(gameover_menu)){
+        manage_music(lose, start);
+		manage_music(pausa, start);
+    }
 
 
     if((menu_is_available(principal_menu)) || (menu_is_available(pausa_menu))){

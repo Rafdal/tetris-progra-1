@@ -67,8 +67,8 @@ rpi_display.o: ./libs/rpi_display.c ./libs/rpi_display.h
 matrix_handler.o: ./libs/matrix_handler.c ./libs/matrix_handler.h
 	gcc -c -Wall ./libs/matrix_handler.c
 
-audio_lib.o: ./testing/audiotest/audio_lib.c ./testing/audiotest/audio_lib.h
-	gcc -c -Wall ./testing/audiotest/audio_lib.c
+audio_lib.o: ./frontend/audio_lib.c ./frontend/audio_lib.h
+	gcc -c -Wall ./frontend/audio_lib.c
 
 #################
 # TESTING LIBS 	#
