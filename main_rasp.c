@@ -151,6 +151,8 @@ int main(void){
 	//Finalizo el sistema de audio
 	endAudio();
 
+	rpi_clear_display();
+
     return 0;
 }
 
@@ -288,9 +290,8 @@ void key_press_callback(uint8_t key){
             case DPAD_BTN:
                 easytimer_delay(200); // Delay para evitar salir del menu al entrar
 				rpi_clear_display();
+				pauseAudio();
 				playMusic(PAUSE_AUDIO, SDL_MIX_MAXVOLUME);
-				if (musicStatus() == PAUSED)
-					unpauseAudio();
 
                 menu_run(pause_menu);
 				rpi_clear_display();
@@ -314,8 +315,9 @@ void key_press_callback(uint8_t key){
 void main_game_start(void){
 
 	rpi_clear_display(); //Limpio el display
+	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
 
-    game_data_t game_data;
+	game_data_t game_data;
     uint64_t lastMillis;
 
     game_start(); //Empiezo el juego
@@ -334,6 +336,9 @@ void main_game_start(void){
         }
 
         if(game_data.state == GAME_LOSE){
+			pauseAudio();
+			playMusic(LOSE_AUDIO, SDL_MIX_MAXVOLUME);
+
 			animation_game_finish();
 			rpi_clear_display();
 			game_quit();
