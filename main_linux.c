@@ -200,9 +200,10 @@ void main_game_start(void){
         if(game_data.state == GAME_LOSE){
 
             printf("Perdiste! The Game\n");
-            menu_run(gameover_menu);
-			manage_music(game, stop);
+            manage_music(game, stop);
 			manage_music(lose, start);
+            menu_run(gameover_menu);
+			
         }
     }
     printf("Leaving game...\n");
@@ -719,8 +720,7 @@ void end_program (void){
     menu_destroy(gameover_menu);
     text_destroy(nivel);
     text_destroy(score);
-    //al_uninstall_audio(); // borrar audio
-    //al_destroy_sample(sample);
+    al_uninstall_audio(); // borrar audio
     //al_shutdown_image_addon(); VER DOCUMENTACION ES LLAMADO AUTOMATICAMENTE AL SALIR DEL PROGRAMA
     printf("Game Ended\n");
     exit(0);

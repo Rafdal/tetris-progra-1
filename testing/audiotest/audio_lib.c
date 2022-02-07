@@ -7,10 +7,15 @@
 
 
 static char is_music_playing;
-static ALLEGRO_SAMPLE *g_music = NULL;
-static ALLEGRO_SAMPLE_INSTANCE *g_instance = NULL;
-static ALLEGRO_SAMPLE *g_music_effect = NULL;
-static ALLEGRO_SAMPLE_INSTANCE *g_instance_effect = NULL;
+static ALLEGRO_SAMPLE *g_music = NULL;            			// Inicia el vessel para la musica
+static ALLEGRO_SAMPLE_INSTANCE *g_instance = NULL;			// Inicia el entorno para la musica			
+static ALLEGRO_SAMPLE *g_music_effect = NULL;				// Inicia el vessel para los sonidos
+static ALLEGRO_SAMPLE_INSTANCE *g_instance_effect = NULL;	// Inicia el entorno para los sonidos
+
+
+//
+// manage_music se usa para reproducir y detener audios, 
+//
 
 void manage_music (char optn, char mode) {
 
@@ -55,7 +60,7 @@ void manage_music (char optn, char mode) {
 
 	 if (optn > pausa){
 		 printf("pause music\n");
-		al_reserve_samples(3);
+		al_reserve_samples(5);
 
 		switch (optn) {
 			case lose:
@@ -73,7 +78,7 @@ void manage_music (char optn, char mode) {
 				is_music_playing = 1;
 				break;
 			case TETRIS:
-				g_music_effect = al_load_sample("3_line_compl.wav");
+				g_music_effect = al_load_sample("win.wav");
 				is_music_playing = 1;
 				break;
 			case chime:
