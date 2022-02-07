@@ -36,7 +36,7 @@ void update_game_display(void); // Actualiza la matriz del juego
 
 void destroy_text (void); //Destruye los bloques de textos deslizantes
 
-void run_menu_effects(void);	// Ejecuta los efectos del display de la RPI
+void run_menu_effects(void); // Ejecuta los efectos del display de la RPI
 
 void update_menu_display(void);	//Actualiza el display del menu
 
@@ -130,11 +130,9 @@ int main(void){
 
 	playMusic(MENU_AUDIO, SDL_MIX_MAXVOLUME);
 	animation_game_start();
+
     // Ejecutar menu principal
-    DEBUG("Running main menu...");
-	
     menu_run(main_menu);
-    DEBUG("Exit main menu...");
 
 	// **************************
 	// *	D E S T R O Y		*
@@ -150,6 +148,8 @@ int main(void){
 
 	//Finalizo el sistema de audio
 	endAudio();
+
+	rpi_clear_display();
 
     return 0;
 }
@@ -250,9 +250,8 @@ void key_press_callback(uint8_t key){
             default:
                 break;
         }
-            // DEBUG
-            // menu_t data = menu_get_current_menu_data();
-            // printf("menu: %s, option: %u %s\n", data.title, data.current_option, data.option_titles[data.current_option]);
+
+
     }else if(game_get_data().state == GAME_RUN){
         switch (key)
         {
@@ -288,9 +287,8 @@ void key_press_callback(uint8_t key){
             case DPAD_BTN:
                 easytimer_delay(200); // Delay para evitar salir del menu al entrar
 				rpi_clear_display();
+				pauseAudio();
 				playMusic(PAUSE_AUDIO, SDL_MIX_MAXVOLUME);
-				if (musicStatus() == PAUSED)
-					unpauseAudio();
 
                 menu_run(pause_menu);
 				rpi_clear_display();
@@ -313,9 +311,11 @@ void key_press_callback(uint8_t key){
 // ***********************************************
 void main_game_start(void){
 
+	//pauseAudio();	//Pauso el audio del menu
 	rpi_clear_display(); //Limpio el display
+	//playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME); //Reproduzco el audio del juego
 
-    game_data_t game_data;
+	game_data_t game_data;
     uint64_t lastMillis;
 
     game_start(); //Empiezo el juego
@@ -334,6 +334,9 @@ void main_game_start(void){
         }
 
         if(game_data.state == GAME_LOSE){
+			pauseAudio();
+			playMusic(LOSE_AUDIO, SDL_MIX_MAXVOLUME);
+
 			animation_game_finish();
 			rpi_clear_display();
 			game_quit();
@@ -357,7 +360,6 @@ void update_game_display(void){
 	assert(mat_init(&public_next_mat, 10, 5));
 	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, game_next_block_public_matrix, 10,5);
 	rpi_copyToDis(&public_next_mat, 0, 11);
-	mat_print(&public_next_mat);
 
 	//Cargo la linea divisora
 	matrix_hand_t divisor_line;
