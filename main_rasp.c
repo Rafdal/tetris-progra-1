@@ -314,8 +314,9 @@ void key_press_callback(uint8_t key){
 // ***********************************************
 void main_game_start(void){
 
+	pauseAudio();	//Pauso el audio del menu
 	rpi_clear_display(); //Limpio el display
-	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
+	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME); //Reproduzco el audio del juego
 
 	game_data_t game_data;
     uint64_t lastMillis;
@@ -362,7 +363,6 @@ void update_game_display(void){
 	assert(mat_init(&public_next_mat, 10, 5));
 	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, game_next_block_public_matrix, 10,5);
 	rpi_copyToDis(&public_next_mat, 0, 11);
-	mat_print(&public_next_mat);
 
 	//Cargo la linea divisora
 	matrix_hand_t divisor_line;
