@@ -44,17 +44,11 @@ blocktext_t* text_init_alleg ( ALLEGRO_COLOR color_bloque, ALLEGRO_COLOR color_f
 //blocktext_t * GAME_OVER = text_init_alleg(al_map_rgb(255,0,0), al_map_rgb(0,255,0), 30, "GAME OVER", pathway_fuente, 350, 100, ALINEADO_IZQUIERDA )
 //
 
-void text_drawer (blocktext_t* bloque);
+int text_drawer (blocktext_t* bloque);
 //DESCRIPCION: Dibuja en el display un bloque de texto usando los datos de la estructura blocktext_t. 
 // - [bloque]: Puntero a la estructura del bloque para obtener los datos
+//RETURN: DEVUELVE 0 SI FUE EXITOSA, 1 SI FALLO EL CAMBIO DE FUENTE
 //ATENCION: NO FLIPEA EL DISPLAY, ESO SE HACE A MANO
-
-
-int text_global_font_changer (blocktext_t * bloque);
-//DESCRIPCION: Cambia el tipo y tamanio de letra. Se va a usar un unico ALLEGRO_FONT global para el tipo de letra. De ser necesario...  
-//cambiar el estilo o tamanio esta funcion se encarga de ello. 
-// - [bloque]: Puntero a estructura la cual contiene todos los datos necesarios para cambiar el tipo de letra
-//RETORNA -1 si hubo error, 0 si fue exitoso
 
 void text_destroy (blocktext_t * bloque);
 //DESCRIPCION: destruye toda la memoria reservada para cada estructura

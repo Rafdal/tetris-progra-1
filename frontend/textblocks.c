@@ -24,14 +24,20 @@ blocktext_t* text_init_alleg ( ALLEGRO_COLOR color_bloque, ALLEGRO_COLOR color_f
     return text;
 }
 
-void text_drawer (blocktext_t* bloque){
+int text_drawer (blocktext_t* bloque){
+    font = al_load_font(bloque->tipo_letra, bloque->font_size, 0);//cambia el tipo de letra y el tamanio
+    if (font==NULL)
+    {
+       printf("Error al cargar fuente");
+       return 1;
+    }
     
     int ancho_fondo = al_get_text_width(font, bloque->texto);
     int alto_fondo = al_get_font_line_height(font);
 
     al_draw_filled_rectangle(bloque->posx, bloque->posy, ((bloque->posx) + ancho_fondo), ((bloque->posy) + alto_fondo), bloque->block_color);
     al_draw_text(font, bloque->font_color, bloque->posx, bloque->posy, bloque->alineacion, bloque->texto);//el parametro es un enum que usa alegro del 0 al 2 
-    
+    return 0;
 }
 
 
@@ -40,18 +46,6 @@ void text_destroy (blocktext_t * bloque){
             free(bloque);
         }
 }
-
-
-int text_global_font_changer (blocktext_t * bloque){
-    font = al_load_font(bloque->tipo_letra, bloque->font_size, 0);
-    if (font==NULL)
-    {
-       printf("Error al cargar fuente");
-       return -1; 
-    }
-    return 0;
-    
-}//cambia el tipo de letra y el tamanio
 
 ALLEGRO_FONT * text_font_pointer_fetcher(void){
     return font;
