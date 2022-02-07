@@ -125,7 +125,6 @@ int main(void){
     menu_run(main_menu);
     DEBUG("Exit main menu...");
 
-
 	// **************************
 	// *	D E S T R O Y		*
 	// **************************
@@ -134,14 +133,10 @@ int main(void){
     menu_destroy(main_menu);
     menu_destroy(pause_menu);
 
-	// Destruye el audio
-	// init_audio(0);
-	// Destruye los bloques de textos deslizantes
-    printf("Lol\n");
     rpi_text_destroy(text_anim);
     rpi_text_destroy(text_stat);
-    printf("boe\n");
 
+    rpi_clear_display();
     return 0;
 }
 
@@ -381,7 +376,7 @@ void animation_row_complete (void)
 	{
 		game_data_t game_data = game_get_data();
 
-		char level_string[16];
+		char level_string[32];
 		bool level_up = false;
 		if (last_game_level != game_data.game_level)
 		{
@@ -390,7 +385,7 @@ void animation_row_complete (void)
 			sprintf(level_string, "LEVEL %d", last_game_level);
 
 			rpi_text_set_offset(text_anim, 0, 0, 0, 0);
-			rpi_text_slide(text_anim, 25);
+			rpi_text_slide(text_anim, 25);  // NO TOCAR
 			rpi_text_set(level_string, text_anim);
 
 			rpi_clear_area(0, 0, 5, RPI_WIDTH);
