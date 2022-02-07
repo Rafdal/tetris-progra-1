@@ -385,7 +385,7 @@ void animation_row_complete (void)
 			sprintf(level_string, "LEVEL %d", last_game_level);
 
 			rpi_text_set_offset(text_anim, 0, 0, 0, 0);
-			rpi_text_slide(text_anim, 25);  // NO TOCAR
+			rpi_text_slide(text_anim, 20);  // NO TOCAR
 			rpi_text_set(level_string, text_anim);
 
 			rpi_clear_area(0, 0, 5, RPI_WIDTH);
