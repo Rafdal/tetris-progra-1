@@ -23,7 +23,7 @@ void manage_music (char optn, char mode) {
 			case game:
 					g_music = al_load_sample("tetris.wav");
 				//	printf("la musica de juego fue creada\n");
-					is_music_playing = 1;
+					is_music_playing = 69;
 				break;
 			case menu:
 					g_music = al_load_sample("main_title.wav");
@@ -39,6 +39,9 @@ void manage_music (char optn, char mode) {
 		al_attach_sample_instance_to_mixer(g_instance, al_get_default_mixer());
 		al_set_sample_instance_playmode(g_instance, ALLEGRO_PLAYMODE_LOOP);
 		al_play_sample_instance(g_instance);
+		if (is_music_playing == 69)
+			al_set_sample_instance_gain(g_instance, 0.50);
+
 	}
 	else if ((!mode) && is_music_playing){
 		//printf("musica destruida");
@@ -50,22 +53,22 @@ void manage_music (char optn, char mode) {
 		al_reserve_samples(3);
 
 		switch (optn) {
-			case win:
-				g_music = al_load_sample("tetris.wav");
-
-				is_music_playing = 1;
-				break;
 			case lose:
-				g_music = al_load_sample("main_title.wav");
-
+				g_music = al_load_sample("lose.wav");
 				is_music_playing = 1;
 				break;
-			case clr_lane:
-				g_music = al_load_sample("pausa.wav");
+			case clr_lane_1:
+				g_music = al_load_sample("1_line_compl.wav");
+				is_music_playing = 1;
+			case clr_lane_2:
+				g_music = al_load_sample("2_line_compl");
+				is_music_playing = 1;
+			case clr_lane_3:
+				g_music = al_load_sample("3_line_compl.wav");
 				is_music_playing = 1;
 				break;
 			case TETRIS:
-				g_music = al_load_sample("main_title.wav");
+				g_music = al_load_sample("win.wav");
 
 				is_music_playing = 1;
 				break;
@@ -79,7 +82,6 @@ void manage_music (char optn, char mode) {
 		al_attach_sample_instance_to_mixer(g_instance_effect, al_get_default_mixer());
 		al_set_sample_instance_playmode(g_instance_effect, ALLEGRO_PLAYMODE_ONCE);
 		al_play_sample_instance(g_instance_effect);
-		printf("esto si se ejecuta\n");
 	}
 }
 
