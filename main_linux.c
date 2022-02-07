@@ -396,7 +396,7 @@ void keypress_callback(uint8_t key){
         return;
     }
     if(menu_is_current_available()){
-		manage_music(clr_lane_1, start);
+		manage_music(chime, start);
         switch (key)
         {
             case KEYB_UP:
