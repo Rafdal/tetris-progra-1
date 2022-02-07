@@ -51,6 +51,7 @@ blocktext_t * score=NULL;
 blocktext_t * nivel=NULL;
 menu_t *principal_menu = NULL;
 menu_t *pausa_menu = NULL;
+menu_t *gameover_menu = NULL;
 
 
 /*void playAudio(void){
@@ -84,6 +85,11 @@ uint8_t param_lvl_fetch (void);
 void exit_game(void){
     game_quit();                // Finalizar juego
     menu_force_close(pausa_menu); // Cerrar menu pausa
+}
+
+//CALLBACK DE GAMEOVER
+void volver_al_main_menu (void){
+    menu_run(principal_menu);
 }
 
 //CALLBACK DE REINICIO DE JUEGO
@@ -149,6 +155,7 @@ int main (void){
     
     principal_menu = menu_init(3, "MENU PRINCIPAL", NULL, MENU_ACTION_DO_NOTHING);
     pausa_menu = menu_init(3, "MENU DE PAUSA", NULL, MENU_ACTION_JUST_EXIT);
+    gameover_menu = menu_init(2, "GAME OVER", NULL, MENU_ACTION_DO_NOTHING);
 
 
     if(principal_menu == NULL || pausa_menu == NULL){
@@ -166,6 +173,10 @@ int main (void){
 	menu_set_option(pausa_menu, 0, "REANUDAR", resume_game);
     menu_set_option(pausa_menu, 1, "REINICIAR", restart_game);
     menu_set_option(pausa_menu, 2, "SALIR", exit_game);
+    
+	// CALLBACKS DE OPCIONES DEL MENU DE PAUSA
+	menu_set_option(pausa_menu, 0, "REINICIAR", restart_game);
+    menu_set_option(pausa_menu, 1, "SALIR", volver_al_main_menu);
 
 
     menu_set_event_listener_display(read_events, display_menu_display);
@@ -202,9 +213,10 @@ void main_game_start(void){
 
         if(game_data.state == GAME_LOSE){
             printf("Perdiste! The Game\n");
-            break;
+            menu_run(gameover_menu);
+/*            break;
             #warning BREAK HARDCODEADO
-            // Aca deberia ir alguna funcion de mostrar score o guardarlo, etc (MAS ADELANTE LO VEMOS)
+            // Aca deberia ir alguna funcion de mostrar score o guardarlo, etc (MAS ADELANTE LO VEMOS)*/
         }
     }
     printf("Leaving game...\n");
@@ -257,40 +269,70 @@ void animation_row_compleate(void)
     }
 }
 
-// HACER !
+
 void display_menu_display(void){
 
-    menu_t menu_data = menu_get_current_menu_data();
-    uint8_t id;
-    al_clear_to_color(al_map_rgb(0,0,0));   //fondo negro
-    al_draw_scaled_bitmap(tetris_cartel, 0, 0, al_get_bitmap_width(tetris_cartel), al_get_bitmap_height(tetris_cartel),BLOCKSZ*3, BLOCKSZ, al_get_display_width(display)-BLOCKSZ*6, BLOCKSZ*8, 0);
-    
-    blocktext_t * menuprin = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 55, menu_data.title, PATH_TTF, al_get_display_width(display)/2, al_get_display_height(display)/2+BLOCKSZ*2, CENTRADO );
-    if(text_global_font_changer(menuprin))
-    {
-        printf("error con text_global_font_changer");
+    if((menu_is_available(principal_menu)) || (menu_is_available(pausa_menu))){
+        printf("valor de menu is available = %d", menu_is_available(principal_menu) );
+        menu_t menu_data = menu_get_current_menu_data();    //consigo los datos del menu actual
+        uint8_t id;
+        al_clear_to_color(al_map_rgb(0,0,0));   //fondo negro
+        al_draw_scaled_bitmap(tetris_cartel, 0, 0, al_get_bitmap_width(tetris_cartel), al_get_bitmap_height(tetris_cartel),BLOCKSZ*3, BLOCKSZ, al_get_display_width(display)-BLOCKSZ*6, BLOCKSZ*8, 0);
+        //dibujo el cartel del tetris
+        blocktext_t * menuprin = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 55, menu_data.title, PATH_TTF, al_get_display_width(display)/2, al_get_display_height(display)/2+BLOCKSZ*2, CENTRADO );
+        if(text_global_font_changer(menuprin))
+        {
+            printf("error con text_global_font_changer");
+        }
+        
+        text_drawer(menuprin);//Escribo el titulo del menu actual
+
+        for(id=0; id<menu_data.n_options; id++)
+        {
+            if(menu_data.current_option == id){
+                blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(0,255,0), 30, menu_data.option_titles[id], PATH_TTF, al_get_display_width(display)/2,(al_get_display_height(display)/2)+(BLOCKSZ*(4+id)), CENTRADO );
+                text_drawer(menuop);
+                text_destroy(menuop);
+            }// si es la que esta siendo apuntada, la dibujo en verde
+
+            else{
+                blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, menu_data.option_titles[id], PATH_TTF, al_get_display_width(display)/2, (al_get_display_height(display)/2)+(BLOCKSZ*(4+id)), CENTRADO );
+                text_drawer(menuop);
+                text_destroy(menuop);
+            }//si no, en blanco
+        }   //imprimo cada opcion del menu en pantalla una abajo de la otra
+            al_flip_display();
     }
-    
-    text_drawer(menuprin);
+    else if (menu_is_available(gameover_menu)){
+        menu_t menu_data = menu_get_current_menu_data();    //consigo los datos del menu actual
+        uint8_t id;
+        al_clear_to_color(al_map_rgb(0,0,0));   //fondo negro
+        al_draw_scaled_bitmap(tetris_cartel, 0, 0, al_get_bitmap_width(tetris_cartel), al_get_bitmap_height(tetris_cartel), BLOCKSZ*3, BLOCKSZ, al_get_display_width(display)-BLOCKSZ*8, BLOCKSZ*6, 0);
+        //dibujo el cartel del tetris
+        blocktext_t * menuprin = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 55, menu_data.title, PATH_TTF, al_get_display_width(display)/2, al_get_display_height(display)/2, CENTRADO );
+        if(text_global_font_changer(menuprin))
+        {
+            printf("error con text_global_font_changer");
+        }
+        
+        text_drawer(menuprin);//Escribo el titulo del menu actual
+        al_draw_textf(text_font_pointer_fetcher(), al_map_rgb(255, 255, 255), al_get_display_width(display)/2,(al_get_display_height(display)/2)+(BLOCKSZ*(2)),CENTRADO, "PUNTAJE FINAL: %i", game_get_data().score);
+            for(id=0; id<menu_data.n_options; id++)
+        {
+            if(menu_data.current_option == id){
+                blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(0,255,0), 30, menu_data.option_titles[id], PATH_TTF, al_get_display_width(display)/2,(al_get_display_height(display)/2)+(BLOCKSZ*(4+id)), CENTRADO );
+                text_drawer(menuop);
+                text_destroy(menuop);
+            }// si es la que esta siendo apuntada, la dibujo en verde
 
-for(id=0; id<menu_data.n_options; id++)
-	{
-        if(menu_data.current_option == id){
-            blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(0,255,0), 30, menu_data.option_titles[id], PATH_TTF, al_get_display_width(display)/2,(al_get_display_height(display)/2)+(BLOCKSZ*(4+id)), CENTRADO );
-            text_drawer(menuop);
-            text_destroy(menuop);
-        }// si es la que esta siendo apuntada, la dibujo en verde
-
-        else{
-            blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, menu_data.option_titles[id], PATH_TTF, al_get_display_width(display)/2, (al_get_display_height(display)/2)+(BLOCKSZ*(4+id)), CENTRADO );
-            text_drawer(menuop);
-            text_destroy(menuop);
-        }//si no, en blanco
-        al_flip_display();
-    }   //imprimo cada opcion del menu en pantalla una abajo de la otra
-   // text_t* titulo_txt = text_init("TETRIS JAJA", 14, NEGRO, ROJO);
-   // text_display(titulo_txt, x, y);
-   // text_set(titulo_txt, );
+            else{
+                blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, menu_data.option_titles[id], PATH_TTF, al_get_display_width(display)/2, (al_get_display_height(display)/2)+(BLOCKSZ*(4+id)), CENTRADO );
+                text_drawer(menuop);
+                al_flip_display();
+                text_destroy(menuop);
+            }//si no, en blanco
+        }   //imprimo cada opcion del menu en pantalla una abajo de la otra
+    }
 }
 
 // Leer los eventos de Allegro (teclado, display, etc)
@@ -429,10 +471,10 @@ void update_display(void) {
         }//tapo los casilleros vacios
     }//DIBUJO PIEZA SIGUIENTE
 
-    text_score_drawer(score, game_get_data().score);
+    text_number_drawer(score, game_get_data().score);
 	al_flip_display(); //despues de esribir toda la matriz muestro lo que escribi
 	printf("SCORE:\n%u\n", game_get_data().score);
-    text_score_drawer(nivel, game_get_data().game_level);
+    text_number_drawer(nivel, game_get_data().game_level);
 
 }
 
@@ -582,7 +624,7 @@ void  initialize_display_game (void){
     }
     text_drawer(puntaje);
     text_drawer(lvl_game);
-    text_score_drawer(nivel, game_get_data().game_level);
+    text_number_drawer(nivel, game_get_data().game_level);
     
    
     //ahora dibujo el muro horizontal
@@ -666,14 +708,16 @@ void end_program (void){
     al_destroy_bitmap(diagrama_teclado);
     al_destroy_bitmap(jugabilidad_diagrama);
 
-// DESTRUCCION DE UTILIDADES ALLEGRO
+// DESTRUCCION DE OTRAS UTILIDADES ALLEGRO
     al_destroy_display(display);
     al_destroy_event_queue(event_queue);
     al_uninstall_keyboard();
+    font_destroyer();
 
 //DESTRUCCION DE UTILIDADES EXTRA
     menu_destroy(principal_menu);
     menu_destroy(pausa_menu);
+    menu_destroy(gameover_menu);
     text_destroy(nivel);
     text_destroy(score);
     //al_uninstall_audio(); // borrar audio

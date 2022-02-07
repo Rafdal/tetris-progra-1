@@ -56,37 +56,23 @@ int text_global_font_changer (blocktext_t * bloque);
 // - [bloque]: Puntero a estructura la cual contiene todos los datos necesarios para cambiar el tipo de letra
 //RETORNA -1 si hubo error, 0 si fue exitoso
 
-void text_colour_changer (blocktext_t * bloque, ALLEGRO_COLOR color_fondo, ALLEGRO_COLOR color_letras);
-//DESCRIPCION: Cambia el color tanto del fondo del bloque como el de la letra.
-//Puede ser usada para OCULTAR EL BLOQUE, solo le pasas el mismo color de fondo y letra
-// - [bloque]: Puntero a estructura para cambiar los colores
-// - [color_fondo]:Nuevo color a poner en el fondo. Usar al_map_rgb para enviar el color
-// - [color_letras]: Nuevo color de las letras. Idem
-//ATENCION: SOLO CAMBIA LOS DATOS, NO IMPRIME EN PANTALLA. PARA ESO LLAMAR NUEVAMENTE A text_drawer
-
-void text_location_changer (blocktext_t * bloque, int newX, int newY);
-//DESCRIPCION: Cambia las coordenadas en x e y del bloque. Acordarse que depende del parametro. Si es alineado a la izq, las coordenadas
-//seran de la esquina superior izq del texto
-// - [newX]: nueva coordenada en X
-// - [newY]: nueva coordenada en Y
-//ATENCION: SOLO CAMBIA LOS DATOS, NO IMPRIME EN PANTALLA. PARA ESO LLAMAR NUEVAMENTE A text_drawer
-
-
-void text_font_changer (blocktext_t* bloque,int tamanio, char * font_family);
-//DESCRIPCION: Cambia el tipo y tamanio de letra de un bloque de texto. Lo hace mediante la modificacion de la estructura.
-//Para cambiar el tipo de letra global se necesita llamar a text_gloabal_font_changer 
-// - [bloque]: puntero a texto que se le quiere cambiar 
-// - [tamanio]: nuevo tamanio a elegir
-// - [font_family]: path al archivo con el nuevo tipo de letra  
-//ATENCION: SOLO CAMBIA LOS DATOS, NO IMPRIME EN PANTALLA. PARA ESO LLAMAR NUEVAMENTE A text_gloabal_font_changer y text_drawer
-
 void text_destroy (blocktext_t * bloque);
 //DESCRIPCION: destruye toda la memoria reservada para cada estructura
 // - [bloque]: puntero a estructura que se quiere destruir
 //OBLIGATORIO LLAMARLA AL FINAL DEL PROGRAMA
 
 ALLEGRO_FONT * text_font_pointer_fetcher(void);
+//DESCRIPCION: Devuelve el puntero a ALLEGRO_FONT que se esta utilizando actualmente
+//No recibe ningun parametro. En caso de que no se haya inicializado la fuente, devuelve NULL
 
-void text_score_drawer (blocktext_t * bloque, uint32_t puntos);
+void text_number_drawer (blocktext_t * bloque, uint32_t puntos);
+//DESCRIPCION: Dibuja en el display una variable al lado del titulo de la opcion. 
+// - [bloque]: puntero a estructura que se quiere destruir
+// - [puntos]: Variable que se desea dibujar en pantalla
+//ATENCION: NO FLIPEA EL DISPLAY, ESO SE HACE A MANO
+
+void font_destroyer (void);
+//DESCRIPCION: destruye la fuente cargada. No necesita ningun parametro
+//OBLIGATORIO LLAMARLA AL FINAL DEL PROGRAMA
 
 #endif //_TEXT_H_
