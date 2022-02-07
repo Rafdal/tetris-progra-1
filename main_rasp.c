@@ -242,7 +242,6 @@ void key_press_callback(uint8_t key){
                 break;
 
             case DPAD_BTN:
-				pauseAudio();
 				menu_go_select();
                 printf("menu BTN\n");
                 break;
