@@ -222,7 +222,7 @@ void main_game_start(void){
 
         if(game_data.state == GAME_LOSE){
 			manage_music(game, stop);
-		//	manage_music(lose, start);
+			manage_music(lose, start);
             printf("Perdiste! The Game\n");
             menu_run(gameover_menu);
 
@@ -260,13 +260,25 @@ void animation_row_compleate(void)
                     easytimer_delay(3);
                     contador_filas_destruidas++; //incremento contador
                     if(contador_filas_destruidas==4 && !indicador){
+						manage_music(TETRIS, start);
                         al_draw_text(text_font_pointer_fetcher(),al_map_rgb(0,120,120), BLOCKSZ*6,BLOCKSZ*4,CENTRADO,"T E T R I S !");
                         al_flip_display();
                         indicador++;
                         }
                 }
+				}
                 reductor-=decremento;
             }
+		switch (contador_filas_destruidas) {
+			case 1:
+				manage_music(clr_lane_1, start);
+				break;
+			case 2:
+				manage_music(clr_lane_2,start);
+				break;
+			case 3:
+				manage_music(clr_lane_3,start);
+				break;
 
         }
         for(i=0; game_row_complete[i] != 0 && i< GAME_WIDTH ; i++){

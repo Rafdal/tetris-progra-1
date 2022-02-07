@@ -18,9 +18,10 @@
 	 game,
 	 menu,
 	 pausa,
-	 win,
 	 lose,
-	 clr_lane,
+	 clr_lane_1,
+	 clr_lane_2,
+	 clr_lane_3,
 	 TETRIS,
 	 chime,
  };
