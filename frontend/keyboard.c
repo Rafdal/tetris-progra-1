@@ -73,6 +73,10 @@ bool keyb_init(ALLEGRO_EVENT_QUEUE *queue){
 
 // Va dentro de if(al_get_next_event(event_queue, pev) ) { ACA }
 void keyb_run(ALLEGRO_EVENT* pev){
+    if(pev == NULL){
+        printf("ERROR evento nulo!\n");
+        return;
+    }
     if (pev->type == ALLEGRO_EVENT_KEY_DOWN) {
         switch (pev->keyboard.keycode) {
             case ALLEGRO_KEY_UP:
