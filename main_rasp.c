@@ -354,9 +354,9 @@ void update_game_display(void){
 
 	//Actualizo la matriz de la pieza siguiente y la cargo en la matriz a imprimir
 	matrix_hand_t public_next_mat;
-	assert(mat_init(&public_next_mat, 11, 4));
-	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, game_next_block_public_matrix, 11,4);
-	rpi_copyToDis(&public_next_mat, 0, 12);
+	assert(mat_init(&public_next_mat, 10, 5));
+	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, game_next_block_public_matrix, 10,5);
+	rpi_copyToDis(&public_next_mat, 0, 11);
 	mat_print(&public_next_mat);
 
 	//Cargo la linea divisora
@@ -366,7 +366,7 @@ void update_game_display(void){
 	rpi_copyToDis(&divisor_line, 0, 10);
 
     // MOSTRAR SCORE
-    rpi_text_set_offset(text_stat,12,11,0,0);
+    rpi_text_set_offset(text_stat,12,10,0,0);
 	char buffer[32];
 	sprintf(buffer, "%d", game_data.game_level);
 	rpi_text_set(buffer, text_stat);

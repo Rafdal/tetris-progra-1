@@ -8,7 +8,7 @@
 
 // ARREGLOS PUBLICOS
 char game_public_matrix [GAME_HEIGHT][GAME_WIDTH];  //Matriz publica del juego
-char game_next_block_public_matrix[12][4];	        //Matriz publica de la pieza siguiente
+char game_next_block_public_matrix[10][5];	        //Matriz publica de la pieza siguiente
 uint8_t game_row_complete[4];                       // Filas completadas
 
 #define GAME_LEVEL1_SCORE 0
