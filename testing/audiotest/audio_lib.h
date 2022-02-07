@@ -11,8 +11,8 @@
 #include <allegro5/allegro_acodec.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
 #include "audio_lib.h"
 
-#define create 1
-#define destroy 0
+#define start 1
+#define stop 0
 
  enum {
 	 game,

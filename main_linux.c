@@ -20,7 +20,7 @@
 #include "./frontend/textblocks.h"
 #include "./backend/menu.h"
 #include "./backend/menu.h"
-
+#include "./testing/audiotest/audio_lib.h"
 
 #define BLOCKSZ 50
 #define ANCHO   10
@@ -83,18 +83,23 @@ uint8_t param_lvl_fetch (void);
 // ******************************
 //CALLBACK DE EXIT GAME
 void exit_game(void){
+	manage_music(game, stop);
     game_quit();                // Finalizar juego
     menu_force_close(pausa_menu); // Cerrar menu pausa
 }
 
 //CALLBACK DE GAMEOVER
 void volver_al_main_menu (void){
+	manage_music(pausa, stop);
+	manage_music(menu, start);
     game_quit();
     menu_force_close_current();
 }
 
 //CALLBACK DE REINICIO DE JUEGO
 void restart_game(void){
+	manage_music(pausa, stop);
+	manage_music(game, start);
 	initialize_display_game(); //inicio el display del juego
     menu_force_close_current(); // Cerrar menu pausa
     game_start(); 	//Corre el juego
@@ -103,6 +108,8 @@ void restart_game(void){
 //CALLBACK DE RENAUDAR JUEGO
 void resume_game(void)
 {
+	manage_music(pausa, stop);
+	manage_music(game, start);
 	initialize_display_game(); //inicio el display del juego
 	menu_force_close_current();	//Cierra el menu
 	game_run();	//Corre el juego
@@ -140,6 +147,8 @@ int main (void){
     easytimer_set_realTimeLoop(read_events); // Leer eventos durante delays
 
 	int error = initialize_alleg(); //inicializo Allegro
+
+	error = install_audio();
 
     if(error){
         printf("Error al iniciar");
@@ -196,7 +205,7 @@ void main_game_start(void){
 
     game_data_t game_data;
     uint64_t lastMillis;
-
+	manage_music(game, start);
     game_start(); // iniciar el juego
     initialize_display_game();
 
@@ -212,6 +221,8 @@ void main_game_start(void){
         }
 
         if(game_data.state == GAME_LOSE){
+			manage_music(game, stop);
+		//	manage_music(lose, start);
             printf("Perdiste! The Game\n");
             menu_run(gameover_menu);
 
@@ -273,6 +284,12 @@ void animation_row_compleate(void)
 
 void display_menu_display(void){
     menu_t menu_data = menu_get_current_menu_data();    //consigo los datos del menu actual
+
+	if (menu_is_available(principal_menu))
+		manage_music(menu, start);
+	if (menu_is_available(pausa_menu))
+		manage_music(pausa, start);
+
 
     if((menu_is_available(principal_menu)) || (menu_is_available(pausa_menu))){
         uint8_t id;
@@ -371,6 +388,7 @@ void keypress_callback(uint8_t key){
         return;
     }
     if(menu_is_current_available()){
+		manage_music(chime, start);
         switch (key)
         {
             case KEYB_UP:
@@ -390,6 +408,7 @@ void keypress_callback(uint8_t key){
 
             case KEYB_SPACE:
             case KEYB_ENTER:
+				manage_music(menu, stop);
                 menu_go_select();
                 printf("menu BTN\n");
                 break;
@@ -427,11 +446,13 @@ void keypress_callback(uint8_t key){
             break;
 
         case KEYB_E:
+			manage_music(chime, start);
             game_rotate(1);
             printf("UPRIGHT\n");
             break;
 
         case KEYB_Q:
+			manage_music(chime, start);
             game_rotate(0);
             printf("UPLEFT\n");
             break;
@@ -441,6 +462,7 @@ void keypress_callback(uint8_t key){
             break;
 
         case KEYB_ESC:
+			manage_music(game, stop);
             menu_run(pausa_menu);
             printf("Juego Pausado\n");
             break;
@@ -661,59 +683,6 @@ void  initialize_display_game (void){
     text_destroy(puntaje);  
     text_destroy(lvl_game);    //libero la memoria dinamica
 
-}
-
-int init_audio(void) {
-    ALLEGRO_DISPLAY *display = NULL;
-    ALLEGRO_SAMPLE *sample = NULL;
-	//ALLEGRO_SAMPLE *sample1 = NULL;
-    ALLEGRO_EVENT_QUEUE *event_queue = NULL;
-
-    if (!al_install_audio()) {
-        fprintf(stderr, "failed to initialize audio!\n");
-        return -1;
-    }
-
-    if (!al_init_acodec_addon()) {
-        fprintf(stderr, "failed to initialize audio codecs!\n");
-        return -1;
-    }
-
-    if (!al_reserve_samples(1)) {
-        fprintf(stderr, "failed to reserve samples!\n");
-        return -1;
-    }
-
-    sample = al_load_sample("audio.wav");
-	//sample1 = al_load_sample("audio2.wav");
-
-    if (!sample) {
-        printf("Audio clip sample not loaded!\n");
-        return -1;
-    }
-
-
-
-    //Loop the sample until the display closes.
-    al_play_sample(sample, 1.0, -1.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
-
-//	al_play_sample(sample1, 1.0, 1.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
-
-   /*   while (!display_close) {
-        ALLEGRO_EVENT ev;
-        if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola, VER RETURN EN DOCUMENT.
-        {
-            if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
-                display_close = true;
-        }
-
-    }
-   */
-    al_uninstall_audio();
-    al_destroy_display(display);
-    al_destroy_event_queue(event_queue);
-    al_destroy_sample(sample);
-    return 0;
 }
 
 
