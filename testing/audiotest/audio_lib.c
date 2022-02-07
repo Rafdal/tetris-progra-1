@@ -41,7 +41,7 @@ void manage_music (char optn, char mode) {
 		al_play_sample_instance(g_instance);
 	}
 	else if ((!mode) && is_music_playing){
-		//printf("musica destruida");
+		printf("audio_lib: musica destruida\n");
 		destroy_music(g_instance);
 	}
 
@@ -79,7 +79,7 @@ void manage_music (char optn, char mode) {
 		al_attach_sample_instance_to_mixer(g_instance_effect, al_get_default_mixer());
 		al_set_sample_instance_playmode(g_instance_effect, ALLEGRO_PLAYMODE_ONCE);
 		al_play_sample_instance(g_instance_effect);
-		printf("esto si se ejecuta\n");
+		// printf("esto si se ejecuta\n");
 	}
 }
 
