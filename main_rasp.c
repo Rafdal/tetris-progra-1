@@ -71,7 +71,10 @@ static uint8_t last_game_level = 1;
 
 static uint8_t line[16][1]={{1},{1},{1},{1}, {1},{1},{1},{1} , {1},{1},{1},{1} , {1},{1},{1},{1}};
 
-
+Audio *game_audio = createAudio(GAME_AUDIO,1, SDL_MIX_MAXVOLUME);
+Audio *lose_audio = createAudio(LOSE_AUDIO, 1, SDL_MIX_MAXVOLUME);
+Audio *pause_audio = createAudio(PAUSE_AUDIO,1,  SDL_MIX_MAXVOLUME);
+Audio *menu_audio = createAudio(MENU_AUDIO, 1 ,SDL_MIX_MAXVOLUME);
 
 // ******************
 // *	M A I N		*
@@ -128,7 +131,7 @@ int main(void){
 	//Setear callback de animacion de eliminar fila
 	game_set_delrow_callback(animation_row_complete);
 
-	playMusic(MENU_AUDIO, SDL_MIX_MAXVOLUME);
+	playMusicFromMemory(menu_audio, SDL_MIX_MAXVOLUME);
 	animation_game_start();
 
     // Ejecutar menu principal
@@ -288,7 +291,7 @@ void key_press_callback(uint8_t key){
                 easytimer_delay(200); // Delay para evitar salir del menu al entrar
 				rpi_clear_display();
 				pauseAudio();
-				playMusic(PAUSE_AUDIO, SDL_MIX_MAXVOLUME);
+				playMusicFromMemory(pause_audio, SDL_MIX_MAXVOLUME);
 
                 menu_run(pause_menu);
 				rpi_clear_display();
@@ -311,9 +314,9 @@ void key_press_callback(uint8_t key){
 // ***********************************************
 void main_game_start(void){
 
-	//pauseAudio();	//Pauso el audio del menu
+	endAudio();	//Pauso el audio del menu
 	rpi_clear_display(); //Limpio el display
-	//playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME); //Reproduzco el audio del juego
+	playMusicFromMemory(game_audio, SDL_MIX_MAXVOLUME); //Reproduzco el audio del juego
 
 	game_data_t game_data;
     uint64_t lastMillis;
@@ -334,7 +337,7 @@ void main_game_start(void){
         }
 
         if(game_data.state == GAME_LOSE){
-			pauseAudio();
+			endAudio();
 			playMusic(LOSE_AUDIO, SDL_MIX_MAXVOLUME);
 
 			animation_game_finish();
