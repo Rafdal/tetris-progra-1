@@ -181,7 +181,7 @@ void _refresh_next_block_mat(void)
 		{
 			for (x = 0; x < size; x++)
 			{
-				game_next_block_public_matrix[y+4*(k-1)][x] = _block(id, x, y);
+				game_next_block_public_matrix[y+3*(k-1)][x] = _block(id, x, y);
 			}
 		}
 	}

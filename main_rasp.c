@@ -389,7 +389,7 @@ void animation_row_complete (void)
 			rpi_text_slide(text_anim, 20);  // NO TOCAR
 			rpi_text_set(level_string, text_anim);
 
-			rpi_clear_area(0, 0, 5, RPI_WIDTH);
+			rpi_clear_area(0, 0, 5, RPI_WIDTH); // Limpio el area donde se muestra el texto
 		}
 		uint64_t lastMs;
 		// rpi_text_slide(text_anim, 100);
@@ -403,8 +403,8 @@ void animation_row_complete (void)
 					for(i=0; game_row_complete[i] != 0 && i < 4 ; i++) //Me muevo por filas
 						delete_pixel(game_row_complete[i], j);
 					
-					rpi_run_display();
 					update_game_animation(0, 5); //Actualizo el display
+					rpi_run_display();
 
 					j++;
 				}
