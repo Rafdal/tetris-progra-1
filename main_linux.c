@@ -89,13 +89,14 @@ void exit_game(void){
 
 //CALLBACK DE GAMEOVER
 void volver_al_main_menu (void){
-    menu_run(principal_menu);
+    game_quit();
+    menu_force_close_current();
 }
 
 //CALLBACK DE REINICIO DE JUEGO
 void restart_game(void){
 	initialize_display_game(); //inicio el display del juego
-    menu_force_close(pausa_menu); // Cerrar menu pausa
+    menu_force_close_current(); // Cerrar menu pausa
     game_start(); 	//Corre el juego
 }
 
@@ -109,7 +110,6 @@ void resume_game(void)
 
 //CALLBACK DE CONTROLES/INSTRUCCIONES
 void how_to_play (void){
-    easytimer_delay(300);
     int actual=1;
     al_draw_scaled_bitmap(diagrama_teclado, 0, 0, al_get_bitmap_width(diagrama_teclado), al_get_bitmap_height(diagrama_teclado), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
     al_flip_display();
@@ -158,7 +158,7 @@ int main (void){
     gameover_menu = menu_init(2, "GAME OVER", NULL, MENU_ACTION_DO_NOTHING);
 
 
-    if(principal_menu == NULL || pausa_menu == NULL){
+    if(principal_menu == NULL || pausa_menu == NULL || gameover_menu == NULL){
         printf("Error NULL menu!\n");
         return -1;
     }
@@ -175,8 +175,8 @@ int main (void){
     menu_set_option(pausa_menu, 2, "SALIR", exit_game);
     
 	// CALLBACKS DE OPCIONES DEL MENU DE PAUSA
-	menu_set_option(pausa_menu, 0, "REINICIAR", restart_game);
-    menu_set_option(pausa_menu, 1, "SALIR", volver_al_main_menu);
+	menu_set_option(gameover_menu, 0, "REINICIAR", restart_game);
+    menu_set_option(gameover_menu, 1, "SALIR", volver_al_main_menu);
 
 
     menu_set_event_listener_display(read_events, display_menu_display);
@@ -214,6 +214,7 @@ void main_game_start(void){
         if(game_data.state == GAME_LOSE){
             printf("Perdiste! The Game\n");
             menu_run(gameover_menu);
+
 /*            break;
             #warning BREAK HARDCODEADO
             // Aca deberia ir alguna funcion de mostrar score o guardarlo, etc (MAS ADELANTE LO VEMOS)*/
@@ -273,7 +274,6 @@ void animation_row_compleate(void)
 void display_menu_display(void){
 
     if((menu_is_available(principal_menu)) || (menu_is_available(pausa_menu))){
-        printf("valor de menu is available = %d", menu_is_available(principal_menu) );
         menu_t menu_data = menu_get_current_menu_data();    //consigo los datos del menu actual
         uint8_t id;
         al_clear_to_color(al_map_rgb(0,0,0));   //fondo negro
@@ -314,7 +314,6 @@ void display_menu_display(void){
         {
             printf("error con text_global_font_changer");
         }
-        
         text_drawer(menuprin);//Escribo el titulo del menu actual
         al_draw_textf(text_font_pointer_fetcher(), al_map_rgb(255, 255, 255), al_get_display_width(display)/2,(al_get_display_height(display)/2)+(BLOCKSZ*(2)),CENTRADO, "PUNTAJE FINAL: %i", game_get_data().score);
             for(id=0; id<menu_data.n_options; id++)
@@ -328,9 +327,9 @@ void display_menu_display(void){
             else{
                 blocktext_t * menuop = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 30, menu_data.option_titles[id], PATH_TTF, al_get_display_width(display)/2, (al_get_display_height(display)/2)+(BLOCKSZ*(4+id)), CENTRADO );
                 text_drawer(menuop);
-                al_flip_display();
                 text_destroy(menuop);
             }//si no, en blanco
+            al_flip_display();
         }   //imprimo cada opcion del menu en pantalla una abajo de la otra
     }
 }

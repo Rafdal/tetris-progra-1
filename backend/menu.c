@@ -132,9 +132,13 @@ void menu_run(menu_t *menu){
 
             // Si estamos en un estado de transicion, actualizamos el display
             if(menu->state != MENU_STATE_AVAILABLE && menu->state != MENU_STATE_CLOSE){
+                menu_state_t last_state = menu->state;
+                menu->state = MENU_STATE_AVAILABLE;
                 update_display();
+                menu->state = last_state;
             }
         }
+        printf("saliendo del menu\n");
     }
 }
 
