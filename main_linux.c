@@ -130,9 +130,7 @@ void how_to_play (void){
             actual=2;
             easytimer_delay(150);
         }
-
     }
-    
 }
 
 
@@ -367,6 +365,7 @@ void read_events(void){
 
 
 void keypress_callback(uint8_t key){
+    printf("Keypress Callback In\n");
     if(easytimer_delay_active()){ // si hay un delay activo no hago nada
         // printf("se mantiene presionada\n");
         return;
@@ -453,12 +452,13 @@ void keypress_callback(uint8_t key){
     game_run();
     update_display(); // estamos viendo si esto buguea la eliminacion de filas
     }
+    printf("Keypress Callback Out\n");
 }
 
 
 
 void update_display(void) {
-
+    printf("Update Display In\n");
     uint8_t parametro_nivel = param_lvl_fetch();
 	uint8_t x, y;
 	for(x=0; x<GAME_WIDTH ; x++)
@@ -487,6 +487,7 @@ void update_display(void) {
 	printf("SCORE:\n%u\n", game_get_data().score);
     text_number_drawer(nivel, game_get_data().game_level);
 
+    printf("Update Display Out\n");
 }
 
 
