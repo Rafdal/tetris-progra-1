@@ -128,7 +128,7 @@ int main(void){
 	//Setear callback de animacion de eliminar fila
 	game_set_delrow_callback(animation_row_complete);
 
-	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
+	playMusic(MENU_AUDIO, SDL_MIX_MAXVOLUME);
 	animation_game_start();
 
     // Ejecutar menu principal
@@ -316,7 +316,8 @@ void key_press_callback(uint8_t key){
 // ***********************************************
 void main_game_start(void){
 	printf("Menu status: %d\n", musicStatus());
-
+	pauseAudio();
+	playSound(GAME_AUDIO, SDL_MIX_MAXVOLUME);
 	rpi_clear_display(); //Limpio el display
 
 	game_data_t game_data;
