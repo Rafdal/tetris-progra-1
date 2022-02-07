@@ -21,8 +21,8 @@
 #define STR_SIZES 64
 #define S2WAIT 180
 
-//#define MENU_AUDIO "./audios/main_title.wav"
-//#define PAUSE_AUDIO "./audios/pausa.wav"
+#define MENU_AUDIO "./audios/main_title.wav"
+#define PAUSE_AUDIO "./audios/pausa.wav"
 #define GAME_AUDIO "./audios/tetris.wav"
 #define LOSE_AUDIO "./audios/game_over.wav"
 #define MOVE_AUDIO "./audios/chime.wav"
@@ -71,13 +71,6 @@ static uint8_t last_game_level = 1;
 
 static uint8_t line[16][1]={{1},{1},{1},{1}, {1},{1},{1},{1} , {1},{1},{1},{1} , {1},{1},{1},{1}};
 
-const char *MENU_AUDIO = "./audios/main_title.wav";
-const char PAUSE_AUDIO[] = "./audios/pausa.wav";
-
-Audio* menu_audio = createAudio(MENU_AUDIO, 1 , SDL_MIX_MAXVOLUME);
-Audio* pause_audio = createAudio(PAUSE_AUDIO, 1 , SDL_MIX_MAXVOLUME);
-Audio* game_audio = createAudio(GAME_AUDIO, 1 , SDL_MIX_MAXVOLUME);
-Audio* lose_audio = createAudio(LOSE_AUDIO, 1 , SDL_MIX_MAXVOLUME);
 
 
 // ******************
@@ -91,7 +84,6 @@ int main(void){
 	// RESERVA DE MEMORIA PARA EL BLOQUE DE TEXTOS DESLIZANTES Y LOS ESTATICOS
     text_stat = rpi_text_reserve(STR_SIZES);
     text_anim = rpi_text_reserve(STR_SIZES);
-
 
 
 	dpad_init();	//Inicializo el pad (joystick usado como pad direccional de 4 botones)
@@ -136,8 +128,7 @@ int main(void){
 	//Setear callback de animacion de eliminar fila
 	game_set_delrow_callback(animation_row_complete);
 
-	//playMusic(MENU_AUDIO, SDL_MIX_MAXVOLUME);
-	playMusicFromMemory(menu_audio, SDL_MIX_MAXVOLUME);
+	playMusic(MENU_AUDIO, SDL_MIX_MAXVOLUME);
 	animation_game_start();
 
     // Ejecutar menu principal
@@ -321,8 +312,7 @@ void key_press_callback(uint8_t key){
 // ***********************************************
 void main_game_start(void){
 
-	//playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
-	playMusicFromMemory(game_audio, SDL_MIX_MAXVOLUME)
+	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
 
 	rpi_clear_display(); //Limpio el display
 
