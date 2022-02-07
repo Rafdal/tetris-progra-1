@@ -163,6 +163,8 @@ void volver_al_main_menu (void){
 void restart_game(void){
 	initialize_display_game(); //inicio el display del juego
     menu_force_close_current(); // Cerrar menu pausa
+	manage_music(pausa, stop);
+	manage_music(game, start);
     game_start(); 	//Corre el juego
 }
 
@@ -194,11 +196,11 @@ void main_game_start(void){
         }
 
         if(game_data.state == GAME_LOSE){
-			manage_music(game, stop);
-			manage_music(lose, start);
+
             printf("Perdiste! The Game\n");
             menu_run(gameover_menu);
-
+			manage_music(game, stop);
+			manage_music(lose, start);
 /*            break;
             #warning BREAK HARDCODEADO
             // Aca deberia ir alguna funcion de mostrar score o guardarlo, etc (MAS ADELANTE LO VEMOS)*/

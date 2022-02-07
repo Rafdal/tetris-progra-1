@@ -40,6 +40,7 @@ void manage_music (char optn, char mode) {
 		al_set_sample_instance_playmode(g_instance, ALLEGRO_PLAYMODE_LOOP);
 		al_play_sample_instance(g_instance);
 		if (is_music_playing == 69)
+			al_set_sample_instance_gain(g_instance, 0.50);
 
 	}
 	else if ((!mode) && is_music_playing){
@@ -81,7 +82,6 @@ void manage_music (char optn, char mode) {
 		al_attach_sample_instance_to_mixer(g_instance_effect, al_get_default_mixer());
 		al_set_sample_instance_playmode(g_instance_effect, ALLEGRO_PLAYMODE_ONCE);
 		al_play_sample_instance(g_instance_effect);
-		printf("esto si se ejecuta\n");
 	}
 }
 
