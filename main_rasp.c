@@ -128,7 +128,7 @@ int main(void){
 	//Setear callback de animacion de eliminar fila
 	game_set_delrow_callback(animation_row_complete);
 
-	playMusic(MENU_AUDIO, SDL_MIX_MAXVOLUME);
+	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
 	animation_game_start();
 
     // Ejecutar menu principal
