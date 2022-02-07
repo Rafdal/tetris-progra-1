@@ -9,6 +9,9 @@
 #include "./libs/rpi_display.h"
 #include "./libs/rpi_text.h"
 
+//LIBRERIA AUDIO SDL2
+#include <SDL2/SDL.h>
+#include "./libs/audio.h"
 
 // DEBUG
 // #define USAR_DEBUG
@@ -16,6 +19,13 @@
 
 
 #define STR_SIZES 64
+#define S2WAIT 180
+
+#define MENU_AUDIO "./audios/main_title.wav"
+#define PAUSE_AUDIO "./audios/pausa.wav"
+#define GAME_AUDIO "./audios/tetris.wav"
+#define LOSE_AUDIO "./audios/game_over.wav"
+#define MOVE_AUDIO "./audios/chime.wav"
 
 // ******************************
 // *	P R O T O T I P O S		*
@@ -33,8 +43,6 @@ void update_menu_display(void);	//Actualiza el display del menu
 void animation_row_complete (void);  //Ejecuta la animacion de fila completa
 
 void key_press_callback(uint8_t key); // Define los Callbacks de las teclas
-
-// int init_audio(char); //Inicializa el audio
 
 void update_game_animation(uint8_t x_init, uint8_t y_init);
 
@@ -75,15 +83,17 @@ int main(void){
     text_stat = rpi_text_reserve(STR_SIZES);
     text_anim = rpi_text_reserve(STR_SIZES);
 
-    dpad_init();	//Inicializo el pad (joystick usado como pad direccional de 4 botones)
-    easytimer_set_realTimeLoop(dpad_read);
+
+	dpad_init();	//Inicializo el pad (joystick usado como pad direccional de 4 botones)
+    game_init();
+	initAudio();
+	easytimer_set_realTimeLoop(dpad_read);
 
 
     #ifdef USAR_DEBUG
     debug_new_file("debug.txt");
     #endif
 
-	// init_audio(1);  //Inicializo el audio
 
 	//Defino los callback for longpress
     dpad_on_press(key_press_callback);
@@ -117,7 +127,7 @@ int main(void){
 	//Setear callback de animacion de eliminar fila
 	game_set_delrow_callback(animation_row_complete);
 
-
+	playMusic(MENU_AUDIO, SDL_MIX_MAXVOLUME);
 	animation_game_start();
     // Ejecutar menu principal
     DEBUG("Running main menu...");
@@ -133,10 +143,13 @@ int main(void){
     menu_destroy(main_menu);
     menu_destroy(pause_menu);
 
-    rpi_text_destroy(text_anim);
+	// Destruye los bloques de textos deslizantes
+	rpi_text_destroy(text_anim);
     rpi_text_destroy(text_stat);
 
-    rpi_clear_display();
+	//Finalizo el sistema de audio
+	endAudio();
+
     return 0;
 }
 
@@ -154,6 +167,7 @@ void exit_game(void){
 void restart_game(void){
 	rpi_clear_display(); //limpio el display
     menu_force_close(pause_menu); // Cerrar menu pausa
+	game_init();
     game_start(); 	//Corre el juego
 }
 
@@ -211,12 +225,14 @@ void key_press_callback(uint8_t key){
         switch (key)
         {
             case DPAD_UP:
-                menu_go_up();
+				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
+				menu_go_up();
                 printf("menu UP\n");
                 break;
 
             case DPAD_DOWN:
-                menu_go_down();
+				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
+				menu_go_down();
                 printf("menu DOWN\n");
                 break;
 
@@ -226,7 +242,8 @@ void key_press_callback(uint8_t key){
                 break;
 
             case DPAD_BTN:
-                menu_go_select();
+				pauseAudio();
+				menu_go_select();
                 printf("menu BTN\n");
                 break;
 
@@ -271,6 +288,10 @@ void key_press_callback(uint8_t key){
             case DPAD_BTN:
                 easytimer_delay(200); // Delay para evitar salir del menu al entrar
 				rpi_clear_display();
+				playMusic(PAUSE_AUDIO, SDL_MIX_MAXVOLUME);
+				if (musicStatus() == PAUSED)
+					unpauseAudio();
+
                 menu_run(pause_menu);
 				rpi_clear_display();
                 printf("game BTN\n");
@@ -280,7 +301,6 @@ void key_press_callback(uint8_t key){
                 break;
         }
         game_run();
-		//animation_row_complete();
 		update_game_display();
     }else{
         printf("Error state.\n");
