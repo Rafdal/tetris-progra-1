@@ -129,7 +129,7 @@ int main (void){
     menu_set_option(pausa_menu, 1, "REINICIAR", restart_game);
     menu_set_option(pausa_menu, 2, "SALIR", exit_game);
     
-	// CALLBACKS DE OPCIONES DEL MENU DE PAUSA
+	// CALLBACKS DE OPCIONES DEL MENU DE GAME OVER
 	menu_set_option(gameover_menu, 0, "REINICIAR", restart_game);
     menu_set_option(gameover_menu, 1, "SALIR", volver_al_main_menu);
 
@@ -500,16 +500,16 @@ void update_display(void) {
 			al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ + BLOCKSZ*x, BLOCKSZ*y, BLOCKSZ, BLOCKSZ, 0);
 		}
 	}
-    for(x=0; x<4 ; x++)
+    for(x=1; x<5 ; x++)
 	{
 		for(y=0; y<parametro_nivel ; y++)
 		{
             float val= (float) game_next_block_public_matrix[y][x];
-            al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+3+x), BLOCKSZ*(y+1), BLOCKSZ, BLOCKSZ, 0);
+            al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+2+x), BLOCKSZ*(y+1), BLOCKSZ, BLOCKSZ, 0);
             
         }
         for(y=parametro_nivel; y<10; y++){
-            al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+3+x), BLOCKSZ*(y+1), BLOCKSZ, BLOCKSZ, 0);
+            al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+2+x), BLOCKSZ*(y+1), BLOCKSZ, BLOCKSZ, 0);
         }//tapo los casilleros vacios
     }//DIBUJO PIEZA SIGUIENTE
 
