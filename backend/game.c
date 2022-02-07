@@ -166,9 +166,9 @@ void _refresh_next_block_mat(void)
 {
 	int y, x, k;
 	//Antes de cargar la matriz nueva la limpio asi se carga correctamente con nuevas piezas
-	for(y=0 ; y < 12 ; y++)
+	for(y=0 ; y < 10 ; y++)
 	{
-		for (x=0 ; x<4; x++)
+		for (x=0 ; x<5; x++)
 		{
 			game_next_block_public_matrix[y][x] = 0;
 		}
@@ -182,7 +182,7 @@ void _refresh_next_block_mat(void)
 		{
 			for (x = 0; x < size; x++)
 			{
-				game_next_block_public_matrix[y+3*(k-1)][x] = _block(id, x, y);
+				game_next_block_public_matrix[y+3*(k-1)][x+1] = _block(id, x, y);
 			}
 		}
 	}
