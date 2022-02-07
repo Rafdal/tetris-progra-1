@@ -49,9 +49,6 @@ menu.o:	./backend/menu.c ./backend/menu.h
 r_easy_timer.o: ./libs/easy_timer.c ./libs/easy_timer.h
 	gcc -c -Wall ./libs/easy_timer.c
 
-t_easy_timer.o: ./testing/easy_timer.c ./testing/easy_timer.h
-	gcc -c -Wall ./testing/easy_timer.c
-
 l_easy_timer.o: ./frontend/easy_timer.c ./frontend/easy_timer.h
 	gcc -c -Wall ./frontend/easy_timer.c
 
@@ -92,7 +89,7 @@ teclado_trucho.o: ./testing/joystick.c ./testing/joystick.h
 dispEmu.o: ./testing/disdrv.c ./testing/disdrv.h
 	gcc -c -Wall ./testing/disdrv.c -o dispEmu.o
 
-rpi_text.o: ./libs/rpi_text.c ./libs/rpi_text.h ./libs/rpi_chars.h
+rpi_text.o: ./libs/rpi_text.c ./libs/rpi_text.h
 	gcc -c -Wall ./libs/rpi_text.c
 	
 clean:
