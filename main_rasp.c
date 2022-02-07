@@ -87,7 +87,6 @@ int main(void){
 
 
 	dpad_init();	//Inicializo el pad (joystick usado como pad direccional de 4 botones)
-    game_init();
 	initAudio();
 	easytimer_set_realTimeLoop(dpad_read);
 
