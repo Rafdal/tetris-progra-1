@@ -74,7 +74,7 @@ void read_events(void);
 void display_menu_display(void);
 void animation_row_compleate(void);
 void main_game_start(void);
-void how_to_play (void);
+void screen_how_to_play (void);
 uint8_t param_lvl_fetch (void);
 //int init_audio(void);
 
@@ -82,68 +82,13 @@ uint8_t param_lvl_fetch (void);
 // *	C A L L B A C K S		*
 // ******************************
 //CALLBACK DE EXIT GAME
-void exit_game(void){
-	manage_music(game, stop);
-    game_quit();                // Finalizar juego
-    menu_force_close(pausa_menu); // Cerrar menu pausa
-}
-
-//CALLBACK DE GAMEOVER
-void volver_al_main_menu (void){
-	manage_music(pausa, stop);
-	manage_music(menu, start);
-    game_quit();
-    menu_force_close_current();
-}
-
-//CALLBACK DE REINICIO DE JUEGO
-void restart_game(void){
-	manage_music(pausa, stop);
-	manage_music(game, start);
-	initialize_display_game(); //inicio el display del juego
-    menu_force_close_current(); // Cerrar menu pausa
-    game_start(); 	//Corre el juego
-}
-
-//CALLBACK DE RENAUDAR JUEGO
-void resume_game(void)
-{
-	manage_music(pausa, stop);
-	manage_music(game, start);
-	initialize_display_game(); //inicio el display del juego
-	menu_force_close_current();	//Cierra el menu
-	game_run();	//Corre el juego
-}
-
-//CALLBACK DE CONTROLES/INSTRUCCIONES
-void how_to_play (void){
-    int actual=1;
-    al_draw_scaled_bitmap(diagrama_teclado, 0, 0, al_get_bitmap_width(diagrama_teclado), al_get_bitmap_height(diagrama_teclado), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
-    al_flip_display();
-    while (!keyb_is_pressed(KEYB_ESC) )
-    {
-        read_events();
-        if((keyb_is_pressed(KEYB_LEFT) || keyb_is_pressed(KEYB_RIGHT)) && (actual==2)){
-        printf("Hasta aca llega\n");
-            al_draw_scaled_bitmap(diagrama_teclado, 0, 0, al_get_bitmap_width(diagrama_teclado), al_get_bitmap_height(diagrama_teclado), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
-            al_flip_display();
-            actual=1;
-            easytimer_delay(150);
-        }
-        
-        else if((keyb_is_pressed(KEYB_LEFT) || keyb_is_pressed(KEYB_RIGHT)) && (actual==1)){
-            al_draw_scaled_bitmap(jugabilidad_diagrama, 0, 0, al_get_bitmap_width(jugabilidad_diagrama), al_get_bitmap_height(jugabilidad_diagrama), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
-            al_flip_display();
-            actual=2;
-            easytimer_delay(150);
-        }
-    }
-}
+void exit_game(void);
+void volver_al_main_menu(void);
+void restart_game(void);
+void resume_game(void);
 
 
 int main (void){
-
-
     easytimer_set_realTimeLoop(read_events); // Leer eventos durante delays
 
 	int error = initialize_alleg(); //inicializo Allegro
@@ -152,8 +97,10 @@ int main (void){
 
     if(error){
         printf("Error al iniciar");
-        return 0;   //si algo fallo termino el programa
+        return -1;   //si algo fallo termino el programa
     }
+
+    easytimer_set_realTimeLoop(read_events); // Leer eventos durante delays
 
     keyb_on_press(keypress_callback);
     keyb_use_press_callback_for_longpress(KEYB_DOWN);
@@ -171,11 +118,10 @@ int main (void){
         printf("Error NULL menu!\n");
         return -1;
     }
-    
 
     // CALLBACKS DE OPCIONES DE MENU MAIN
     menu_set_option(principal_menu, 0, "JUGAR", main_game_start);
-    menu_set_option(principal_menu, 1, "COMO JUGAR", how_to_play );
+    menu_set_option(principal_menu, 1, "COMO JUGAR", screen_how_to_play );
     menu_set_option(principal_menu, 2, "SALIR", menu_force_close_current);
 
 	// CALLBACKS DE OPCIONES DEL MENU DE PAUSA
@@ -189,9 +135,10 @@ int main (void){
 
 
     menu_set_event_listener_display(read_events, display_menu_display);
-    game_set_delrow_callback(animation_row_compleate);
    
-    printf("Run\n");
+    game_set_delrow_callback(animation_row_compleate);
+
+    printf("Run main menu\n");
     menu_run(principal_menu);
    //main_game_start();
     
@@ -199,6 +146,32 @@ int main (void){
 
     return 0;
 
+}
+
+void exit_game(void){
+    game_quit();                // Finalizar juego
+    menu_force_close(pausa_menu); // Cerrar menu pausa
+}
+
+//CALLBACK DE GAMEOVER
+void volver_al_main_menu (void){
+    game_quit();
+    menu_force_close_current();
+}
+
+//CALLBACK DE REINICIO DE JUEGO
+void restart_game(void){
+	initialize_display_game(); //inicio el display del juego
+    menu_force_close_current(); // Cerrar menu pausa
+    game_start(); 	//Corre el juego
+}
+
+//CALLBACK DE RENAUDAR JUEGO
+void resume_game(void)
+{
+	initialize_display_game(); //inicio el display del juego
+	menu_force_close_current();	//Cierra el menu
+	game_run();	//Corre el juego
 }
 
 void main_game_start(void){
@@ -281,6 +254,30 @@ void animation_row_compleate(void)
     }
 }
 
+//CALLBACK DE CONTROLES/INSTRUCCIONES
+void screen_how_to_play (void){
+    int actual=1;
+    al_draw_scaled_bitmap(diagrama_teclado, 0, 0, al_get_bitmap_width(diagrama_teclado), al_get_bitmap_height(diagrama_teclado), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
+    al_flip_display();
+    while (!keyb_is_pressed(KEYB_ESC) )
+    {
+        read_events();
+        if((keyb_is_pressed(KEYB_LEFT) || keyb_is_pressed(KEYB_RIGHT)) && (actual==2)){
+        printf("Hasta aca llega\n");
+            al_draw_scaled_bitmap(diagrama_teclado, 0, 0, al_get_bitmap_width(diagrama_teclado), al_get_bitmap_height(diagrama_teclado), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
+            al_flip_display();
+            actual=1;
+            easytimer_delay(150);
+        }
+        
+        else if((keyb_is_pressed(KEYB_LEFT) || keyb_is_pressed(KEYB_RIGHT)) && (actual==1)){
+            al_draw_scaled_bitmap(jugabilidad_diagrama, 0, 0, al_get_bitmap_width(jugabilidad_diagrama), al_get_bitmap_height(jugabilidad_diagrama), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
+            al_flip_display();
+            actual=2;
+            easytimer_delay(150);
+        }
+    }
+}
 
 void display_menu_display(void){
     menu_t menu_data = menu_get_current_menu_data();    //consigo los datos del menu actual
@@ -377,8 +374,6 @@ void read_events(void){
     }
     keyb_run(&ev); // Siempre debe ejecutarse el keyb_run
 }
-
-
 
 
 void keypress_callback(uint8_t key){
@@ -713,6 +708,7 @@ void end_program (void){
     //al_destroy_sample(sample);
     //al_shutdown_image_addon(); VER DOCUMENTACION ES LLAMADO AUTOMATICAMENTE AL SALIR DEL PROGRAMA
     printf("Game Ended\n");
+    exit(0);
 }
 uint8_t param_lvl_fetch (void){
     uint8_t temporal=game_get_data().game_level; 

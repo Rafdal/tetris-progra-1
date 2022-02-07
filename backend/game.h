@@ -29,7 +29,7 @@ uint8_t game_row_complete[4];                       // Filas completadas
 #define GAME_LEVEL7_SPEED 150
 #define GAME_LEVEL8_SPEED 100
 
-typedef enum {GAME_RUN, GAME_FAST_RUN, GAME_QUIT, GAME_LOSE} game_state_t;
+typedef enum {GAME_IDLE, GAME_RUN, GAME_FAST_RUN, GAME_QUIT, GAME_LOSE} game_state_t;
 
 //Estructura de la pieza
 typedef struct{
