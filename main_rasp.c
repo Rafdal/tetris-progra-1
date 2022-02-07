@@ -213,8 +213,6 @@ void update_menu_display(void)
     rpi_run_display(); //Actualizo el display
 }
 
-
-
 void key_press_callback(uint8_t key){
     DEBUG("key_press_callback");
     if(easytimer_delay_active()){ // si el delay esta activo
@@ -255,21 +253,24 @@ void key_press_callback(uint8_t key){
         switch (key)
         {
             case DPAD_UP:
-                printf("game UP\n");
+				printf("game UP\n");
                 break;
 
             case DPAD_DOWN:
-                game_move_down();
+				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
+				game_move_down();
                 printf("game DOWN\n");
                 break;
 
             case DPAD_LEFT:
-                game_move_horizontal(0);
+				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
+				game_move_horizontal(0);
                 printf("game LEFT\n");
                 break;
 
             case DPAD_RIGHT:
-                game_move_horizontal(1);
+				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
+				game_move_horizontal(1);
                 printf("game RIGHT\n");
                 break;
 
@@ -284,15 +285,10 @@ void key_press_callback(uint8_t key){
                 break;
 
             case DPAD_BTN:
-                easytimer_delay(200); // Delay para evitar salir del menu al entrar
+				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
+				easytimer_delay(200); // Delay para evitar salir del menu al entrar
 				rpi_clear_display();
-				printf("Pause menu status: %d\n", musicStatus());
-
-				pauseAudio();
-				printf("Pause menu status: %d\n", musicStatus());
-
 				playMusic(PAUSE_AUDIO, SDL_MIX_MAXVOLUME);
-				printf("Pause menu status: %d\n", musicStatus());
 
 
 				menu_run(pause_menu);
@@ -315,11 +311,8 @@ void key_press_callback(uint8_t key){
 // *	F U N C I O N E S	 D E L    J U E G O	 *
 // ***********************************************
 void main_game_start(void){
-	printf("Menu status: %d\n", musicStatus());
 
 	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
-
-	printf("Menu status: %d\n", musicStatus());
 
 	rpi_clear_display(); //Limpio el display
 
