@@ -12,8 +12,11 @@ static menu_t *current_menu = NULL;    // Puntero al menu del contexto actual (e
 
 // Inicializar un menu (retorna NULL en caso de error)
 menu_t* menu_init(uint8_t options, char* title, menu_callback_t on_exit, menu_action_t action){
-    menu_t *menu = (menu_t*) calloc(1, sizeof(menu_t)); // Asignar memoria a la estructura
-    if(menu != NULL && options > 0){
+    menu_t *menu = NULL;
+    if(options>0)
+        menu = (menu_t*) malloc(sizeof(menu_t)); // Asignar memoria a la estructura
+
+    if(menu != NULL){
         // Asignar memoria a los arreglos de informacion de las opciones
         menu->option_titles = (char**) calloc(options, sizeof(char*));
         menu->option_callbacks = (menu_callback_t*) calloc(options, sizeof(menu_callback_t));
@@ -24,19 +27,19 @@ menu_t* menu_init(uint8_t options, char* title, menu_callback_t on_exit, menu_ac
             free(menu->option_callbacks);
             free(menu);
             menu = NULL; // (error)
+        }else{
+            // Asignar los datos
+            menu->title = title;
+            menu->current_option = 0;
+            menu->n_options = options;
+            menu->on_exit = on_exit;
+            menu->exit_action = action;
         }
-
-        // Asignar los datos
-        menu->title = title;
-        menu->current_option = 0;
-        menu->n_options = options;
-        menu->on_exit = on_exit;
-        menu->exit_action = action;
     }
     return menu;
 }
 
-// OPCIONAL. Loop en tiempo real
+// OPCIONAL. Loop en tiempo real para animaciones (usado en raspberry pi)
 void menu_set_animation_callback(menu_callback_t animation_f){
     display_animations = animation_f;
 }
@@ -64,19 +67,20 @@ void menu_destroy(menu_t *menu){ // Liberar memoria de un menu
 
 // ABRIR Y EJECUTAR UN MENU
 void menu_run(menu_t *menu){
+    // Sin los callbacks event_listener y update_display, el menu no funciona!
     if(menu != NULL && event_listener != NULL && update_display != NULL){
 
         menu->state = MENU_STATE_AVAILABLE; // Activar el menu
-        menu->current_option=0;
+        menu->current_option=0;             // Focusear la primera opcion por defecto
 
-        current_menu = menu;
-        update_display(); // Mostrar el menu
+        current_menu = menu;                // Setear el menu como menu actual (en foco)
+        update_display();                   // Renderizar el menu
 
         while (menu->state != MENU_STATE_CLOSE) // Mientras el menu no se haya cerrado o este cerrado
         {
             menu->state = MENU_STATE_AVAILABLE; // reset state
         
-            event_listener(); // escuchar cambios de estado
+            event_listener();                   // escuchar cambios de estado (bajar,seleccionar,cerrar,etc)
 
             switch (menu->state)
             {
@@ -123,7 +127,7 @@ void menu_run(menu_t *menu){
                 break;
 
             default:
-                printf("Menu Event Error\n");
+                // printf("Menu Event Error\n");
                 break;
             }
 
@@ -143,19 +147,23 @@ void menu_run(menu_t *menu){
 }
 
 void menu_go_up(void){
-    current_menu->state = MENU_STATE_UP;
+    if(current_menu != NULL)
+        current_menu->state = MENU_STATE_UP;
 }
 
 void menu_go_down(void){
-    current_menu->state = MENU_STATE_DOWN;
+    if(current_menu != NULL)
+        current_menu->state = MENU_STATE_DOWN;
 }
 
 void menu_go_select(void){
-    current_menu->state = MENU_STATE_SELECT;
+    if(current_menu != NULL)
+        current_menu->state = MENU_STATE_SELECT;
 }
 
 void menu_go_back(void){
-    current_menu->state = MENU_STATE_BACK;
+    if(current_menu != NULL)
+        current_menu->state = MENU_STATE_BACK;
 }
 
 

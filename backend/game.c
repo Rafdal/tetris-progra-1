@@ -95,7 +95,7 @@ static void _clear_block_matrix(void); // Borra la matriz del bloque
 static void _update_score(int streak, uint8_t lvl);
 static void _init_arr_next_block (void); //Inicializa el arreglo con los proximos bloques
 static void _update_next_block (void); //Actualiza el arreglo con las proximas piezas una vez que la primera pieza de este arreglo ya fue impresa en el juego
-static void _update_level (void); //Actualiza el nivel del juego dependiendo del score obtenido
+static void _update_level_and_speed (void); //Actualiza el nivel del juego dependiendo del score obtenido
 static void _refresh_next_block_mat (void); //Actualiza la matriz de la pieza siguiente
 static int _can_write(uint8_t x, uint8_t y); // devuelve 1 si se puede escribir, si no se puede, corrige la posicion del bloque
 
@@ -306,10 +306,10 @@ void game_run(void){
 
 			// printf("STREAK : %d\n", streak );
 			_update_score(streak, game_data.game_level);
-			_update_level();
+			_update_level_and_speed();
 
 			_animation_callback();
-   	 }
+        }
 		_update_game_public_matrix();
 		_refresh_next_block_mat();
     }
@@ -390,7 +390,7 @@ void _render_block_pixel_aux(char val, uint8_t size, uint8_t x, uint8_t y){
 
 // Actualiza la matriz con los datos de coordenadas del bloque
 void _render(void){
-    if(game_data.state == GAME_RUN || game_data.state == GAME_INSERT_BLOCK){
+    if(game_data.state == GAME_RUN){
         _clear_block_matrix();
         uint8_t x,y;
         uint8_t id = game_data.id;
@@ -525,7 +525,7 @@ void _update_score(int streak, uint8_t lvl){
 }
 
 //Actualiza el Nivel a partir del score obtenido
-void _update_level (void)
+void _update_level_and_speed (void)
 {
 	if ( game_data.score >= GAME_LEVEL1_SCORE && game_data.score<= GAME_LEVEL2_SCORE )
 	{
@@ -557,10 +557,15 @@ void _update_level (void)
 		game_data.game_level = 6;
 		game_data.speed_interval = GAME_LEVEL6_SPEED;
 	}
-	else if (game_data.score > GAME_LEVEL7_SCORE)
+    else if( game_data.score >GAME_LEVEL7_SCORE && game_data.score <= GAME_LEVEL8_SCORE)
 	{
 		game_data.game_level = 7;
 		game_data.speed_interval = GAME_LEVEL7_SPEED;
+	}
+	else if (game_data.score > GAME_LEVEL8_SCORE)
+	{
+		game_data.game_level = 8;
+		game_data.speed_interval = GAME_LEVEL8_SPEED;
 	}
 }
 

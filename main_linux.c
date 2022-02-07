@@ -246,7 +246,7 @@ void animation_row_compleate(void)
                     al_draw_tinted_scaled_rotated_bitmap(pieza_blanca,  al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(pieza_blanca)/2, al_get_bitmap_height(pieza_blanca)/2, (BLOCKSZ/2 +BLOCKSZ*z), (BLOCKSZ/2 +BLOCKSZ*(game_row_complete[i])),reductor, reductor, angulo, 0);
                     //se va haciendo mas chia a medida que rota
                     al_flip_display();
-                    easytimer_delay(5);
+                    easytimer_delay(3);
                     contador_filas_destruidas++; //incremento contador
                     if(contador_filas_destruidas==4 && !indicador){
                         al_draw_text(text_font_pointer_fetcher(),al_map_rgb(0,120,120), BLOCKSZ*6,BLOCKSZ*4,CENTRADO,"T E T R I S !");
@@ -279,7 +279,7 @@ void display_menu_display(void){
         al_clear_to_color(al_map_rgb(0,0,0));   //fondo negro
         al_draw_scaled_bitmap(tetris_cartel, 0, 0, al_get_bitmap_width(tetris_cartel), al_get_bitmap_height(tetris_cartel),BLOCKSZ*3, BLOCKSZ, al_get_display_width(display)-BLOCKSZ*6, BLOCKSZ*8, 0);
         //dibujo el cartel del tetris
-        blocktext_t * menuprin = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 55, menu_data.title, PATH_TTF, al_get_display_width(display)/2, al_get_display_height(display)/2+BLOCKSZ*2, CENTRADO );
+        blocktext_t * menuprin = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 100, menu_data.title, PATH_TTF, al_get_display_width(display)/2, al_get_display_height(display)/2+BLOCKSZ*2, CENTRADO );
         if(text_global_font_changer(menuprin))
         {
             printf("error con text_global_font_changer");
@@ -309,11 +309,10 @@ void display_menu_display(void){
         al_clear_to_color(al_map_rgb(0,0,0));   //fondo negro
         al_draw_scaled_bitmap(tetris_cartel, 0, 0, al_get_bitmap_width(tetris_cartel), al_get_bitmap_height(tetris_cartel), BLOCKSZ*3, BLOCKSZ, al_get_display_width(display)-BLOCKSZ*8, BLOCKSZ*6, 0);
         //dibujo el cartel del tetris
-        blocktext_t * menuprin = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 55, menu_data.title, PATH_TTF, al_get_display_width(display)/2, al_get_display_height(display)/2, CENTRADO );
+        blocktext_t * menuprin = text_init_alleg(al_map_rgb(0,0,0), al_map_rgb(255,255,255), 100, menu_data.title, PATH_TTF, al_get_display_width(display)/2, al_get_display_height(display)/2, CENTRADO );
         if(text_global_font_changer(menuprin))
-        {
             printf("error con text_global_font_changer");
-        }
+
         text_drawer(menuprin);//Escribo el titulo del menu actual
         al_draw_textf(text_font_pointer_fetcher(), al_map_rgb(255, 255, 255), al_get_display_width(display)/2,(al_get_display_height(display)/2)+(BLOCKSZ*(2)),CENTRADO, "PUNTAJE FINAL: %i", game_get_data().score);
             for(id=0; id<menu_data.n_options; id++)
@@ -351,11 +350,11 @@ void read_events(void){
 
 void keypress_callback(uint8_t key){
     if(easytimer_delay_active()){ // si hay un delay activo no hago nada
-    printf("se mantiene presionada\n");
+        // printf("se mantiene presionada\n");
         return;
     }
     if(menu_is_current_available()){
-switch (key)
+        switch (key)
         {
             case KEYB_UP:
                 menu_go_up();
@@ -381,14 +380,14 @@ switch (key)
             default:
                 break;
         }
-            menu_t data = menu_get_current_menu_data();
-            printf("menu: %s, option: %u %s\n", data.title, data.current_option, data.option_titles[data.current_option]);
+        menu_t data = menu_get_current_menu_data();
+        printf("menu: %s, option: %u %s\n", data.title, data.current_option, data.option_titles[data.current_option]);
     }
     else if(game_get_data().state == GAME_RUN){
 
         switch (key)
         {
-            case KEYB_UP:
+        case KEYB_UP:
             printf("UP\n");
             break;
 
@@ -420,10 +419,9 @@ switch (key)
             printf("UPLEFT\n");
             break;
 
-        /*case KEYB_SPACE:
-            game_start();
-            printf("BTN\n");
-            break;*/
+        case KEYB_SPACE:
+            // printf("FAST RUN\n");
+            break;
 
         case KEYB_ESC:
             menu_run(pausa_menu);

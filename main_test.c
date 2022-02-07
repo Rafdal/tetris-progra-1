@@ -125,7 +125,7 @@ int main(void){
 	game_set_delrow_callback(animation_row_complete);
 
 
-	animation_game_start();
+	// animation_game_start();
     // Ejecutar menu principal
     DEBUG("Running main menu...");
 	
@@ -195,6 +195,7 @@ void update_menu_display(void)
     menu_t menu_data = menu_get_current_menu_data();
     uint8_t id;
 
+	printf("Menu state: %u\n", menu_data.state);
     for(id=0; id<menu_data.n_options; id++)
 	{
         if(menu_data.current_option == id){
