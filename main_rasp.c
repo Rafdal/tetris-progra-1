@@ -276,6 +276,7 @@ void key_press_callback(uint8_t key){
             case DPAD_BTN:
 				rpi_clear_display();
                 menu_run(pause_menu);
+				rpi_clear_display();
                 printf("game BTN\n");
                 break;
 
@@ -327,9 +328,6 @@ void main_game_start(void){
 }
 
 void update_game_display(void){
-
-	rpi_clear_display();
-
 	game_data_t game_data = game_get_data();
 
     rpi_text_set_offset(text_stat,12,11,0,0);
