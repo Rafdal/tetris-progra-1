@@ -155,6 +155,8 @@ void exit_game(void){
 
 //CALLBACK DE GAMEOVER
 void volver_al_main_menu (void){
+    manage_music(game, stop);
+	manage_music(lose, start);
     game_quit();
     menu_force_close_current();
 }
@@ -201,9 +203,6 @@ void main_game_start(void){
             menu_run(gameover_menu);
 			manage_music(game, stop);
 			manage_music(lose, start);
-/*            break;
-            #warning BREAK HARDCODEADO
-            // Aca deberia ir alguna funcion de mostrar score o guardarlo, etc (MAS ADELANTE LO VEMOS)*/
         }
     }
     printf("Leaving game...\n");
@@ -249,10 +248,10 @@ void animation_row_compleate(void)
 				manage_music(clr_lane_1, start);
 				break;
 			case 2:
-				manage_music(clr_lane_2,start);
+				manage_music(clr_lane_2, start);
 				break;
 			case 3:
-				manage_music(clr_lane_3,start);
+				manage_music(clr_lane_3, start);
 				break;
 
         }
