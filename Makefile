@@ -74,13 +74,13 @@ matrix_handler.o: ./libs/matrix_handler.c ./libs/matrix_handler.h
 debug.o: ./debug/debug.c ./debug/debug.h
 	gcc -c -Wall ./debug/debug.c
 
-t_matrix_handler.o: ./testing/matrix_handler.c ./testing/matrix_handler.h
+t_matrix_handler.o: libs/matrix_handler.c libs/matrix_handler.h
 	gcc -c -Wall ./testing/matrix_handler.c
 
 t_easy_timer.o: ./testing/easy_timer.c ./testing/easy_timer.h
 	gcc -c -Wall ./testing/easy_timer.c
 
-t_rpi_display.o: ./testing/rpi_display.c ./testing/rpi_display.h
+t_rpi_display.o: libs/rpi_display.c libs/rpi_display.h
 	gcc -c -Wall ./testing/rpi_display.c
 
 teclado_trucho.o: ./testing/joystick.c ./testing/joystick.h
@@ -92,7 +92,7 @@ dispEmu.o: ./testing/disdrv.c ./testing/disdrv.h
 rpi_text.o: ./libs/rpi_text.c ./libs/rpi_text.h
 	gcc -c -Wall ./libs/rpi_text.c
 
-t_rpi_text.o: ./testing/rpi_text.c ./testing/rpi_text.h
+t_rpi_text.o: libs/rpi_text.c libs/rpi_text.h
 	gcc -c -Wall ./testing/rpi_text.c
 
 clean:

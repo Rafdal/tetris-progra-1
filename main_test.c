@@ -5,9 +5,9 @@
 #include "./backend/menu.h"
 #include "./testing/joystick.h"
 #include "./testing/easy_timer.h"
-#include "./testing/matrix_handler.h"
-#include "./testing/rpi_display.h"
-#include "./testing/rpi_text.h"
+#include "libs/matrix_handler.h"
+#include "libs/rpi_display.h"
+#include "libs/rpi_text.h"
 #include "./frontend/keyboard.h"
 
 // LIBRERIAS ALEGRO
