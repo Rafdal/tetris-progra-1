@@ -89,8 +89,6 @@ void resume_game(void);
 
 
 int main (void){
-
-
     easytimer_set_realTimeLoop(read_events); // Leer eventos durante delays
 
 	int error = initialize_alleg(); //inicializo Allegro
