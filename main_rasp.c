@@ -128,7 +128,7 @@ int main(void){
 	//Setear callback de animacion de eliminar fila
 	game_set_delrow_callback(animation_row_complete);
 
-	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
+	playMusic(MENU_AUDIO, SDL_MIX_MAXVOLUME);
 	animation_game_start();
 
     // Ejecutar menu principal
@@ -242,7 +242,6 @@ void key_press_callback(uint8_t key){
                 break;
 
             case DPAD_BTN:
-				pauseAudio();
 				menu_go_select();
                 printf("menu BTN\n");
                 break;
@@ -256,21 +255,24 @@ void key_press_callback(uint8_t key){
         switch (key)
         {
             case DPAD_UP:
-                printf("game UP\n");
+				printf("game UP\n");
                 break;
 
             case DPAD_DOWN:
-                game_move_down();
+				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
+				game_move_down();
                 printf("game DOWN\n");
                 break;
 
             case DPAD_LEFT:
-                game_move_horizontal(0);
+				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
+				game_move_horizontal(0);
                 printf("game LEFT\n");
                 break;
 
             case DPAD_RIGHT:
-                game_move_horizontal(1);
+				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
+				game_move_horizontal(1);
                 printf("game RIGHT\n");
                 break;
 
@@ -285,15 +287,10 @@ void key_press_callback(uint8_t key){
                 break;
 
             case DPAD_BTN:
-                easytimer_delay(200); // Delay para evitar salir del menu al entrar
+				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
+				easytimer_delay(200); // Delay para evitar salir del menu al entrar
 				rpi_clear_display();
-				printf("Pause menu status: %d\n", musicStatus());
-
-				pauseAudio();
-				printf("Pause menu status: %d\n", musicStatus());
-
 				playMusic(PAUSE_AUDIO, SDL_MIX_MAXVOLUME);
-				printf("Pause menu status: %d\n", musicStatus());
 
 
 				menu_run(pause_menu);
@@ -316,6 +313,10 @@ void key_press_callback(uint8_t key){
 // *	F U N C I O N E S	 D E L    J U E G O	 *
 // ***********************************************
 void main_game_start(void){
+	printf("Menu status: %d\n", musicStatus());
+
+	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
+
 	printf("Menu status: %d\n", musicStatus());
 
 	rpi_clear_display(); //Limpio el display
