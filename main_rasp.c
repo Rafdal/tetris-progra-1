@@ -168,7 +168,6 @@ void exit_game(void){
 void restart_game(void){
 	rpi_clear_display(); //limpio el display
     menu_force_close(pause_menu); // Cerrar menu pausa
-	game_init();
     game_start(); 	//Corre el juego
 }
 
