@@ -287,10 +287,16 @@ void key_press_callback(uint8_t key){
             case DPAD_BTN:
                 easytimer_delay(200); // Delay para evitar salir del menu al entrar
 				rpi_clear_display();
-				pauseAudio();
-				playMusic(PAUSE_AUDIO, SDL_MIX_MAXVOLUME);
+				printf("Pause menu status: %d\n", musicStatus());
 
-                menu_run(pause_menu);
+				pauseAudio();
+				printf("Pause menu status: %d\n", musicStatus());
+
+				playMusic(PAUSE_AUDIO, SDL_MIX_MAXVOLUME);
+				printf("Pause menu status: %d\n", musicStatus());
+
+
+				menu_run(pause_menu);
 				rpi_clear_display();
                 printf("game BTN\n");
                 break;
@@ -316,9 +322,8 @@ void main_game_start(void){
 	printf("New song/ Menu status: %d\n", musicStatus());
 
 
-	endAudio();	//Pauso el audio del menu
 	rpi_clear_display(); //Limpio el display
-	//playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME); //Reproduzco el audio del juego
+	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME); //Reproduzco el audio del juego
 
 	game_data_t game_data;
     uint64_t lastMillis;
