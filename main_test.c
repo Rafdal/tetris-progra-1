@@ -44,10 +44,10 @@ void key_press_callback(uint8_t key); // Define los Callbacks de las teclas
 
 // int init_audio(char); //Inicializa el audio
 
-_Noreturn void * animation_deleate_row(); //Elimina las filas completas de forma animada
+ void * animation_deleate_row(); //Elimina las filas completas de forma animada
 
-_Noreturn void * animation_text (); //Muestra un texto en pantalla
-
+ void * animation_text (); //Muestra un texto en pantalla
+// _Noreturn
 void update_game_animation(uint8_t x_init, uint8_t y_init);
 
 void animation_game_finish(void);
@@ -405,7 +405,7 @@ void animation_row_complete (void)
 	}
 }
 
-_Noreturn void * animation_text ()
+void * animation_text ()
 {
 	game_data_t game_data = game_get_data();
 
@@ -425,9 +425,11 @@ _Noreturn void * animation_text ()
 		while(text_anim->state == RPI_TEXT_STATE_SLIDE)
 			rpi_text_one_slide(text_anim);
 	}
+	return animation_text;
+#warning @AgusSolari Error de los noreturn
 }
 
-_Noreturn void * animation_deleate_row()
+void * animation_deleate_row()
 {
 	int i, j;
 	for(j=0; j < GAME_WIDTH; j++) // Me muevo por columnas
@@ -449,6 +451,7 @@ _Noreturn void * animation_deleate_row()
 			game_row_complete[i]= 0; //Coloco en cero el arreglo
 		}
 	}
+	return animation_deleate_row;
 }
 
 int init_audio(char destroy) {

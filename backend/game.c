@@ -149,7 +149,7 @@ void game_quit(void){
 }
 
 // !! Inicia el arreglo y matriz de la pieza siguente
-void _init_arr_next_block (void) // !Inicializa el arreglo con los proximos bloques
+void _init_arr_next_block (void) // ! Inicializa el arreglo con los proximos bloques
 {
 	//Antes de cargar la matriz nueva la limpio asi se carga correctamente con nuevas piezas
 	int i;
@@ -219,12 +219,6 @@ void _clear_block_matrix(void){
 // Funcion auxiliar para manejar un arreglo unidimensional (de una matriz) con coordenadas cartesianas
 char _block(uint8_t id, uint8_t x, uint8_t y){
     return blocks[id].data[x+y*blocks[id].size];
-}
-
-// Funcion que devuelve un ID de un bloque de manera aleatoria
-uint8_t _get_next_block (void)
-{
-    return ;
 }
 
 void _undo_movement(void){
