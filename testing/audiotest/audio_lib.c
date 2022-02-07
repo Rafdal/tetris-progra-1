@@ -64,7 +64,7 @@ void manage_music (char optn, char mode) {
 				g_music_effect = al_load_sample("2_line_compl");
 				is_music_playing = 1;
 			case clr_lane_3:
-				g_music_effect = al_load_sample(".wav");
+				g_music_effect = al_load_sample("3_line_compl.wav");
 				is_music_playing = 1;
 				break;
 			case TETRIS:
