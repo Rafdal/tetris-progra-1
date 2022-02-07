@@ -318,7 +318,6 @@ void main_game_start(void){
         if(game_data.state == GAME_RUN && easytimer_get_millis()-lastMillis >= game_data.speed_interval){
             game_move_down();
             game_run();	//Corro el juego
-			//animation_row_complete();	//Analizo si se completo una fila y corro lo animacion
             update_game_display();  //Actualizo el display
 
             lastMillis = easytimer_get_millis();
@@ -391,10 +390,12 @@ void animation_row_complete (void)
 	{
 		game_data_t game_data = game_get_data();
 
+		char level_string[16];
+		bool level_up = false;
 		if (last_game_level != game_data.game_level)
 		{
+			level_up = true;
 			last_game_level = game_data.game_level;
-			char level_string[16];
 			sprintf(level_string, "LEVEL %d", last_game_level);
 
 			rpi_text_set_offset(text_anim, 0, 0, 0, 0);
@@ -402,34 +403,36 @@ void animation_row_complete (void)
 			rpi_text_set(level_string, text_anim);
 
 			rpi_clear_area(0, 0, 5, RPI_WIDTH);
-
-			uint64_t lastMs;
-			// rpi_text_slide(text_anim, 100);
-			int i,j=0;
-			while(text_anim != NULL && text_anim->state == RPI_TEXT_STATE_SLIDE){
+		}
+		uint64_t lastMs;
+		// rpi_text_slide(text_anim, 100);
+		int i,j=0;
+		while(j<GAME_WIDTH){
+			if(level_up)
 				rpi_text_one_slide(text_anim);
-				if(easytimer_get_millis()-lastMs > 125){
-					if(j<GAME_WIDTH){
-						for(i=0; game_row_complete[i] != 0 && i < 4 ; i++) //Me muevo por filas
-							delete_pixel(game_row_complete[i], j);
-						
-						rpi_run_display();
-						update_game_animation(0, 5); //Actualizo el display
 
-						j++;
-					}
-					lastMs = easytimer_get_millis();
+			if(easytimer_get_millis()-lastMs > 125){
+				if(j<GAME_WIDTH){
+					for(i=0; game_row_complete[i] != 0 && i < 4 ; i++) //Me muevo por filas
+						delete_pixel(game_row_complete[i], j);
+					
+					rpi_run_display();
+					update_game_animation(0, 5); //Actualizo el display
+
+					j++;
 				}
-			}
-			for(i=0; i < 4 ; i++) //Elimino las filas completas
-			{
-				if(game_row_complete[i] != 0)
-				{
-					delete_row(game_row_complete[i]);
-					game_row_complete[i]= 0; //Coloco en cero el arreglo
-				}
+				lastMs = easytimer_get_millis();
 			}
 		}
+		for(i=0; i < 4 ; i++) //Elimino las filas completas
+		{
+			if(game_row_complete[i] != 0)
+			{
+				delete_row(game_row_complete[i]);
+				game_row_complete[i]= 0; //Coloco en cero el arreglo
+			}
+		}
+
 	}
 }
 
