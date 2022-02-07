@@ -239,11 +239,11 @@ void animation_row_compleate(void)
                         al_draw_text(text_font_pointer_fetcher(),al_map_rgb(0,120,120), BLOCKSZ*6,BLOCKSZ*4,CENTRADO,"T E T R I S !");
                         al_flip_display();
                         indicador++;
-                        }
+                    }
                 }
 				}
                 reductor-=decremento;
-            }
+        }
 		switch (contador_filas_destruidas) {
 			case 1:
 				manage_music(clr_lane_1, start);
