@@ -54,27 +54,25 @@ void manage_music (char optn, char mode) {
 
 		switch (optn) {
 			case lose:
-				g_music = al_load_sample("lose.wav");
+				g_music_effect = al_load_sample("lose.wav");
 				is_music_playing = 1;
 				break;
 			case clr_lane_1:
-				g_music = al_load_sample("1_line_compl.wav");
+				g_music_effect = al_load_sample("1_line_compl.wav");
 				is_music_playing = 1;
 			case clr_lane_2:
-				g_music = al_load_sample("2_line_compl");
+				g_music_effect = al_load_sample("2_line_compl");
 				is_music_playing = 1;
 			case clr_lane_3:
-				g_music = al_load_sample("3_line_compl.wav");
+				g_music_effect = al_load_sample("3_line_compl.wav");
 				is_music_playing = 1;
 				break;
 			case TETRIS:
-				g_music = al_load_sample("win.wav");
-
+				g_music_effect = al_load_sample("3_line_compl.wav");
 				is_music_playing = 1;
 				break;
 			case chime:
 				g_music_effect = al_load_sample("chime.wav");
-
 				is_music_playing = 1;
 				break;
 		}
