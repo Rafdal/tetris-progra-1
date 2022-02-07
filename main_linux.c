@@ -482,11 +482,16 @@ void update_display(void) {
         }//tapo los casilleros vacios
     }//DIBUJO PIEZA SIGUIENTE
 
-    text_number_drawer(score, game_get_data().score);
-	al_flip_display(); //despues de esribir toda la matriz muestro lo que escribi
+    if(text_number_drawer(score, game_get_data().score)){
+        end_program();
+    }
 	printf("SCORE:\n%u\n", game_get_data().score);
-    text_number_drawer(nivel, game_get_data().game_level);
+    
+    if(text_number_drawer(nivel, game_get_data().game_level)){
+        end_program();
+    }
 
+	al_flip_display(); //despues de esribir toda la matriz muestro lo que escribi
     printf("Update Display Out\n");
 }
 
