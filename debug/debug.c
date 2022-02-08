@@ -1,13 +1,16 @@
 #include "debug.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
-static FILE *file;
-static char *filename;
+static FILE *file = NULL;
+static char *filename = NULL;
 
-int debug_new_file(char* _filename)
+// -1 = ERROR   |   0 ~ MAX_DEBUG_FILES-1 = OK
+bool debug_new_file(char* _filename)
 {
     filename = _filename;
+
     if (file != NULL){
         fclose(file); // si hay uno abierto, lo cierro
     }
@@ -15,17 +18,19 @@ int debug_new_file(char* _filename)
     if ((file = fopen(filename, "w")) == NULL)
     {
         printf("ERROR OPENING FILE!\n");
+        return false;
     }
     fclose(file);
-    return 0;
+    return true;
 }
 
-void deb_set_file_name(char* _filename){
-    filename = _filename;
-}
+// void deb_set_file_name(char* _filename){
+//     filename = _filename;
+// }
 
-int deb_println(const char *__format, ...){
+int deb_print(const char *__format, ...){
     int out=1;
+
     if((file = fopen(filename, "a")) == NULL){
         printf("error opening file %s\n", filename);
     }
@@ -38,12 +43,12 @@ int deb_println(const char *__format, ...){
         out = fprintf(file, buf); // imprimirlos en el archivo
         fprintf(file, "\n");
         fflush(file);
-        fclose(file);
     }
+    fclose(file);
     return out;
 }
 
-int deb_print(const char *__format, ...){
+/* int deb_print(const char *__format, ...){
     int out=1;
     if((file = fopen(filename, "a")) == NULL){
         printf("error opening file %s\n", filename);
@@ -59,4 +64,4 @@ int deb_print(const char *__format, ...){
         fclose(file);
     }
     return out;
-}
+} */
