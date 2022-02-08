@@ -13,7 +13,7 @@ blocktext_t* text_init_alleg (text_color_t color, int tamanio_letra, char* palab
     
     if( text != NULL){
 
-        switch (color)
+        switch (color)  //Dependiendo del parametro recibido, pongo colores predeterminados. Usamos esto ya que no usamos muchos otros colores.
         {
         case TXT_VERDE:
             text->font_color=al_map_rgb(0, 255, 0);
@@ -26,6 +26,7 @@ blocktext_t* text_init_alleg (text_color_t color, int tamanio_letra, char* palab
             break;
         
         default:
+            text->font_color=al_map_rgb(255, 255, 255);
             break;
         }
         // Asignar los datos
@@ -48,13 +49,9 @@ int text_drawer (blocktext_t* bloque){
     font = al_load_font(bloque->tipo_letra, bloque->font_size, 0);//cambia el tipo de letra y el tamanio
     
     if(font != NULL){
-        // int ancho_fondo = al_get_text_width(font, bloque->texto);
-        // int alto_fondo = al_get_font_line_height(font);
-
-        //al_draw_filled_rectangle(bloque->posx, bloque->posy, ((bloque->posx) + ancho_fondo), ((bloque->posy) + alto_fondo), bloque->block_color);
-        //dibujo un rectangulo detras del texto, sirve para borrar lo que estaba escrito antes
+        
         al_draw_text(font, bloque->font_color, bloque->posx, bloque->posy, bloque->alineacion, bloque->texto);//el parametro es un enum que usa alegro del 0 al 2 
-    }
+    }// escribo lo que contiene el bloque
     return 0;
 }
 
@@ -75,11 +72,14 @@ int text_number_drawer (blocktext_t * bloque, uint32_t puntos){
        return 1;
     }
     font = al_load_font(bloque->tipo_letra, bloque->font_size, 0);//cambia el tipo de letra y el tamanio
-    int ancho_fondo = al_get_text_width(font, "00000000000");
-    int alto_fondo = al_get_font_line_height(font);
+
+    int ancho_fondo = al_get_text_width(font, "00000000000"); //fondo de ancho predeterminado para simplificar...
+    int alto_fondo = al_get_font_line_height(font); // ...y alto del tamanio de la letra
 
     al_draw_filled_rectangle(bloque->posx, bloque->posy, ((bloque->posx) + ancho_fondo), ((bloque->posy) + alto_fondo), al_map_rgb(0, 0, 0));
+    // dibujo el fondo para borrar lo escrito antes
     al_draw_textf(font, bloque->font_color, bloque->posx, bloque->posy, bloque->alineacion, "%i", puntos);
+    //ahora escribo la variable
     return 0;
 }
 
