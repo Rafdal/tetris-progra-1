@@ -160,7 +160,8 @@ int main(void){
 // **************************************
 //CALLBACK DE EXIT GAME
 void exit_game(void){
-    game_quit();                  // Finalizar juego
+	playMusic(PAUSE_AUDIO, SDL_MIX_MAXVOLUME);
+	game_quit();                  // Finalizar juego
     menu_force_close(pause_menu); // Cerrar menu pausa
 }
 
@@ -168,7 +169,8 @@ void exit_game(void){
 void restart_game(void){
 	rpi_clear_display(); //limpio el display
     menu_force_close(pause_menu); // Cerrar menu pausa
-    game_start(); 	//Corre el juego
+	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
+	game_start(); 	//Corre el juego
 }
 
 //CALLBACK DE RENAUDAR JUEGO
@@ -176,6 +178,7 @@ void resume_game(void)
 {
 	rpi_clear_display(); 	//Limpia el display
 	menu_force_close(pause_menu); //Cierra el menu de pausa
+	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
 	game_run();	//Corre el juego
 }
 
@@ -212,8 +215,6 @@ void update_menu_display(void)
     }
     rpi_run_display(); //Actualizo el display
 }
-
-
 
 void key_press_callback(uint8_t key){
     DEBUG("key_press_callback");
@@ -277,12 +278,14 @@ void key_press_callback(uint8_t key){
                 break;
 
             case DPAD_UPRIGHT:
-                game_rotate(1);
+				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
+				game_rotate(1);
                 printf("game UPRIGHT\n");
                 break;
 
             case DPAD_UPLEFT:
-                game_rotate(0);
+				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
+				game_rotate(0);
                 printf("game UPLEFT\n");
                 break;
 
@@ -313,11 +316,8 @@ void key_press_callback(uint8_t key){
 // *	F U N C I O N E S	 D E L    J U E G O	 *
 // ***********************************************
 void main_game_start(void){
-	printf("Menu status: %d\n", musicStatus());
 
 	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
-
-	printf("Menu status: %d\n", musicStatus());
 
 	rpi_clear_display(); //Limpio el display
 
@@ -345,6 +345,10 @@ void main_game_start(void){
 
 			animation_game_finish();
 			rpi_clear_display();
+			while (musicStatus() != FINISHED)
+			{
+
+			}
 			game_quit();
         }
     }

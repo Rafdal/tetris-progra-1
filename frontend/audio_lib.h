@@ -24,6 +24,7 @@
 	 clr_lane_3,
 	 TETRIS,
 	 chime,
+	 chime_select,
  };
 
 

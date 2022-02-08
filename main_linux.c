@@ -20,7 +20,7 @@
 #include "./frontend/textblocks.h"
 #include "./backend/menu.h"
 #include "./backend/menu.h"
-#include "./testing/audiotest/audio_lib.h"
+#include "./frontend/audio_lib.h"
 
 #define BLOCKSZ 50
 #define ANCHO   10
@@ -155,24 +155,24 @@ void exit_game(void){
 
 //CALLBACK DE GAMEOVER
 void volver_al_main_menu (void){
-    manage_music(game, stop);
-	manage_music(lose, start);
+    printf("volviendo al ma");
     game_quit();
     menu_force_close(gameover_menu);
+    printf("in menu...\n");
 }
 
 //CALLBACK DE REINICIO DE JUEGO
 void restart_game(void){
+    manage_music(game, start);
 	initialize_display_game(); //inicio el display del juego
     menu_force_close_current(); // Cerrar menu pausa
-	manage_music(pausa, stop);
-	manage_music(game, start);
     game_start(); 	//Corre el juego
 }
 
 //CALLBACK DE RENAUDAR JUEGO
 void resume_game(void)
 {
+    manage_music(game, start);
 	initialize_display_game(); //inicio el display del juego
 	menu_force_close_current();	//Cierra el menu
 	game_run();	//Corre el juego
@@ -180,9 +180,10 @@ void resume_game(void)
 
 void main_game_start(void){
 
+    manage_music(game, start);
+
     game_data_t game_data;
     uint64_t lastMillis;
-	manage_music(game, start);
     game_start(); // iniciar el juego
     initialize_display_game();
 
@@ -198,11 +199,9 @@ void main_game_start(void){
         }
 
         if(game_data.state == GAME_LOSE){
-
+            manage_music(lose, start);
             printf("Perdiste! The Game\n");
             menu_run(gameover_menu);
-			manage_music(game, stop);
-			manage_music(lose, start);
         }
     }
     printf("Leaving game...\n");
@@ -299,6 +298,10 @@ void display_menu_display(void){
 		manage_music(menu, start);
 	if (menu_is_available(pausa_menu))
 		manage_music(pausa, start);
+    if (menu_is_available(gameover_menu)){
+        manage_music(game, stop);
+	//	manage_music(pausa, start);
+    }
 
 
     if((menu_is_available(principal_menu)) || (menu_is_available(pausa_menu))){
@@ -396,20 +399,23 @@ void keypress_callback(uint8_t key){
         return;
     }
     if(menu_is_current_available()){
-		manage_music(clr_lane_1, start);
+		
         switch (key)
         {
             case KEYB_UP:
+                manage_music(chime_select, start);
                 menu_go_up();
                 printf("menu UP\n");
                 break;
 
             case KEYB_DOWN:
+                manage_music(chime_select, start);
                 menu_go_down();
                 printf("menu DOWN\n");
                 break;
 
             case KEYB_LEFT:
+                manage_music(chime_select, start);
                 menu_go_back();
                 printf("menu LEFT\n");
                 break;
@@ -417,6 +423,7 @@ void keypress_callback(uint8_t key){
             case KEYB_SPACE:
             case KEYB_ENTER:
                 printf("menu BTN...\n");
+                manage_music(chime, start);
 				manage_music(menu, stop);
                 menu_go_select();
                 printf("menu BTN\n");
@@ -455,13 +462,13 @@ void keypress_callback(uint8_t key){
             break;
 
         case KEYB_E:
-			manage_music(chime, start);
+			manage_music(chime_select, start);
             game_rotate(1);
             printf("UPRIGHT\n");
             break;
 
         case KEYB_Q:
-			manage_music(chime, start);
+			manage_music(chime_select, start);
             game_rotate(0);
             printf("UPLEFT\n");
             break;
@@ -719,8 +726,7 @@ void end_program (void){
     menu_destroy(gameover_menu);
     text_destroy(nivel);
     text_destroy(score);
-    //al_uninstall_audio(); // borrar audio
-    //al_destroy_sample(sample);
+    al_uninstall_audio(); // borrar audio
     //al_shutdown_image_addon(); VER DOCUMENTACION ES LLAMADO AUTOMATICAMENTE AL SALIR DEL PROGRAMA
     printf("Game Ended\n");
     exit(0);

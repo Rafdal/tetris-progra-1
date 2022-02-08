@@ -34,8 +34,8 @@ int text_drawer (blocktext_t* bloque){
     font = al_load_font(bloque->tipo_letra, bloque->font_size, 0);//cambia el tipo de letra y el tamanio
     
     if(font != NULL){
-        int ancho_fondo = al_get_text_width(font, bloque->texto);
-        int alto_fondo = al_get_font_line_height(font);
+        // int ancho_fondo = al_get_text_width(font, bloque->texto);
+        // int alto_fondo = al_get_font_line_height(font);
 
         //al_draw_filled_rectangle(bloque->posx, bloque->posy, ((bloque->posx) + ancho_fondo), ((bloque->posy) + alto_fondo), bloque->block_color);
         //dibujo un rectangulo detras del texto, sirve para borrar lo que estaba escrito antes
