@@ -2,6 +2,7 @@
 .vscode
 
 *.o
+*.wav
 
 # para evitar los merge conflicts
 back
