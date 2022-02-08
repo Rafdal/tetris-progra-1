@@ -8,7 +8,7 @@ linux: main_linux.o game.o l_easy_timer.o keyboard.o textblocks.o menu.o audio_l
 	gcc -Wall main_linux.o easy_timer.o keyboard.o game.o textblocks.o menu.o audio_lib.o -o linux `pkg-config --libs allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5 allegro_font-5`
 
 rasp: rpi_text.o menu.o main_rasp.o r_easy_timer.o joystick.o rpi_display.o game.o matrix_handler.o
-	gcc -Wall rpi_text.o menu.o main_rasp.o joystick.o easy_timer.o rpi_display.o game.o matrix_handler.o ./libs/libAudioSDL2.o ./libs/joydrv.o ./libs/disdrv.o -L/usr/local/lib -lSDL2 -o rasp
+	gcc -Wall rpi_text.o menu.o main_rasp.o joystick.o easy_timer.o rpi_display.o game.o matrix_handler.o ./libs/libAudioSDL1.o -lSDL ./libs/libAudioSDL2.o ./libs/joydrv.o ./libs/disdrv.o -L/usr/local/lib -lSDL2 -o rasp
 
 push:
 	git add . && git commit -m "make" && git push
