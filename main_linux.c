@@ -233,10 +233,17 @@ void main_game_start(void){
         }
 
         if(game_data.state == GAME_LOSE){
+            audio_force_stop(game_audio);
             audio_play(lose_audio);
             // manage_music(lose, start);
-            al_draw_scaled_bitmap(gameoverfoto, 0, 0, al_get_bitmap_width(gameoverfoto), al_get_bitmap_height(gameoverfoto), al_get_display_width(display)/2, al_get_display_height(display)/3, BLOCKSZ*8, BLOCKSZ*4, 0 );
+            al_draw_scaled_bitmap(gameoverfoto, 0, 0, al_get_bitmap_width(gameoverfoto), al_get_bitmap_height(gameoverfoto), BLOCKSZ*3, BLOCKSZ*3, BLOCKSZ*8, BLOCKSZ*4, 0 );
+            al_flip_display();
             printf("Perdiste! The Game\n");
+
+            while (audio_is_playing(lose_audio))
+            {
+                read_events();
+            }
             menu_run(gameover_menu);
         }
     }
