@@ -127,9 +127,17 @@ void audio_destroy(void){
 	al_uninstall_audio();
 }
 
+bool audio_is_playing(audio_t* audio){
+	if(audio != NULL){
+		return al_get_sample_instance_playing(audio->instance);
+	}
+	return false;
+}
+
 void audio_set_speed(audio_t* audio, float speed){
 	if(audio != NULL && audio->speed != speed){
-		al_set_sample_instance_speed(audio->instance, audio->speed);
+		printf("vel: %0.2f\n", speed);
+		al_set_sample_instance_speed(audio->instance, speed);
 		audio->speed = speed;
 	}
 }
@@ -138,6 +146,7 @@ void audio_set_speed(audio_t* audio, float speed){
 void audio_force_stop(audio_t* audio){
 	if(audio != NULL && al_get_sample_instance_playing(audio->instance)){
 		al_stop_sample_instance(audio->instance);
+		audio->status = AUDIO_STOP;
 	}
 }
 /* void manage_music (char optn, char mode) {

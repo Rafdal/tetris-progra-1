@@ -50,5 +50,7 @@ void audio_force_stop(audio_t* audio);
 
 void audio_set_speed(audio_t* audio, float speed);
 
+bool audio_is_playing(audio_t* audio);
+
 
 #endif //AUDIO_LIB_H
