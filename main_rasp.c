@@ -259,7 +259,6 @@ void key_press_callback(uint8_t key){
                 break;
 
             case DPAD_LEFT:
-                menu_go_back();
                 printf("menu LEFT\n");
                 break;
 
