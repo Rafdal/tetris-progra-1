@@ -4,8 +4,8 @@ test: debug.o main_test.o menu.o dispEmu.o t_rpi_display.o t_easy_timer.o t_matr
 back: main_back.o game.o easy_timer.o teclado_trucho.o
 	gcc -Wall main_back.o game.o easy_timer.o teclado_trucho.o -o back `pkg-config --libs allegro-5`
 
-linux: main_linux.o game.o l_easy_timer.o keyboard.o textblocks.o menu.o audio_lib.o
-	gcc -Wall main_linux.o easy_timer.o keyboard.o game.o textblocks.o menu.o audio_lib.o -o linux `pkg-config --libs allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5 allegro_font-5`
+linux: main_linux.o debug.o game.o l_easy_timer.o keyboard.o textblocks.o menu.o audio_lib.o
+	gcc -Wall main_linux.o debug.o easy_timer.o keyboard.o game.o textblocks.o menu.o audio_lib.o -o linux `pkg-config --libs allegro_ttf-5 allegro_image-5 allegro_audio-5 allegro_acodec-5 allegro_primitives-5 allegro_font-5`
 
 rasp: rpi_text.o menu.o main_rasp.o r_easy_timer.o joystick.o rpi_display.o game.o matrix_handler.o
 	gcc -Wall rpi_text.o menu.o main_rasp.o joystick.o easy_timer.o rpi_display.o game.o matrix_handler.o ./libs/libAudioSDL1.o -lSDL ./libs/libAudioSDL2.o ./libs/joydrv.o ./libs/disdrv.o -L/usr/local/lib -lSDL2 -o rasp
@@ -74,8 +74,8 @@ audio_lib.o: ./frontend/audio_lib.c ./frontend/audio_lib.h
 # TESTING LIBS 	#
 #################
 
-debug.o: ./debug/debug.c ./debug/debug.h
-	gcc -c -Wall ./debug/debug.c
+debug.o: debug.c debug.h
+	gcc -c -Wall debug.c
 
 t_matrix_handler.o: libs/matrix_handler.c libs/matrix_handler.h
 	gcc -c -Wall ./testing/matrix_handler.c
