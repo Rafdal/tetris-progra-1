@@ -1,7 +1,7 @@
 #ifndef LIBDANY_H
 #define LIBDANY_H
 
-
+/*
 enum status { 
 			  NO_INIT,
 			  READY,
@@ -10,6 +10,7 @@ enum status {
 			  PAUSED,
 			  FINISHED
 			};
+*/
 
 void debug_status();
 
