@@ -59,6 +59,8 @@ audio_t* menu_audio = NULL;
 audio_t* game_audio = NULL;
 audio_t* pause_audio = NULL;
 audio_t* line_comp_audio[4] = {NULL,NULL,NULL,NULL};
+audio_t* chime_audio = NULL;
+audio_t* chime_select_audio = NULL;
 
 /*void playAudio(void){
     al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
@@ -113,11 +115,13 @@ int main (void){
     menu_audio = audio_init("main_title.wav", 1, AUDIO_MUSIC);
     game_audio = audio_init("tetris.wav", 0.4, AUDIO_MUSIC);
     pause_audio = audio_init("pausa.wav", 1, AUDIO_MUSIC);
-    lose_audio = audio_init("lose.wav", 1, AUDIO_MUSIC);
 
     line_comp_audio[0] = audio_init("1_line_compl.wav", 1, AUDIO_EFFECT);
     line_comp_audio[1] = audio_init("2_line_compl.wav", 1, AUDIO_EFFECT);
     line_comp_audio[2] = audio_init("3_line_compl.wav", 1, AUDIO_EFFECT);
+    lose_audio = audio_init("lose.wav", 1, AUDIO_EFFECT);
+    chime_audio = audio_init ("chime.wav",1, AUDIO_EFFECT);
+    chime_select_audio = audio_init ("chime_select.wav", 1, AUDIO_EFFECT);
 
     int i;
     for(i=0; i<3 ; i++){
@@ -415,18 +419,21 @@ void keypress_callback(uint8_t key){
         {
             case KEYB_UP:
                 // manage_music(chime_select, start);
+                audio_play(chime_audio);
                 menu_go_up();
                 printf("menu UP\n");
                 break;
 
             case KEYB_DOWN:
                 // manage_music(chime_select, start);
+                audio_play(chime_audio);
                 menu_go_down();
                 printf("menu DOWN\n");
                 break;
 
             case KEYB_LEFT:
                 // manage_music(chime_select, start);
+                audio_play(chime_audio);
                 menu_go_back();
                 printf("menu LEFT\n");
                 break;
@@ -436,6 +443,7 @@ void keypress_callback(uint8_t key){
                 printf("menu BTN...\n");
                 // manage_music(chime, start);
 				// manage_music(menu, stop);
+                audio_play(chime_select_audio);
                 menu_go_select();
                 printf("menu BTN\n");
                 break;
@@ -474,12 +482,14 @@ void keypress_callback(uint8_t key){
 
         case KEYB_E:
 			// manage_music(chime_select, start);
+            audio_play(chime_audio);
             game_rotate(1);
             printf("UPRIGHT\n");
             break;
 
         case KEYB_Q:
 			// manage_music(chime_select, start);
+            audio_play(chime_audio);
             game_rotate(0);
             printf("UPLEFT\n");
             break;
