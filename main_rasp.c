@@ -69,7 +69,7 @@ static uint8_t last_game_level = 1;
 static uint8_t line[16][1]={{1},{1},{1},{1}, {1},{1},{1},{1} , {1},{1},{1},{1} , {1},{1},{1},{1}};
 
 char menu_audio[]= "./audios/menu_audio.wav";
-char pause_audio[]= "./audios/pausa_audio.wav";
+char pause_audio[]= "./audios/pause_audio.wav";
 char game_audio[] = "./audios/game_audio.wav";
 char lose_audio[] = "./audios/lose_audio.wav";
 char move_audio[] =  "./audios/move_audio.wav";
@@ -130,7 +130,7 @@ int main(void){
 	//Setear callback de animacion de eliminar fila
 	game_set_delrow_callback(animation_row_complete);
 
-	audio(menu_audio);
+	audio(pause_audio);
 	animation_game_start();
 
     // Ejecutar menu principal
