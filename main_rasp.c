@@ -366,7 +366,6 @@ void main_game_start(void){
     }
     printf("Leaving game...\n");
 	rpi_clear_display();
-	printf("Music Status: %d\n", player_status());
 	audio(menu_audio);
 }
 
@@ -541,5 +540,8 @@ void audio (char * audio)
 		stop_sound();
 	}
 	if(!set_file_to_play(audio))	//Si se inicia correctamente el audio lo reproduce
+	{
+		printf("Music Status: %d\n", player_status());
 		play_sound();
+	}
 }
