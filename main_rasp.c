@@ -1,6 +1,9 @@
+//LIBRERIAS ESTANDAR
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
+//LIBRERIAS PROPIAS
 #include "./backend/game.h"
 #include "./backend/menu.h"
 #include "./libs/joystick.h"
@@ -9,11 +12,11 @@
 #include "./libs/rpi_display.h"
 #include "./libs/rpi_text.h"
 
-//LIBRERIA AUDIO SDL2
+//LIBRERIA AUDIO SDL
 #include <SDL2/SDL.h>
 #include "./libs/libaudio.h"
 
-// DEBUG
+// LIBRERIA DEBUG
 // #define USAR_DEBUG
 #include "./debug/debug.h"
 
@@ -58,21 +61,22 @@ void audio (char * audio);
 // **************************************
 // *	 V A R S . G L O B A L E S		*
 // **************************************
-menu_t *main_menu = NULL;
-menu_t *pause_menu = NULL;
+menu_t *main_menu = NULL;	//Puntero para main menu
+menu_t *pause_menu = NULL;	//Puntero para menu de pausa
 
 rpi_text_block_t* text_stat = NULL; // Puntero para los bloques de texto estaticos
 rpi_text_block_t* text_anim = NULL; // Puntero para texto deslizante con anumacion
 
-static uint8_t last_game_level = 1;
+static uint8_t last_game_level = 1;	//Nivel de juego inicial
 
-static uint8_t line[16][1]={{1},{1},{1},{1}, {1},{1},{1},{1} , {1},{1},{1},{1} , {1},{1},{1},{1}};
+static uint8_t line[16][1]={{1},{1},{1},{1}, {1},{1},{1},{1} , {1},{1},{1},{1} , {1},{1},{1},{1}}; //Linea divisora de juego
 
-char menu_audio[]= "./audios/menu_audio.wav";
-char pause_audio[]= "./audios/pause_audio.wav";
-char game_audio[] = "./audios/game_audio.wav";
-char lose_audio[] = "./audios/lose_audio.wav";
-char move_audio[] =  "./audios/move_audio.wav";
+//Direcciones de memoria para audio
+static char menu_audio[]= "./audios/menu_audio.wav";
+static char pause_audio[]= "./audios/pause_audio.wav";
+static char game_audio[] = "./audios/game_audio.wav";
+static char lose_audio[] = "./audios/lose_audio.wav";
+static char move_audio[] =  "./audios/move_audio.wav";
 
 
 // ******************
@@ -89,7 +93,7 @@ int main(void){
 
 
 	dpad_init();	//Inicializo el pad (joystick usado como pad direccional de 4 botones)
-	init_sound();
+	init_sound();	//Inicializo el sonido
 	easytimer_set_realTimeLoop(dpad_read);
 
 
@@ -130,8 +134,8 @@ int main(void){
 	//Setear callback de animacion de eliminar fila
 	game_set_delrow_callback(animation_row_complete);
 
-	audio(menu_audio);
-	animation_game_start();
+	audio(menu_audio);	//Reproduzo el audio del menu
+	animation_game_start();		// Reproduzco la animacion de inicio
 
     // Ejecutar menu principal
     menu_run(main_menu);
@@ -148,9 +152,9 @@ int main(void){
 	rpi_text_destroy(text_anim);
     rpi_text_destroy(text_stat);
 
-	stop_sound();
+	stop_sound(); //Detengo el sonido
 
-	rpi_clear_display();
+	rpi_clear_display();	//Limpio el display
 
     return 0;
 }
@@ -161,8 +165,8 @@ int main(void){
 // **************************************
 //CALLBACK DE EXIT GAME
 void exit_game(void){
-	game_quit();                  // Finalizar juego
-	rpi_clear_display();
+	game_quit();	// Finalizar juego
+	rpi_clear_display();	//Limpio el display
 	menu_force_close(pause_menu); // Cerrar menu pausa
 }
 
@@ -170,7 +174,7 @@ void exit_game(void){
 void restart_game(void){
 	rpi_clear_display(); //limpio el display
     menu_force_close(pause_menu); // Cerrar menu pausa
-	audio(game_audio);
+	audio(game_audio);	//Reproduzco el audio del juego
 	game_start(); 	//Corre el juego
 }
 
@@ -179,7 +183,7 @@ void resume_game(void)
 {
 	rpi_clear_display(); 	//Limpia el display
 	menu_force_close(pause_menu); //Cierra el menu de pausa
-	audio(game_audio);
+	audio(game_audio);	//Reproduzco el audio del juego
 	game_run();	//Corre el juego
 }
 
@@ -187,6 +191,18 @@ void run_menu_effects(void)
 {
 	menu_t menu_data = menu_get_current_menu_data();
     uint8_t id;
+
+	if (!strcmp("main_menu", menu_data.title))
+	{
+		if(player_status() != PLAYING)
+			audio(menu_audio);
+	}
+	else
+	{
+		if(player_status() != PLAYING)
+			audio(pause_audio);
+	}
+
 
     for(id=0; id<menu_data.n_options; id++){
         if(menu_data.current_option == id)
@@ -196,6 +212,7 @@ void run_menu_effects(void)
     }
 }
 
+//Actualizo las opciones del menu
 void update_menu_display(void)
 {
     menu_t menu_data = menu_get_current_menu_data();
@@ -217,6 +234,7 @@ void update_menu_display(void)
     rpi_run_display(); //Actualizo el display
 }
 
+//DEFINICION DE LOS CALLBACKS
 void key_press_callback(uint8_t key){
     DEBUG("key_press_callback");
     if(easytimer_delay_active()){ // si el delay esta activo
@@ -380,7 +398,7 @@ void update_game_display(void){
 	printf("LEVEL: %d\n", game_get_data().game_level);
 }
 
-// (Para la animacion de borrar filas)
+// Para la animacion de borrar filas
 void update_game_animation(uint8_t x_init, uint8_t y_init)
 {
 	// Actualizo la matriz del juego y la cargo en la matriz a imprimir
@@ -397,8 +415,6 @@ void update_game_animation(uint8_t x_init, uint8_t y_init)
 
 	rpi_run_display(); //Actualizo el display
 }
-
-
 
 void animation_row_complete (void)
 {
@@ -451,8 +467,6 @@ void animation_row_complete (void)
 
 	}
 }
-
-
 
 void animation_game_finish(void)
 {
