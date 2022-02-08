@@ -306,6 +306,7 @@ void key_press_callback(uint8_t key){
 				audio(pause_audio);
 				rpi_clear_display();
 				menu_run(pause_menu);
+				rpi_clear_display();
                 printf("game BTN\n");
                 break;
 
