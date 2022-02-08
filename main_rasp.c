@@ -12,6 +12,7 @@
 //LIBRERIA AUDIO SDL2
 #include <SDL2/SDL.h>
 #include "./libs/audio.h"
+#include "./libs/libaudio.h"
 
 // DEBUG
 // #define USAR_DEBUG
@@ -21,11 +22,6 @@
 #define STR_SIZES 64
 #define S2WAIT 180
 
-#define MENU_AUDIO "./audios/main_title.wav"
-#define PAUSE_AUDIO "./audios/pausa.wav"
-#define GAME_AUDIO "./audios/tetris.wav"
-#define LOSE_AUDIO "./audios/game_over.wav"
-#define MOVE_AUDIO "./audios/chime.wav"
 
 // ******************************
 // *	P R O T O T I P O S		*
@@ -71,6 +67,11 @@ static uint8_t last_game_level = 1;
 
 static uint8_t line[16][1]={{1},{1},{1},{1}, {1},{1},{1},{1} , {1},{1},{1},{1} , {1},{1},{1},{1}};
 
+char menu_audio[]= "./audios/main_title.wav";
+char pause_audio[]= "./audios/pausa.wav";
+char game_audio[] = "./audios/tetris.wav";
+char lose_audio[] = "./audios/game_over.wav";
+char move_audio[] =  "./audios/chime.wav";
 
 
 // ******************
@@ -87,7 +88,7 @@ int main(void){
 
 
 	dpad_init();	//Inicializo el pad (joystick usado como pad direccional de 4 botones)
-	initAudio();
+	init_sound();
 	easytimer_set_realTimeLoop(dpad_read);
 
 
@@ -128,7 +129,8 @@ int main(void){
 	//Setear callback de animacion de eliminar fila
 	game_set_delrow_callback(animation_row_complete);
 
-	playMusic(MENU_AUDIO, SDL_MIX_MAXVOLUME);
+	set_file_to_play(menu_audio);
+	play_sound();
 	animation_game_start();
 
     // Ejecutar menu principal
@@ -146,8 +148,7 @@ int main(void){
 	rpi_text_destroy(text_anim);
     rpi_text_destroy(text_stat);
 
-	//Finalizo el sistema de audio
-	endAudio();
+	stop_sound();
 
 	rpi_clear_display();
 
@@ -160,7 +161,6 @@ int main(void){
 // **************************************
 //CALLBACK DE EXIT GAME
 void exit_game(void){
-	playMusic(PAUSE_AUDIO, SDL_MIX_MAXVOLUME);
 	game_quit();                  // Finalizar juego
     menu_force_close(pause_menu); // Cerrar menu pausa
 }
@@ -169,7 +169,6 @@ void exit_game(void){
 void restart_game(void){
 	rpi_clear_display(); //limpio el display
     menu_force_close(pause_menu); // Cerrar menu pausa
-	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
 	game_start(); 	//Corre el juego
 }
 
@@ -178,7 +177,6 @@ void resume_game(void)
 {
 	rpi_clear_display(); 	//Limpia el display
 	menu_force_close(pause_menu); //Cierra el menu de pausa
-	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
 	game_run();	//Corre el juego
 }
 
@@ -226,13 +224,11 @@ void key_press_callback(uint8_t key){
         switch (key)
         {
             case DPAD_UP:
-				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
 				menu_go_up();
                 printf("menu UP\n");
                 break;
 
             case DPAD_DOWN:
-				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
 				menu_go_down();
                 printf("menu DOWN\n");
                 break;
@@ -260,40 +256,33 @@ void key_press_callback(uint8_t key){
                 break;
 
             case DPAD_DOWN:
-				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
 				game_move_down();
                 printf("game DOWN\n");
                 break;
 
             case DPAD_LEFT:
-				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
 				game_move_horizontal(0);
                 printf("game LEFT\n");
                 break;
 
             case DPAD_RIGHT:
-				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
 				game_move_horizontal(1);
                 printf("game RIGHT\n");
                 break;
 
             case DPAD_UPRIGHT:
-				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
 				game_rotate(1);
                 printf("game UPRIGHT\n");
                 break;
 
             case DPAD_UPLEFT:
-				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
 				game_rotate(0);
                 printf("game UPLEFT\n");
                 break;
 
             case DPAD_BTN:
-				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
 				easytimer_delay(200); // Delay para evitar salir del menu al entrar
 				rpi_clear_display();
-				playMusic(PAUSE_AUDIO, SDL_MIX_MAXVOLUME);
 
 
 				menu_run(pause_menu);
@@ -317,7 +306,10 @@ void key_press_callback(uint8_t key){
 // ***********************************************
 void main_game_start(void){
 
-	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
+	stop_sound();
+
+	set_file_to_play(game_audio);
+	play_sound();
 
 	rpi_clear_display(); //Limpio el display
 
@@ -340,15 +332,13 @@ void main_game_start(void){
         }
 
         if(game_data.state == GAME_LOSE){
-			pauseAudio();
-			playMusic(LOSE_AUDIO, SDL_MIX_MAXVOLUME);
+			stop_sound();
+
+			set_file_to_play(lose_audio);
+			play_sound();
 
 			animation_game_finish();
 			rpi_clear_display();
-			while (musicStatus() != FINISHED)
-			{
-
-			}
 			game_quit();
         }
     }
