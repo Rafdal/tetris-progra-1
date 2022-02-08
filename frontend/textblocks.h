@@ -9,6 +9,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+typedef enum {TXT_BLANCO, TXT_VERDE, TXT_ROJO} text_color_t;
+
 
 //Estructura de datos de los bloques de texto
 typedef struct 
@@ -29,10 +31,10 @@ typedef enum{
     ALINEADO_DERECHA
 }text_alineacion_t;
 
-blocktext_t* text_init_alleg ( ALLEGRO_COLOR color_bloque, ALLEGRO_COLOR color_font, int tamanio_letra, char* palabras, char* nombre_letra, int x, int y, int align);
+blocktext_t* text_init_alleg (text_color_t color, int tamanio_letra, char* palabras, char* nombre_letra, int x, int y, int align);
 //DESCRIPCION: Inicializa un Bloque de Texto, reserva memoria dinamica, se ejecuta 1 vez al principio del programa por cada texto que se desea escribir.
-// - [color_bloque]: color a asignarle al fondo del bloque, es un rectangulo. se le pasa un ALLEGRO_COLOR, usando al_map_rgb(r, g, b)
-// - [color_font]: color de la fuente. Lo mismo que el bloque. La combinacion de parametros r, g, b de la funcion de alegro devuelve el color deseado
+// - [color_bloque]: color a asignarle al fondo del bloque, es un rectangulo. 
+// - [color_font]: color de la fuente. se le pasa un ALLEGRO_COLOR, usando al_map_rgb(r, g, b). La combinacion de parametros r, g, b de la funcion de alegro devuelve el color deseado
 // - [tamanio_letra]: tamanio de la letra, el fondo se ajusta al tamanio de la letra asi que no hace falta cambiarlo
 // - [palabras]: el texto que se desea imprimir en pantalla
 // - [tipo_letra]: un string que contiene el path para el archivo de la fuente
