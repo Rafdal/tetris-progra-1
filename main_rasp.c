@@ -77,6 +77,10 @@ static char pause_audio[]= "./audios/pause_audio.wav";
 static char game_audio[] = "./audios/game_audio.wav";
 static char lose_audio[] = "./audios/lose_audio.wav";
 static char move_audio[] =  "./audios/move_audio.wav";
+static char com_row_1[] =  "./audios/1_line_compl";
+static char com_row_2[] =  "./audios/2_line_compl";
+static char com_row_3[] =  "./audios/3_line_compl";
+
 
 
 // ******************
@@ -366,7 +370,6 @@ void main_game_start(void){
     }
     printf("Leaving game...\n");
 	rpi_clear_display();
-	printf("Music Status: %d\n", player_status());
 	audio(menu_audio);
 }
 
@@ -473,6 +476,20 @@ void animation_row_complete (void)
 			}
 		}
 
+		uint8_t streak = game_data.streak;
+
+		switch (streak)
+		{
+			case 1:
+				audio(com_row_1);
+				break;
+			case 2:
+				audio(com_row_2);
+				break;
+			case 3:
+				audio(com_row_3);
+				break;
+		}
 	}
 }
 
@@ -540,7 +557,9 @@ void audio (char * audio)
 	{
 		stop_sound();
 	}
-
-	set_file_to_play(audio);
-	play_sound();
+	if(!set_file_to_play(audio))	//Si se inicia correctamente el audio lo reproduce
+	{
+		printf("Music Status: %d\n", player_status());
+		play_sound();
+	}
 }
