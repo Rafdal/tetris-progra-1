@@ -527,8 +527,6 @@ void animation_game_start (void)
 	rpi_clear_display();
 	easytimer_delay(500);
 }
-<<<<<<< HEAD
-=======
 
 void audio (char * audio)
 {
@@ -546,4 +544,3 @@ void audio (char * audio)
 	set_file_to_play(audio);
 	play_sound();
 }
->>>>>>> bbc3698d9522440461252ee2b1040e5920e66a7e
