@@ -238,7 +238,8 @@ void update_menu_display(void)
             rpi_text_print(text_stat); //Imprimo las opciones
         }
     }
-    rpi_run_display(); //Actualizo el display
+	rpi_clear_area(10,0,16,16);
+    rpi_run_display(); //Actualizo el displal
 }
 
 //DEFINICION DE LOS CALLBACKS
