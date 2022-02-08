@@ -76,11 +76,6 @@ static char menu_audio[]= "./audios/menu_audio.wav";
 static char pause_audio[]= "./audios/pause_audio.wav";
 static char game_audio[] = "./audios/game_audio.wav";
 static char lose_audio[] = "./audios/lose_audio.wav";
-static char move_audio[] =  "./audios/move_audio.wav";
-static char com_row_1[] =  "./audios/1_line_compl";
-static char com_row_2[] =  "./audios/2_line_compl";
-static char com_row_3[] =  "./audios/3_line_compl";
-
 
 
 // ******************
@@ -427,16 +422,14 @@ void update_game_animation(uint8_t x_init, uint8_t y_init)
 	rpi_run_display(); //Actualizo el display
 }
 
-void animation_row_complete (void)
-{
-	if(game_row_complete[0] != 0 ) //Si existe fila completa entro a la animacion
+void animation_row_complete (void) {
+	if (game_row_complete[0] != 0) //Si existe fila completa entro a la animacion
 	{
 		game_data_t game_data = game_get_data();
 
 		char level_string[32];
 		bool level_up = false;
-		if (last_game_level != game_data.game_level)
-		{
+		if (last_game_level != game_data.game_level) {
 			level_up = true;
 			last_game_level = game_data.game_level;
 			sprintf(level_string, "LEVEL %d", last_game_level);
@@ -449,16 +442,16 @@ void animation_row_complete (void)
 		}
 		uint64_t lastMs;
 		// rpi_text_slide(text_anim, 100);
-		int i,j=0;
-		while(j<GAME_WIDTH){
-			if(level_up)
+		int i, j = 0;
+		while (j < GAME_WIDTH) {
+			if (level_up)
 				rpi_text_one_slide(text_anim);
 
-			if(easytimer_get_millis()-lastMs > 100){
-				if(j<GAME_WIDTH){
-					for(i=0; game_row_complete[i] != 0 && i < 4 ; i++) //Me muevo por filas
+			if (easytimer_get_millis() - lastMs > 100) {
+				if (j < GAME_WIDTH) {
+					for (i = 0; game_row_complete[i] != 0 && i < 4; i++) //Me muevo por filas
 						delete_pixel(game_row_complete[i], j);
-					
+
 					update_game_animation(0, 5); //Actualizo el display
 					rpi_run_display();
 
@@ -467,28 +460,12 @@ void animation_row_complete (void)
 				lastMs = easytimer_get_millis();
 			}
 		}
-		for(i=0; i < 4 ; i++) //Elimino las filas completas
+		for (i = 0; i < 4; i++) //Elimino las filas completas
 		{
-			if(game_row_complete[i] != 0)
-			{
+			if (game_row_complete[i] != 0) {
 				delete_row(game_row_complete[i]);
-				game_row_complete[i]= 0; //Coloco en cero el arreglo
+				game_row_complete[i] = 0; //Coloco en cero el arreglo
 			}
-		}
-
-		uint8_t streak = game_data.streak;
-
-		switch (streak)
-		{
-			case 1:
-				audio(com_row_1);
-				break;
-			case 2:
-				audio(com_row_2);
-				break;
-			case 3:
-				audio(com_row_3);
-				break;
 		}
 	}
 }
