@@ -52,7 +52,7 @@ menu_t *principal_menu = NULL;
 menu_t *pausa_menu = NULL;
 menu_t *gameover_menu = NULL;
 
-// EFECTOS DE SONIDO Y MUSICA
+// EFECTOS DE SOline_comp_audioNIDO Y MUSICA
 audio_t* lose_audio = NULL;
 
 audio_t* menu_audio = NULL;
@@ -61,6 +61,8 @@ audio_t* pause_audio = NULL;
 audio_t* line_comp_audio[4] = {NULL,NULL,NULL,NULL};
 audio_t* chime_audio = NULL;
 audio_t* chime_select_audio = NULL;
+audio_t* win_audio = NULL;
+
 
 /*void playAudio(void){
     al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
@@ -114,23 +116,24 @@ int main (void){
 
     menu_audio = audio_init("main_title.wav", 1, AUDIO_MUSIC);
     game_audio = audio_init("tetris.wav", 0.4, AUDIO_MUSIC);
-    pause_audio = audio_init("pausa.wav", 1, AUDIO_MUSIC);
+    pause_audio = audio_init("pausa.wav", 3, AUDIO_MUSIC);
 
     line_comp_audio[0] = audio_init("1_line_compl.wav", 1, AUDIO_EFFECT);
     line_comp_audio[1] = audio_init("2_line_compl.wav", 1, AUDIO_EFFECT);
     line_comp_audio[2] = audio_init("3_line_compl.wav", 1, AUDIO_EFFECT);
+    line_comp_audio[3] = audio_init("win.wav", 1, AUDIO_EFFECT);
     lose_audio = audio_init("lose.wav", 1, AUDIO_EFFECT);
     chime_audio = audio_init ("chime.wav",1, AUDIO_EFFECT);
     chime_select_audio = audio_init ("chime_select.wav", 1, AUDIO_EFFECT);
 
     int i;
-    for(i=0; i<3 ; i++){
+    for(i=0; i<4 ; i++){
         if(line_comp_audio[i] == NULL){
             end_program();
             return -1;
         }
     }
-    if(menu_audio == NULL || game_audio == NULL || pause_audio == NULL || lose_audio == NULL){
+    if(menu_audio == NULL || game_audio == NULL || pause_audio == NULL || lose_audio == NULL || chime_audio == NULL || chime_select_audio == NULL){
         end_program(); // aca se destruye el audio
         return -1;
     }
