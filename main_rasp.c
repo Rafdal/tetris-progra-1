@@ -219,6 +219,11 @@ void update_menu_display(void)
     uint8_t id;
 
 	text_anim->str_size=0;
+	text_anim->y=0;
+	text_stat->str_size=0;
+	text_anim->y=0;
+	rpi_text_set("  ", text_anim);
+	rpi_text_set("  ", text_stat);
 	printf("menu: %s, opts: %u\n", menu_data.title, menu_data.n_options);
     for(id=0; id<menu_data.n_options; id++)
 	{
