@@ -79,6 +79,9 @@ void manage_music (char optn, char mode) {
 			case chime:
 				g_music_effect = al_load_sample("chime.wav");
 				break;
+			case chime_select:
+				g_music_effect = al_load_sample("chime_select.wav");
+				break;
 		}
 		g_instance_effect = al_create_sample_instance(g_music_effect);
 		if(g_instance_effect == NULL){
