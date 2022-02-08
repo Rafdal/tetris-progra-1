@@ -399,20 +399,23 @@ void keypress_callback(uint8_t key){
         return;
     }
     if(menu_is_current_available()){
-		manage_music(chime, start);
+		
         switch (key)
         {
             case KEYB_UP:
+                manage_music(chime_select, start);
                 menu_go_up();
                 printf("menu UP\n");
                 break;
 
             case KEYB_DOWN:
+                manage_music(chime_select, start);
                 menu_go_down();
                 printf("menu DOWN\n");
                 break;
 
             case KEYB_LEFT:
+                manage_music(chime_select, start);
                 menu_go_back();
                 printf("menu LEFT\n");
                 break;
@@ -420,7 +423,7 @@ void keypress_callback(uint8_t key){
             case KEYB_SPACE:
             case KEYB_ENTER:
                 printf("menu BTN...\n");
-                manage_music(chime_select, start);
+                manage_music(chime, start);
 				manage_music(menu, stop);
                 menu_go_select();
                 printf("menu BTN\n");
@@ -459,13 +462,13 @@ void keypress_callback(uint8_t key){
             break;
 
         case KEYB_E:
-			manage_music(chime, start);
+			manage_music(chime_select, start);
             game_rotate(1);
             printf("UPRIGHT\n");
             break;
 
         case KEYB_Q:
-			manage_music(chime, start);
+			manage_music(chime_select, start);
             game_rotate(0);
             printf("UPLEFT\n");
             break;
