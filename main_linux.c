@@ -655,7 +655,7 @@ int initialize_alleg(void) {
         printf("failed to load tetris_cartel !\n");
         return -1;
     }
-    diagrama_teclado = al_load_bitmap("./frontend/images/control3s2.png");
+    diagrama_teclado = al_load_bitmap("./frontend/images/controles.png");
     if (!diagrama_teclado) {
         al_destroy_bitmap(tetris_cartel);
         al_destroy_bitmap(pieza_blanca);
