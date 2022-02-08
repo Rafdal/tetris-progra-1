@@ -238,7 +238,7 @@ void update_menu_display(void)
             rpi_text_print(text_stat); //Imprimo las opciones
         }
     }
-	if(menu_is_available(main_menu)
+	if(menu_is_available(main_menu))
 		rpi_clear_area(10,0,16,16);
     rpi_run_display(); //Actualizo el displal
 }
