@@ -192,18 +192,6 @@ void run_menu_effects(void)
 	menu_t menu_data = menu_get_current_menu_data();
     uint8_t id;
 
-	if (!strcmp("main_menu", menu_data.title))
-	{
-		if(player_status() != PLAYING)
-			audio(menu_audio);
-	}
-	else
-	{
-		if(player_status() != PLAYING)
-			audio(pause_audio);
-	}
-
-
     for(id=0; id<menu_data.n_options; id++){
         if(menu_data.current_option == id)
 		{
@@ -218,13 +206,6 @@ void update_menu_display(void)
     menu_t menu_data = menu_get_current_menu_data();
     uint8_t id;
 
-	text_anim->str_size=0;
-	text_anim->y=0;
-	text_stat->str_size=0;
-	text_anim->y=0;
-	rpi_text_set("  ", text_anim);
-	rpi_text_set("  ", text_stat);
-	printf("menu: %s, opts: %u\n", menu_data.title, menu_data.n_options);
     for(id=0; id<menu_data.n_options; id++)
 	{
         if(menu_data.current_option == id){
@@ -238,8 +219,23 @@ void update_menu_display(void)
             rpi_text_print(text_stat); //Imprimo las opciones
         }
     }
-	if(menu_is_available(main_menu))
+	if(menu_is_available(main_menu)){
 		rpi_clear_area(10,0,16,16);
+
+		if(player_status() != PLAYING)
+		{
+			end_play();
+			audio(menu_audio);
+		}
+	}
+	else if(menu_is_available(pause_menu))
+	{
+		if(player_status() != PLAYING)
+		{
+			end_play();
+			audio(pause_audio);
+		}
+	}
     rpi_run_display(); //Actualizo el displal
 }
 
@@ -370,7 +366,6 @@ void main_game_start(void){
     }
     printf("Leaving game...\n");
 	rpi_clear_display();
-	easytimer_delay(500);
 	printf("Music Status: %d\n", player_status());
 	audio(menu_audio);
 }
