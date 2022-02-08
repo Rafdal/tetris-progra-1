@@ -343,6 +343,7 @@ void main_game_start(void){
     }
     printf("Leaving game...\n");
 	audio(menu_audio);
+	printf("SEG\n");
 	rpi_clear_display();
 }
 
