@@ -11,28 +11,39 @@
 #include <allegro5/allegro_acodec.h> // NO OLVIDAR AGREGAR EN EL LINKER DEL PROYECTO
 #include "audio_lib.h"
 
-#define start 1
-#define stop 0
+// #define start 1
+// #define stop 0
 
- enum {
-	 game,
-	 menu,
-	 pausa,
-	 lose,
-	 clr_lane_1,
-	 clr_lane_2,
-	 clr_lane_3,
-	 TETRIS,
-	 chime,
-	 chime_select,
- };
+// enum {game,menu,pausa,lose,clr_lane_1,clr_lane_2,clr_lane_3,TETRIS,chime,chime_select};
+
+typedef enum {AUDIO_PLAY, AUDIO_STOP} audio_status_t;
+typedef enum {AUDIO_MUSIC, AUDIO_EFFECT} audio_type_t;
+
+typedef struct {
+	ALLEGRO_SAMPLE_INSTANCE *instance;
+	ALLEGRO_SAMPLE *sample;
+	audio_type_t type;
+	audio_status_t status;
+	float gain;
+}audio_t;
+
+/* typedef struct {
+	uint8_t track_id;
+	ALLEGRO_SAMPLE_INSTANCE *instance;
+	ALLEGRO_SAMPLE *sample;
+	uint8_t mode;
+	float gain;
+}audio_effect_t; */
 
 
-////////////Prototipos//////////////////
+bool audio_install (void);
 
-void manage_music (char, char);
-void destroy_music (ALLEGRO_SAMPLE_INSTANCE*);
-char install_audio (void);
+audio_t* audio_init(const char* filename, float gain, audio_type_t type);
+
+void audio_play(audio_t* audio);
+
+void audio_destroy(void);
+
 
 
 

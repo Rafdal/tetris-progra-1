@@ -6,11 +6,8 @@
 // Inicializar matriz con ancho y alto
 // retorna true si fue exitoso
 bool mat_init(matrix_hand_t *mat, uint8_t _height, uint8_t _width){
-    if(mat == NULL){
-        mat->height = 0;
-        mat->width = 0;
+    if(mat == NULL)
         return false; // si el puntero es nulo retorno falso
-    }
 
     // guardo las dimensiones de la matriz
     mat->width = _width;
@@ -56,39 +53,38 @@ void mat_delete(matrix_hand_t *mat){
 
 // Aceder a un byte de la matriz
 uint8_t mat_get_byte(matrix_hand_t *mat, uint8_t y, uint8_t x){
-    assert(mat != NULL && mat->mat != NULL);
-    assert(x < mat->width && y < mat->height);
-
-    return mat->mat[x+y*mat->width];
+    if(mat != NULL && mat->mat != NULL && x < mat->width && y < mat->height)
+        return mat->mat[x+y*mat->width];
+    return 255;
 }
 
 // Setear un byte de la matriz
 void mat_set_byte(matrix_hand_t *mat, uint8_t y, uint8_t x, uint8_t byte){
-    assert(mat != NULL && mat->mat != NULL);
-    assert(x < mat->width && y < mat->height);
-
-    mat->mat[x+y*mat->width] = byte;
+    if(mat != NULL && mat->mat != NULL && x < mat->width && y < mat->height)
+        mat->mat[x+y*mat->width] = byte;
 }
 
 // visualizar matriz
 void mat_print(matrix_hand_t *mat){
-    int x,y;
-    for(y=0; y < mat->height; y++){
-        for(x=0; x < mat->width; x++){
-            printf("%-3u", mat_get_byte(mat, y, x));
+    if(mat != NULL){
+        int x,y;
+        for(y=0; y < mat->height; y++){
+            for(x=0; x < mat->width; x++){
+                printf("%-3u", mat_get_byte(mat, y, x));
+            }
+            putchar('\n');
         }
-        putchar('\n');
     }
 }
 
 void mat_copyFromTo(matrix_hand_t *fromMat, matrix_hand_t *toMat, uint8_t offsetY, uint8_t offsetX){
-    assert(mat_validate(toMat, fromMat->height+offsetY, fromMat->width+offsetX));
-
-    int x,y;
-    for(y=0; y<fromMat->height; y++){
-        for(x=0; x<fromMat->width; x++){
-            uint8_t byte = mat_get_byte(fromMat, y, x);
-            mat_set_byte(toMat, offsetY+y, offsetX+x, byte);
+    if(fromMat != NULL && toMat != NULL && mat_validate(toMat, fromMat->height+offsetY, fromMat->width+offsetX)){
+        int x,y;
+        for(y=0; y<fromMat->height; y++){
+            for(x=0; x<fromMat->width; x++){
+                uint8_t byte = mat_get_byte(fromMat, y, x);
+                mat_set_byte(toMat, offsetY+y, offsetX+x, byte);
+            }
         }
     }
 }

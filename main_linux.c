@@ -52,6 +52,15 @@ menu_t *principal_menu = NULL;
 menu_t *pausa_menu = NULL;
 menu_t *gameover_menu = NULL;
 
+// EFECTOS DE SONIDO Y MUSICA
+audio_t* lose_audio = NULL;
+
+audio_t* menu_audio = NULL;
+audio_t* game_audio = NULL;
+audio_t* pause_audio = NULL;
+audio_t* line_comp_audio[4] = {NULL,NULL,NULL,NULL};
+audio_t* chime_audio = NULL;
+audio_t* chime_select_audio = NULL;
 
 /*void playAudio(void){
     al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
@@ -89,17 +98,41 @@ void volver_al_main_menu(void);
 void restart_game(void);
 void resume_game(void);
 
-
 int main (void){
-	int error = initialize_alleg(); //inicializo Allegro
+	if(initialize_alleg()){
+        printf("Allegro FAIL!\n");
+        return -1;
+    } //inicializo Allegro
     
     easytimer_set_realTimeLoop(read_events); // Leer eventos durante delays
 
-	error = install_audio();
+    if(!audio_install()){
+        printf("Error al iniciar el audio!\n");
+        end_program(); //si algo fallo termino el programa
+        return -1;   
+    }
 
-    if(error){
-        printf("Error al iniciar");
-        return -1;   //si algo fallo termino el programa
+    menu_audio = audio_init("main_title.wav", 1, AUDIO_MUSIC);
+    game_audio = audio_init("tetris.wav", 0.4, AUDIO_MUSIC);
+    pause_audio = audio_init("pausa.wav", 1, AUDIO_MUSIC);
+
+    line_comp_audio[0] = audio_init("1_line_compl.wav", 1, AUDIO_EFFECT);
+    line_comp_audio[1] = audio_init("2_line_compl.wav", 1, AUDIO_EFFECT);
+    line_comp_audio[2] = audio_init("3_line_compl.wav", 1, AUDIO_EFFECT);
+    lose_audio = audio_init("lose.wav", 1, AUDIO_EFFECT);
+    chime_audio = audio_init ("chime.wav",1, AUDIO_EFFECT);
+    chime_select_audio = audio_init ("chime_select.wav", 1, AUDIO_EFFECT);
+
+    int i;
+    for(i=0; i<3 ; i++){
+        if(line_comp_audio[i] == NULL){
+            end_program();
+            return -1;
+        }
+    }
+    if(menu_audio == NULL || game_audio == NULL || pause_audio == NULL || lose_audio == NULL){
+        end_program(); // aca se destruye el audio
+        return -1;
     }
 
     easytimer_set_realTimeLoop(read_events); // Leer eventos durante delays
@@ -108,16 +141,14 @@ int main (void){
     keyb_use_press_callback_for_longpress(KEYB_DOWN);
     keyb_use_press_callback_for_longpress(KEYB_LEFT);
     keyb_use_press_callback_for_longpress(KEYB_RIGHT);
-
-//	int init_audio();
     
     principal_menu = menu_init(3, "MENU PRINCIPAL", NULL, MENU_ACTION_DO_NOTHING);
     pausa_menu = menu_init(3, "MENU DE PAUSA", NULL, MENU_ACTION_JUST_EXIT);
     gameover_menu = menu_init(2, "GAME OVER", NULL, MENU_ACTION_DO_NOTHING);
 
-
     if(principal_menu == NULL || pausa_menu == NULL || gameover_menu == NULL){
         printf("Error NULL menu!\n");
+        end_program(); // End program destruye todo
         return -1;
     }
 
@@ -140,11 +171,10 @@ int main (void){
    
     game_set_delrow_callback(animation_row_compleate);
 
-    printf("Run main menu\n");
+    // MAIN MENU
     menu_run(principal_menu);
-   //main_game_start();
     
-    end_program();//borro todo
+    end_program(); //borro todo
 
     return 0;
 
@@ -165,7 +195,7 @@ void volver_al_main_menu (void){
 
 //CALLBACK DE REINICIO DE JUEGO
 void restart_game(void){
-    manage_music(game, start);
+    // manage_music(game, start);
 	initialize_display_game(); //inicio el display del juego
     menu_force_close_current(); // Cerrar menu pausa
     game_start(); 	//Corre el juego
@@ -174,16 +204,13 @@ void restart_game(void){
 //CALLBACK DE RENAUDAR JUEGO
 void resume_game(void)
 {
-    manage_music(game, start);
+    // manage_music(game, start);
 	initialize_display_game(); //inicio el display del juego
 	menu_force_close_current();	//Cierra el menu
 	game_run();	//Corre el juego
 }
 
 void main_game_start(void){
-
-    manage_music(game, start);
-
     game_data_t game_data;
     uint64_t lastMillis;
     game_start(); // iniciar el juego
@@ -191,6 +218,7 @@ void main_game_start(void){
 
     while ((game_data = game_get_data()).state != GAME_QUIT)
     {
+        audio_play(game_audio);
         read_events(); // Leer teclado y eventos (Allegro)
         
         if(game_data.state == GAME_RUN && easytimer_get_millis()-lastMillis >= game_data.speed_interval){
@@ -201,7 +229,8 @@ void main_game_start(void){
         }
 
         if(game_data.state == GAME_LOSE){
-            manage_music(lose, start);
+            audio_play(lose_audio);
+            // manage_music(lose, start);
             printf("Perdiste! The Game\n");
             menu_run(gameover_menu);
         }
@@ -209,72 +238,43 @@ void main_game_start(void){
     printf("Leaving game...\n");
 } // main_game_start
 
-uint64_t stamp;
-void printStamp(void){
-    uint64_t dif = easytimer_get_millis() - stamp;
-    printf("%lu\n", dif);
-    stamp = easytimer_get_millis();
-}
-
 void animation_row_compleate(void)
 {
+    game_data_t game_data = game_get_data();
     if(game_row_complete[0])
     {
-        int i;
-        int z;
+        int z,i;
         float reductor;
         float angulo;
-        float decremento= 0.1;
-        int contador_filas_destruidas;
-        int indicador;
-        stamp = easytimer_get_millis();
+        float decremento = 0.1;
 
-        for(reductor=2.1, angulo=0, indicador=0; reductor>=0; angulo+=(3.1415/8)){
-    
+        if(game_data.streak == 4){ // Si se completaron 4 filas a la vez
+            al_draw_text(text_font_pointer_fetcher(),al_map_rgb(0,120,120), BLOCKSZ*6,BLOCKSZ*4,CENTRADO,"T E T R I S !");
+            al_flip_display();
+        }
+        audio_play(line_comp_audio[game_data.streak-1]); // filas completadas - 1
+
+        for(reductor=2.1, angulo=0; reductor>=0; angulo+=(3.1415/8)){
             for(i=0; game_row_complete[i] != 0 && i < 4 ; i++){
-                contador_filas_destruidas=0;
                 for(z=1; z<=ANCHO; z++){
                     al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(game_row_complete[i]), BLOCKSZ, BLOCKSZ, 0);
-                //pongo el fondo en negro
+                    //pongo el fondo en negro
                     al_draw_tinted_scaled_rotated_bitmap(pieza_blanca,  al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(pieza_blanca)/2, al_get_bitmap_height(pieza_blanca)/2, (BLOCKSZ/2 +BLOCKSZ*z), (BLOCKSZ/2 +BLOCKSZ*(game_row_complete[i])),reductor, reductor, angulo, 0);
                     //Dibujo una pieza blanca, se va haciendo mas chia a medida que rota
-                    // putchar('c');
-                    // printStamp();
-                    contador_filas_destruidas++; //incremento contador
                 }//este ciclo va por columnas
-                
-                if(contador_filas_destruidas==4 && !indicador){
-                    manage_music(TETRIS, start);
-                    al_draw_text(text_font_pointer_fetcher(),al_map_rgb(0,120,120), BLOCKSZ*6,BLOCKSZ*4,CENTRADO,"T E T R I S !");
-                    indicador++;
-                }
-
+                al_flip_display();
             }//este otro ciclo va por filas
-            // easytimer_delay(4);
-            // al_flip_display();
             reductor-=decremento;
-        }
-		switch (contador_filas_destruidas) {
-			case 1:
-				manage_music(clr_lane_1, start);
-				break;
-			case 2:
-				manage_music(clr_lane_2, start);
-				break;
-			case 3:
-				manage_music(clr_lane_3, start);
-				break;
+        }		
 
-        }
-        for(i=0; game_row_complete[i] != 0 && i< GAME_WIDTH ; i++){
+        for(i=0; game_row_complete[i] != 0 && i < 4 ; i++){
             for(z=1; z<=ANCHO; z++){
                 al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(game_row_complete[i]), BLOCKSZ, BLOCKSZ, 0);
-                al_flip_display();
             } //pongo el fondo en negro de nuevo
             delete_row(game_row_complete[i]);
             game_row_complete[i]= 0;
         }
-        
+        al_flip_display();
     }
 }
 
@@ -307,11 +307,14 @@ void display_menu_display(void){
     menu_t menu_data = menu_get_current_menu_data();    //consigo los datos del menu actual
 
 	if (menu_is_available(principal_menu))
-		manage_music(menu, start);
+        audio_play(menu_audio);
+		// manage_music(menu, start);
 	if (menu_is_available(pausa_menu))
-		manage_music(pausa, start);
+        audio_play(pause_audio);
+		// manage_music(pausa, start);
     if (menu_is_available(gameover_menu)){
-        manage_music(game, stop);
+        audio_play(pause_audio);
+        // manage_music(game, stop);
 	//	manage_music(pausa, start);
     }
 
@@ -394,7 +397,7 @@ void display_menu_display(void){
 // Leer los eventos de Allegro (teclado, display, etc)
 void read_events(void){
     ALLEGRO_EVENT ev;
-    if (al_get_next_event(event_queue, &ev)) //Toma un evento de la cola
+    if (event_queue != NULL && al_get_next_event(event_queue, &ev)) //Toma un evento de la cola
     {
         if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
             game_quit();
@@ -415,19 +418,22 @@ void keypress_callback(uint8_t key){
         switch (key)
         {
             case KEYB_UP:
-                manage_music(chime_select, start);
+                // manage_music(chime_select, start);
+                audio_play(chime_audio);
                 menu_go_up();
                 printf("menu UP\n");
                 break;
 
             case KEYB_DOWN:
-                manage_music(chime_select, start);
+                // manage_music(chime_select, start);
+                audio_play(chime_audio);
                 menu_go_down();
                 printf("menu DOWN\n");
                 break;
 
             case KEYB_LEFT:
-                manage_music(chime_select, start);
+                // manage_music(chime_select, start);
+                audio_play(chime_audio);
                 menu_go_back();
                 printf("menu LEFT\n");
                 break;
@@ -435,8 +441,9 @@ void keypress_callback(uint8_t key){
             case KEYB_SPACE:
             case KEYB_ENTER:
                 printf("menu BTN...\n");
-                manage_music(chime, start);
-				manage_music(menu, stop);
+                // manage_music(chime, start);
+				// manage_music(menu, stop);
+                audio_play(chime_select_audio);
                 menu_go_select();
                 printf("menu BTN\n");
                 break;
@@ -474,13 +481,15 @@ void keypress_callback(uint8_t key){
             break;
 
         case KEYB_E:
-			manage_music(chime_select, start);
+			// manage_music(chime_select, start);
+            audio_play(chime_audio);
             game_rotate(1);
             printf("UPRIGHT\n");
             break;
 
         case KEYB_Q:
-			manage_music(chime_select, start);
+			// manage_music(chime_select, start);
+            audio_play(chime_audio);
             game_rotate(0);
             printf("UPLEFT\n");
             break;
@@ -490,7 +499,7 @@ void keypress_callback(uint8_t key){
             break;
 
         case KEYB_ESC:
-			manage_music(game, stop);
+			// manage_music(game, stop);
             menu_run(pausa_menu);
             printf("Juego Pausado\n");
             break;
@@ -548,121 +557,145 @@ void update_display(void) {
 
 
 int initialize_alleg(void) {
-    if (!al_init()) {
+    if (!al_init()) {   // ! System
         printf( "failed to initialize allegro!\n");
         return -1;
     }
 
-    event_queue = al_create_event_queue(); //creo cola de eventos
+    event_queue = al_create_event_queue(); // ! event_queue
     if (!event_queue) {
         printf( "failed to create event_queue!\n");
         return -1;
     }
 
-    if(!keyb_init(event_queue)){
+    if(!keyb_init(event_queue)){ // ! keyboard
+        al_destroy_event_queue(event_queue);
         printf("No se pudo inicializar el teclado!\n");
         return -1;
     }
 
-     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-   /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    if (!al_init_image_addon()) { // ADDON necesario para manejo(no olvidar el freno de mano) de imagenes 
+    if (!al_init_image_addon()) { // ! image_addon -    necesario para manejo de imagenes 
+        al_uninstall_keyboard();        
+        al_destroy_event_queue(event_queue);
         printf("failed to initialize image addon !\n");
         return -1;
     }
-    if (!al_init_font_addon()) { 
-        fprintf(stderr, "failed to initialize font addon !\n");
+    if (!al_init_font_addon()) { // ! font_addon
+        al_uninstall_keyboard();        
+        al_destroy_event_queue(event_queue);
+        printf("failed to initialize font addon !\n");
         return -1;
     }
-    if (!al_init_primitives_addon()) { 
-        fprintf(stderr, "failed to initialize primitives addon !\n");
+    if (!al_init_primitives_addon()) { // ! primitives_addon
+        al_uninstall_keyboard();        
+        al_destroy_event_queue(event_queue);
+        printf("failed to initialize primitives addon !\n");
         return -1;
     }
-    if (!al_init_ttf_addon()) {  
-        fprintf(stderr, "failed to initialize ttf addon !\n");
+    if (!al_init_ttf_addon()) {  // ! ttf addon
+        al_uninstall_keyboard();        
+        al_destroy_event_queue(event_queue);
+        printf("failed to initialize ttf addon !\n");
         return -1;
     }
 
     image = al_load_bitmap("./frontend/images/piezastetris.png");
     if (!image) {
-       printf( "failed to load image !\n");
+        al_uninstall_keyboard();        
         al_destroy_event_queue(event_queue);
+
+        printf( "failed to load image !\n");
         return -1;
     }
 
     muroH = al_load_bitmap("./frontend/images/muroH.jpg");
     if (!muroH) {
-        printf( "failed to load muroH !\n");
         al_destroy_bitmap(image);
+
+        al_uninstall_keyboard();        
         al_destroy_event_queue(event_queue);
+        printf( "failed to load muroH !\n");
+
         return -1;
     }
     muroV = al_load_bitmap("./frontend/images/muroV.jpg");
     if (!muroV) {
-        printf("failed to load muroV !\n");
-        al_destroy_bitmap(image);
         al_destroy_bitmap(muroH);
+        al_destroy_bitmap(image);
+
+        al_uninstall_keyboard();        
         al_destroy_event_queue(event_queue);
+        printf("failed to load muroV !\n");
         return -1;
     }
     pieza_blanca = al_load_bitmap("./frontend/images/white_tile.png");
     if (!pieza_blanca) {
-        printf("failed to load pieza_blanca !\n");
-        al_destroy_bitmap(image);
-        al_destroy_bitmap(muroH);
         al_destroy_bitmap(muroV);
+        al_destroy_bitmap(muroH);
+        al_destroy_bitmap(image);
+
+        al_uninstall_keyboard();        
         al_destroy_event_queue(event_queue);
+        printf("failed to load pieza_blanca !\n");
         return -1;
     }
     tetris_cartel = al_load_bitmap("./frontend/images/tetris_cartel.png");
     if (!tetris_cartel) {
-        printf("failed to load tetris_cartel !\n");
-        al_destroy_bitmap(image);
-        al_destroy_bitmap(muroH);
-        al_destroy_bitmap(muroV);
         al_destroy_bitmap(pieza_blanca);
+        al_destroy_bitmap(muroV);
+        al_destroy_bitmap(muroH);
+        al_destroy_bitmap(image);
+
+        al_uninstall_keyboard();        
         al_destroy_event_queue(event_queue);
+        printf("failed to load tetris_cartel !\n");
         return -1;
     }
     diagrama_teclado = al_load_bitmap("./frontend/images/control3s2.png");
     if (!diagrama_teclado) {
-        printf("failed to load diagrama_teclado !\n");
-        al_destroy_bitmap(image);
-        al_destroy_bitmap(muroH);
-        al_destroy_bitmap(muroV);
-        al_destroy_bitmap(pieza_blanca);
         al_destroy_bitmap(tetris_cartel);
+        al_destroy_bitmap(pieza_blanca);
+        al_destroy_bitmap(muroV);
+        al_destroy_bitmap(muroH);
+        al_destroy_bitmap(image);
+
+        al_uninstall_keyboard();        
         al_destroy_event_queue(event_queue);
+        printf("failed to load diagrama_teclado !\n");
         return -1;
     }
     jugabilidad_diagrama = al_load_bitmap("./frontend/images/instrucciones.png");
     if (!jugabilidad_diagrama) {
-        printf("failed to load jugabilidad_diagrama !\n");
-        al_destroy_bitmap(image);
-        al_destroy_bitmap(muroH);
-        al_destroy_bitmap(muroV);
-        al_destroy_bitmap(pieza_blanca);
-        al_destroy_bitmap(tetris_cartel);
         al_destroy_bitmap(diagrama_teclado);
+        al_destroy_bitmap(tetris_cartel);
+        al_destroy_bitmap(pieza_blanca);
+        al_destroy_bitmap(muroV);
+        al_destroy_bitmap(muroH);
+        al_destroy_bitmap(image);
+
+        al_uninstall_keyboard();        
         al_destroy_event_queue(event_queue);
+        printf("failed to load jugabilidad_diagrama !\n");
         return -1;
     }
 
     display = al_create_display(((ANCHO+8)*BLOCKSZ), ((ALTO+1)*BLOCKSZ));
     if (!display) {
-        al_destroy_bitmap(image);
-        al_destroy_bitmap(muroH);
-        al_destroy_bitmap(muroV);
-        al_destroy_bitmap(pieza_blanca);
+        al_destroy_bitmap(jugabilidad_diagrama);
         al_destroy_bitmap(diagrama_teclado);
         al_destroy_bitmap(tetris_cartel);
+        al_destroy_bitmap(pieza_blanca);
+        al_destroy_bitmap(muroV);
+        al_destroy_bitmap(muroH);
+        al_destroy_bitmap(image);
+
+        al_uninstall_keyboard();        
         al_destroy_event_queue(event_queue);
-        fprintf(stderr,"failed to create display!\n");
+        printf("failed to create display!\n");
         return -1;
     }
     al_set_display_option(display, ALLEGRO_VSYNC, 2);
-
 
     al_register_event_source(event_queue, al_get_display_event_source(display));
     return 0;
@@ -719,6 +752,8 @@ void  initialize_display_game (void){
 
 void end_program (void){
 
+
+    printf("destruyendo bitmaps...\n");
 // DESTRUCCION DE BITMAPS
     al_destroy_bitmap(image);
     al_destroy_bitmap(muroH);
@@ -729,19 +764,23 @@ void end_program (void){
     al_destroy_bitmap(jugabilidad_diagrama);
 
 // DESTRUCCION DE OTRAS UTILIDADES ALLEGRO
-    al_destroy_display(display);
+    printf("destruyendo utils...\n");
+    al_uninstall_keyboard();        
     al_destroy_event_queue(event_queue);
-    al_uninstall_keyboard();
+    al_destroy_display(display);
+
+    audio_destroy();
     font_destroyer();
 
 //DESTRUCCION DE UTILIDADES EXTRA
+    printf("destruyendo menus y texto...\n");
     menu_destroy(principal_menu);
     menu_destroy(pausa_menu);
     menu_destroy(gameover_menu);
     text_destroy(nivel);
     text_destroy(score);
-    al_uninstall_audio(); // borrar audio
-    //al_shutdown_image_addon(); VER DOCUMENTACION ES LLAMADO AUTOMATICAMENTE AL SALIR DEL PROGRAMA
+
+    al_uninstall_system();
     printf("Game Ended\n");
     exit(0);
 }
