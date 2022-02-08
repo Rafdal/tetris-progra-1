@@ -11,7 +11,6 @@
 
 //LIBRERIA AUDIO SDL2
 #include <SDL2/SDL.h>
-#include "./libs/audio.h"
 #include "./libs/libaudio.h"
 
 // DEBUG
@@ -90,7 +89,6 @@ int main(void){
 
 
 	dpad_init();	//Inicializo el pad (joystick usado como pad direccional de 4 botones)
-	initAudio();
 	init_sound();
 	easytimer_set_realTimeLoop(dpad_read);
 
@@ -229,13 +227,11 @@ void key_press_callback(uint8_t key){
         switch (key)
         {
             case DPAD_UP:
-				playSound(move_audio, SDL_MIX_MAXVOLUME);
 				menu_go_up();
                 printf("menu UP\n");
                 break;
 
             case DPAD_DOWN:
-				playSound(move_audio, SDL_MIX_MAXVOLUME);
 				menu_go_down();
                 printf("menu DOWN\n");
                 break;
@@ -278,13 +274,11 @@ void key_press_callback(uint8_t key){
                 break;
 
             case DPAD_UPRIGHT:
-				playSound(move_audio, SDL_MIX_MAXVOLUME);
 				game_rotate(1);
                 printf("game UPRIGHT\n");
                 break;
 
             case DPAD_UPLEFT:
-				playSound(move_audio, SDL_MIX_MAXVOLUME);
 				game_rotate(0);
                 printf("game UPLEFT\n");
                 break;
