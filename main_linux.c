@@ -156,8 +156,6 @@ void exit_game(void){
 //CALLBACK DE GAMEOVER
 void volver_al_main_menu (void){
     printf("volviendo al ma");
-    manage_music(game, stop);
-	manage_music(lose, start);
     game_quit();
     menu_force_close(gameover_menu);
     printf("in menu...\n");
@@ -167,14 +165,13 @@ void volver_al_main_menu (void){
 void restart_game(void){
 	initialize_display_game(); //inicio el display del juego
     menu_force_close_current(); // Cerrar menu pausa
-	manage_music(pausa, stop);
-	manage_music(game, start);
     game_start(); 	//Corre el juego
 }
 
 //CALLBACK DE RENAUDAR JUEGO
 void resume_game(void)
 {
+    manage_music(game, start);
 	initialize_display_game(); //inicio el display del juego
 	menu_force_close_current();	//Cierra el menu
 	game_run();	//Corre el juego
@@ -182,9 +179,10 @@ void resume_game(void)
 
 void main_game_start(void){
 
+    manage_music(game, start);
+
     game_data_t game_data;
     uint64_t lastMillis;
-	manage_music(game, start);
     game_start(); // iniciar el juego
     initialize_display_game();
 
@@ -200,10 +198,8 @@ void main_game_start(void){
         }
 
         if(game_data.state == GAME_LOSE){
-
+            manage_music(lose, start);
             printf("Perdiste! The Game\n");
-            manage_music(game, stop);
-			manage_music(lose, start);
             menu_run(gameover_menu);
 			
         }
@@ -303,8 +299,8 @@ void display_menu_display(void){
 	if (menu_is_available(pausa_menu))
 		manage_music(pausa, start);
     if (menu_is_available(gameover_menu)){
-        manage_music(lose, start);
-		manage_music(pausa, start);
+        manage_music(game, stop);
+	//	manage_music(pausa, start);
     }
 
 
