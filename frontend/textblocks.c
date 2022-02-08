@@ -74,10 +74,11 @@ int text_number_drawer (blocktext_t * bloque, uint32_t puntos){
        printf("Error, PUNTERO NULO en text_drawer: %u\n", __LINE__);
        return 1;
     }
+    font = al_load_font(bloque->tipo_letra, bloque->font_size, 0);//cambia el tipo de letra y el tamanio
     int ancho_fondo = al_get_text_width(font, "00000000000");
     int alto_fondo = al_get_font_line_height(font);
 
-    al_draw_filled_rectangle(bloque->posx, bloque->posy, ((bloque->posx) + ancho_fondo), ((bloque->posy) + alto_fondo), bloque->block_color);
+    al_draw_filled_rectangle(bloque->posx, bloque->posy, ((bloque->posx) + ancho_fondo), ((bloque->posy) + alto_fondo), al_map_rgb(0, 0, 0));
     al_draw_textf(font, bloque->font_color, bloque->posx, bloque->posy, bloque->alineacion, "%i", puntos);
     return 0;
 }

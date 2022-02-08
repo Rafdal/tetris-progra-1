@@ -62,7 +62,7 @@ ALLEGRO_FONT * text_font_pointer_fetcher(void);
 //No recibe ningun parametro. En caso de que no se haya inicializado la fuente, devuelve NULL
 
 int text_number_drawer (blocktext_t * bloque, uint32_t puntos);
-//DESCRIPCION: Dibuja en el display una variable al lado del titulo de la opcion. 
+//DESCRIPCION: Dibuja en el display una variable. Por default dibuja un rectangulo negro detras de la variable para borrar lo escrito anteriormente
 // - [bloque]: puntero a estructura que se quiere destruir
 // - [puntos]: Variable que se desea dibujar en pantalla
 //RETURN: DEVUELVE 0 SI ES EXITOSO, 1 SI EL PUNTERO ES NULO
