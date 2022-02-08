@@ -207,6 +207,12 @@ void main_game_start(void){
     printf("Leaving game...\n");
 } // main_game_start
 
+uint64_t stamp;
+void printStamp(void){
+    uint64_t dif = easytimer_get_millis() - stamp;
+    printf("%lu\n", dif);
+    stamp = easytimer_get_millis();
+}
 
 void animation_row_compleate(void)
 {
@@ -219,16 +225,19 @@ void animation_row_compleate(void)
         float decremento= 0.1;
         int contador_filas_destruidas;
         int indicador;
+        stamp = easytimer_get_millis();
 
         for(reductor=2.1, angulo=0, indicador=0; reductor>=0; angulo+=(3.1415/8)){
     
-            for(z=1; z<=ANCHO; z++){
+            for(i=0; game_row_complete[i] != 0 && i < 4 ; i++){
                 contador_filas_destruidas=0;
-                for( i=0; game_row_complete[i] != 0 && i< 4 ; i++){
+                for(z=1; z<=ANCHO; z++){
                     al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(game_row_complete[i]), BLOCKSZ, BLOCKSZ, 0);
                 //pongo el fondo en negro
                     al_draw_tinted_scaled_rotated_bitmap(pieza_blanca,  al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(pieza_blanca)/2, al_get_bitmap_height(pieza_blanca)/2, (BLOCKSZ/2 +BLOCKSZ*z), (BLOCKSZ/2 +BLOCKSZ*(game_row_complete[i])),reductor, reductor, angulo, 0);
                     //Dibujo una pieza blanca, se va haciendo mas chia a medida que rota
+                    // putchar('c');
+                    // printStamp();
                     contador_filas_destruidas++; //incremento contador
                 }//este ciclo va por columnas
                 
@@ -237,10 +246,15 @@ void animation_row_compleate(void)
                     al_draw_text(text_font_pointer_fetcher(),al_map_rgb(0,120,120), BLOCKSZ*6,BLOCKSZ*4,CENTRADO,"T E T R I S !");
                     indicador++;
                 }
+
+                    // putchar('a');
+                    // printStamp();
                 al_flip_display();
+                    // putchar('b');
+                    // printStamp();
             }//este otro ciclo va por filas
-            easytimer_delay(4);
-            al_flip_display();
+            // easytimer_delay(4);
+            // al_flip_display();
             reductor-=decremento;
         }
 		switch (contador_filas_destruidas) {
@@ -272,10 +286,10 @@ void screen_how_to_play (void){
     int actual=1;
     al_draw_scaled_bitmap(diagrama_teclado, 0, 0, al_get_bitmap_width(diagrama_teclado), al_get_bitmap_height(diagrama_teclado), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
     al_flip_display();
-    while (!keyb_is_pressed(KEYB_ESC) )
+    while (!keyb_is_pressed(KEYB_ESC))
     {
         read_events();
-        if((keyb_is_pressed(KEYB_LEFT) || keyb_is_pressed(KEYB_RIGHT)) && (actual==2)){
+        if(keyb_is_pressed(KEYB_LEFT) && (actual==2)){
         printf("Hasta aca llega\n");
             al_draw_scaled_bitmap(diagrama_teclado, 0, 0, al_get_bitmap_width(diagrama_teclado), al_get_bitmap_height(diagrama_teclado), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
             al_flip_display();
@@ -283,7 +297,7 @@ void screen_how_to_play (void){
             easytimer_delay(150);
         }
         
-        else if((keyb_is_pressed(KEYB_LEFT) || keyb_is_pressed(KEYB_RIGHT)) && (actual==1)){
+        else if(keyb_is_pressed(KEYB_RIGHT) && (actual==1)){
             al_draw_scaled_bitmap(jugabilidad_diagrama, 0, 0, al_get_bitmap_width(jugabilidad_diagrama), al_get_bitmap_height(jugabilidad_diagrama), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
             al_flip_display();
             actual=2;
@@ -614,7 +628,7 @@ int initialize_alleg(void) {
         al_destroy_event_queue(event_queue);
         return -1;
     }
-    diagrama_teclado = al_load_bitmap("./frontend/images/control3s.png");
+    diagrama_teclado = al_load_bitmap("./frontend/images/control3s2.png");
     if (!diagrama_teclado) {
         printf("failed to load diagrama_teclado !\n");
         al_destroy_bitmap(image);
@@ -625,7 +639,7 @@ int initialize_alleg(void) {
         al_destroy_event_queue(event_queue);
         return -1;
     }
-    jugabilidad_diagrama = al_load_bitmap("./frontend/images/jugabilidad_tetris.png");
+    jugabilidad_diagrama = al_load_bitmap("./frontend/images/instrucciones.png");
     if (!jugabilidad_diagrama) {
         printf("failed to load jugabilidad_diagrama !\n");
         al_destroy_bitmap(image);
