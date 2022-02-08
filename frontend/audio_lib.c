@@ -12,6 +12,18 @@ static ALLEGRO_SAMPLE_INSTANCE *g_instance = NULL;
 static ALLEGRO_SAMPLE *g_music_effect = NULL;
 static ALLEGRO_SAMPLE_INSTANCE *g_instance_effect = NULL;
 
+typedef struct {
+	ALLEGRO_SAMPLE_INSTANCE *music_instance;
+	ALLEGRO_SAMPLE *music_sample;
+	uint8_t mode;
+}audio_music_t;
+
+typedef struct {
+	ALLEGRO_SAMPLE_INSTANCE *effect_instance;
+	ALLEGRO_SAMPLE *effect_sample;
+	uint8_t mode;
+}audio_effect_t;
+
 void manage_music (char optn, char mode) {
 
 	printf("music state = %d,  optn: %u, mode: %u\n", is_music_playing, optn, mode);
@@ -39,6 +51,7 @@ void manage_music (char optn, char mode) {
 			printf("MUSIC NULL!\n");
 			exit(1);
 		}
+
 		g_instance = al_create_sample_instance(g_music);
 		al_attach_sample_instance_to_mixer(g_instance, al_get_default_mixer());
 		al_set_sample_instance_playmode(g_instance, ALLEGRO_PLAYMODE_LOOP);
