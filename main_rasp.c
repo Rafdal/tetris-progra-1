@@ -90,8 +90,8 @@ int main(void){
 
 
 	dpad_init();	//Inicializo el pad (joystick usado como pad direccional de 4 botones)
-	init_sound();
 	initAudio();
+	init_sound();
 	easytimer_set_realTimeLoop(dpad_read);
 
 
@@ -291,6 +291,7 @@ void key_press_callback(uint8_t key){
 
             case DPAD_BTN:
 				easytimer_delay(200); // Delay para evitar salir del menu al entrar
+				audio(pause_audio);
 				rpi_clear_display();
 				menu_run(pause_menu);
 				rpi_clear_display();
@@ -336,8 +337,8 @@ void main_game_start(void){
         }
 
         if(game_data.state == GAME_LOSE){
-			audio(lose_audio);
 
+			audio(lose_audio);
 			animation_game_finish();
 			rpi_clear_display();
 			game_quit();
