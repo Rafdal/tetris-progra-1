@@ -2,7 +2,6 @@
  * File:   main_linux.c
  * Author: RD,AC,AS,SV
  */
-
 #include "./backend/game.h"
 #include "./frontend/easy_timer.h"
 #include <assert.h>
@@ -61,6 +60,9 @@ menu_t *gameover_menu = NULL;
 
 
 
+
+
+
 // ******************************
 // *	P R O T O T I P O S		*
 // ******************************
@@ -90,7 +92,7 @@ void resume_game(void);
 
 int main (void){
     easytimer_set_realTimeLoop(read_events); // Leer eventos durante delays
-
+    
 	int error = initialize_alleg(); //inicializo Allegro
 
 	error = install_audio();
@@ -229,9 +231,9 @@ void animation_row_compleate(void)
 
         for(reductor=2.1, angulo=0, indicador=0; reductor>=0; angulo+=(3.1415/8)){
     
-            for(i=0; game_row_complete[i] != 0 && i < 4 ; i++){
+            for(z=1; z<=ANCHO; z++){
                 contador_filas_destruidas=0;
-                for(z=1; z<=ANCHO; z++){
+                for(i=0; game_row_complete[i] != 0 && i < 4 ; i++){
                     al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(game_row_complete[i]), BLOCKSZ, BLOCKSZ, 0);
                 //pongo el fondo en negro
                     al_draw_tinted_scaled_rotated_bitmap(pieza_blanca,  al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(pieza_blanca)/2, al_get_bitmap_height(pieza_blanca)/2, (BLOCKSZ/2 +BLOCKSZ*z), (BLOCKSZ/2 +BLOCKSZ*(game_row_complete[i])),reductor, reductor, angulo, 0);
@@ -247,11 +249,11 @@ void animation_row_compleate(void)
                     indicador++;
                 }
 
-                    // putchar('a');
-                    // printStamp();
+                    putchar('a');
+                    printStamp();
                 al_flip_display();
-                    // putchar('b');
-                    // printStamp();
+                    putchar('b');
+                    printStamp();
             }//este otro ciclo va por filas
             // easytimer_delay(4);
             // al_flip_display();
@@ -664,6 +666,8 @@ int initialize_alleg(void) {
         fprintf(stderr,"failed to create display!\n");
         return -1;
     }
+    al_set_display_option(display, ALLEGRO_VSYNC, 2);
+
 
     al_register_event_source(event_queue, al_get_display_event_source(display));
     return 0;
