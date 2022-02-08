@@ -334,7 +334,7 @@ void main_game_start(void){
 
         if(game_data.state == GAME_LOSE){
 
-			audio(move_audio);
+			audio(pause_audio);
 			animation_game_finish();
 			rpi_clear_display();
 			game_quit();
