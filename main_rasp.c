@@ -228,13 +228,13 @@ void key_press_callback(uint8_t key){
         switch (key)
         {
             case DPAD_UP:
-				audio(move_audio);
+				playSound(move_audio, SDL_MIX_MAXVOLUME);
 				menu_go_up();
                 printf("menu UP\n");
                 break;
 
             case DPAD_DOWN:
-				audio(move_audio);
+				playSound(move_audio, SDL_MIX_MAXVOLUME);
 				menu_go_down();
                 printf("menu DOWN\n");
                 break;
@@ -262,31 +262,28 @@ void key_press_callback(uint8_t key){
                 break;
 
             case DPAD_DOWN:
-				audio(move_audio);
 				game_move_down();
                 printf("game DOWN\n");
                 break;
 
             case DPAD_LEFT:
-				audio(move_audio);
 				game_move_horizontal(0);
                 printf("game LEFT\n");
                 break;
 
             case DPAD_RIGHT:
-				audio(move_audio);
 				game_move_horizontal(1);
                 printf("game RIGHT\n");
                 break;
 
             case DPAD_UPRIGHT:
-				audio(move_audio);
+				playSound(move_audio, SDL_MIX_MAXVOLUME);
 				game_rotate(1);
                 printf("game UPRIGHT\n");
                 break;
 
             case DPAD_UPLEFT:
-				audio(move_audio);
+				playSound(move_audio, SDL_MIX_MAXVOLUME);
 				game_rotate(0);
                 printf("game UPLEFT\n");
                 break;
@@ -294,8 +291,6 @@ void key_press_callback(uint8_t key){
             case DPAD_BTN:
 				easytimer_delay(200); // Delay para evitar salir del menu al entrar
 				rpi_clear_display();
-
-
 				menu_run(pause_menu);
 				rpi_clear_display();
                 printf("game BTN\n");
