@@ -163,6 +163,7 @@ void volver_al_main_menu (void){
 
 //CALLBACK DE REINICIO DE JUEGO
 void restart_game(void){
+    manage_music(game, start);
 	initialize_display_game(); //inicio el display del juego
     menu_force_close_current(); // Cerrar menu pausa
     game_start(); 	//Corre el juego
@@ -201,7 +202,6 @@ void main_game_start(void){
             manage_music(lose, start);
             printf("Perdiste! The Game\n");
             menu_run(gameover_menu);
-			
         }
     }
     printf("Leaving game...\n");
