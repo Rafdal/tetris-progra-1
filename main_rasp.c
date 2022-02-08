@@ -541,7 +541,7 @@ void audio (char * audio)
 		stop_sound();
 	}
 
-	int status = set_file_to_play(audio);
-	printf("Audio Status %s : %d\n", audio, status);
+	int audio_status = set_file_to_play(audio);
+	printf("Audio Status %s : %d\n", audio, audio_status);
 	play_sound();
 }
