@@ -239,11 +239,10 @@ void animation_row_compleate(void)
     game_data_t game_data = game_get_data();
     if(game_row_complete[0])
     {
-        int i,z;
+        int z,i;
         float reductor;
         float angulo;
         float decremento = 0.1;
-        int f; // fila
 
         if(game_data.streak == 4){ // Si se completaron 4 filas a la vez
             al_draw_text(text_font_pointer_fetcher(),al_map_rgb(0,120,120), BLOCKSZ*6,BLOCKSZ*4,CENTRADO,"T E T R I S !");
@@ -252,11 +251,11 @@ void animation_row_compleate(void)
         audio_play(line_comp_audio[game_data.streak-1]); // filas completadas - 1
 
         for(reductor=2.1, angulo=0; reductor>=0; angulo+=(3.1415/8)){
-            for(f=0; game_row_complete[f] != 0 && f < 4 ; f++){
+            for(i=0; game_row_complete[i] != 0 && i < 4 ; i++){
                 for(z=1; z<=ANCHO; z++){
-                    al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(game_row_complete[f]), BLOCKSZ, BLOCKSZ, 0);
+                    al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(game_row_complete[i]), BLOCKSZ, BLOCKSZ, 0);
                     //pongo el fondo en negro
-                    al_draw_tinted_scaled_rotated_bitmap(pieza_blanca,  al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(pieza_blanca)/2, al_get_bitmap_height(pieza_blanca)/2, (BLOCKSZ/2 +BLOCKSZ*z), (BLOCKSZ/2 +BLOCKSZ*(game_row_complete[f])),reductor, reductor, angulo, 0);
+                    al_draw_tinted_scaled_rotated_bitmap(pieza_blanca,  al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(pieza_blanca)/2, al_get_bitmap_height(pieza_blanca)/2, (BLOCKSZ/2 +BLOCKSZ*z), (BLOCKSZ/2 +BLOCKSZ*(game_row_complete[i])),reductor, reductor, angulo, 0);
                     //Dibujo una pieza blanca, se va haciendo mas chia a medida que rota
                 }//este ciclo va por columnas
                 al_flip_display();
@@ -264,15 +263,14 @@ void animation_row_compleate(void)
             reductor-=decremento;
         }		
 
-        for(f=0; game_row_complete[f] != 0 && f < 4 ; f++){
+        for(i=0; game_row_complete[i] != 0 && i < 4 ; i++){
             for(z=1; z<=ANCHO; z++){
-                al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(game_row_complete[f]), BLOCKSZ, BLOCKSZ, 0);
+                al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(game_row_complete[i]), BLOCKSZ, BLOCKSZ, 0);
             } //pongo el fondo en negro de nuevo
-            delete_row(game_row_complete[f]);
-            game_row_complete[f]= 0;
+            delete_row(game_row_complete[i]);
+            game_row_complete[i]= 0;
         }
         al_flip_display();
-        
     }
 }
 
