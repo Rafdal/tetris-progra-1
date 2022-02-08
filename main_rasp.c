@@ -163,6 +163,7 @@ int main(void){
 void exit_game(void){
 	game_quit();                  // Finalizar juego
 	menu_force_close(pause_menu); // Cerrar menu pausa
+	rpi_clear_display();
 }
 
 //CALLBACK DE REINICIO DE JUEGO
@@ -343,6 +344,7 @@ void main_game_start(void){
     printf("Leaving game...\n");
 	rpi_clear_display();
 	printf("Music Status: %d\n", player_status());
+	audio(menu_audio);
 }
 
 void update_game_display(void){
