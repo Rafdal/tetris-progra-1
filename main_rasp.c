@@ -218,7 +218,7 @@ void update_menu_display(void)
     menu_t menu_data = menu_get_current_menu_data();
     uint8_t id;
 
-	printf("menu: %s\n", menu_data.title});
+	printf("menu: %s\n", menu_data.title);
     for(id=0; id<menu_data.n_options; id++)
 	{
         if(menu_data.current_option == id){
