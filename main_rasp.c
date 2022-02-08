@@ -307,6 +307,7 @@ void key_press_callback(uint8_t key){
 				rpi_clear_display();
 				menu_run(pause_menu);
 				rpi_clear_display();
+				easytimer_delay(500);
                 printf("game BTN\n");
                 break;
 
@@ -361,6 +362,7 @@ void main_game_start(void){
     }
     printf("Leaving game...\n");
 	rpi_clear_display();
+	easytimer_delay(500);
 	printf("Music Status: %d\n", player_status());
 	audio(menu_audio);
 }
