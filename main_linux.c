@@ -791,19 +791,24 @@ uint8_t param_lvl_fetch (void){
     switch (temporal)
     {
     case 1:
+    case 2:
+    case 3:
         temporal=10;
         break;
 /*        temporal=7;
         break;
         temporal=4;
         break;*/
-    case 2:
-    case 3:
     case 4:
     case 5:
+    //    temporal=7;
+    //    break;
     case 6:
-        temporal=7;
-        break;
+    //    temporal=4;
+    //    break;
+    case 7:
+    case 8:
+        temporal=1;
 
     default:
         temporal=10;
