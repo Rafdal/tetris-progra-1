@@ -91,9 +91,9 @@ void resume_game(void);
 
 
 int main (void){
-    easytimer_set_realTimeLoop(read_events); // Leer eventos durante delays
-    
 	int error = initialize_alleg(); //inicializo Allegro
+    
+    easytimer_set_realTimeLoop(read_events); // Leer eventos durante delays
 
 	error = install_audio();
 
@@ -231,9 +231,9 @@ void animation_row_compleate(void)
 
         for(reductor=2.1, angulo=0, indicador=0; reductor>=0; angulo+=(3.1415/8)){
     
-            for(z=1; z<=ANCHO; z++){
+            for(i=0; game_row_complete[i] != 0 && i < 4 ; i++){
                 contador_filas_destruidas=0;
-                for(i=0; game_row_complete[i] != 0 && i < 4 ; i++){
+                for(z=1; z<=ANCHO; z++){
                     al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(game_row_complete[i]), BLOCKSZ, BLOCKSZ, 0);
                 //pongo el fondo en negro
                     al_draw_tinted_scaled_rotated_bitmap(pieza_blanca,  al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(pieza_blanca)/2, al_get_bitmap_height(pieza_blanca)/2, (BLOCKSZ/2 +BLOCKSZ*z), (BLOCKSZ/2 +BLOCKSZ*(game_row_complete[i])),reductor, reductor, angulo, 0);
@@ -244,16 +244,11 @@ void animation_row_compleate(void)
                 }//este ciclo va por columnas
                 
                 if(contador_filas_destruidas==4 && !indicador){
-					//	manage_music(TETRIS, start);
+                    manage_music(TETRIS, start);
                     al_draw_text(text_font_pointer_fetcher(),al_map_rgb(0,120,120), BLOCKSZ*6,BLOCKSZ*4,CENTRADO,"T E T R I S !");
                     indicador++;
                 }
 
-                    putchar('a');
-                    printStamp();
-                al_flip_display();
-                    putchar('b');
-                    printStamp();
             }//este otro ciclo va por filas
             // easytimer_delay(4);
             // al_flip_display();

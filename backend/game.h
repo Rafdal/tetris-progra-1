@@ -16,9 +16,9 @@ uint8_t game_row_complete[4];                       // Filas completadas
 #define GAME_LEVEL3_SCORE 1000
 #define GAME_LEVEL4_SCORE 2000
 #define GAME_LEVEL5_SCORE 5000
-#define GAME_LEVEL6_SCORE 8000
-#define GAME_LEVEL7_SCORE 12000
-#define GAME_LEVEL8_SCORE 15000
+#define GAME_LEVEL6_SCORE 10000
+#define GAME_LEVEL7_SCORE 15000
+#define GAME_LEVEL8_SCORE 20000
 
 #define GAME_LEVEL1_SPEED 2000
 #define GAME_LEVEL2_SPEED 1200
