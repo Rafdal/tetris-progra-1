@@ -314,7 +314,6 @@ void key_press_callback(uint8_t key){
 				rpi_clear_display();
 				menu_run(pause_menu);
 				rpi_clear_display();
-				easytimer_delay(500);
                 printf("game BTN\n");
                 break;
 
@@ -377,35 +376,37 @@ void main_game_start(void){
 void update_game_display(void){
 	game_data_t game_data = game_get_data();
 
-	// Actualizo la matriz del juego y la cargo en la matriz a imprimir
-	matrix_hand_t mat_handler;
-	assert(mat_init(&mat_handler, GAME_HEIGHT, GAME_WIDTH));
-	MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, GAME_HEIGHT, GAME_WIDTH);
-	rpi_copyToDis(&mat_handler, 0, 0);
+	if(game_data.state != GAME_QUIT){
+		// Actualizo la matriz del juego y la cargo en la matriz a imprimir
+		matrix_hand_t mat_handler;
+		assert(mat_init(&mat_handler, GAME_HEIGHT, GAME_WIDTH));
+		MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, GAME_HEIGHT, GAME_WIDTH);
+		rpi_copyToDis(&mat_handler, 0, 0);
 
-	//Actualizo la matriz de la pieza siguiente y la cargo en la matriz a imprimir
-	matrix_hand_t public_next_mat;
-	assert(mat_init(&public_next_mat, 10, 5));
-	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, game_next_block_public_matrix, 10,5);
-	rpi_copyToDis(&public_next_mat, 0, 11);
+		//Actualizo la matriz de la pieza siguiente y la cargo en la matriz a imprimir
+		matrix_hand_t public_next_mat;
+		assert(mat_init(&public_next_mat, 10, 5));
+		MAT_COPY_FROM_2D_ARRAY(&public_next_mat, game_next_block_public_matrix, 10,5);
+		rpi_copyToDis(&public_next_mat, 0, 11);
 
-	//Cargo la linea divisora
-	matrix_hand_t divisor_line;
-	assert(mat_init(&divisor_line, 16, 1));
-	MAT_COPY_FROM_2D_ARRAY(&divisor_line, line, 16, 1);
-	rpi_copyToDis(&divisor_line, 0, 10);
+		//Cargo la linea divisora
+		matrix_hand_t divisor_line;
+		assert(mat_init(&divisor_line, 16, 1));
+		MAT_COPY_FROM_2D_ARRAY(&divisor_line, line, 16, 1);
+		rpi_copyToDis(&divisor_line, 0, 10);
 
-    // MOSTRAR SCORE
-    rpi_text_set_offset(text_stat,12,10,0,0);
-	char buffer[32];
-	sprintf(buffer, "%d", game_data.game_level);
-	rpi_text_set(buffer, text_stat);
-	rpi_text_print(text_stat);
+		// MOSTRAR SCORE
+		rpi_text_set_offset(text_stat,12,10,0,0);
+		char buffer[32];
+		sprintf(buffer, "%d", game_data.game_level);
+		rpi_text_set(buffer, text_stat);
+		rpi_text_print(text_stat);
 
-	rpi_run_display(); //Actualizo el display
+		rpi_run_display(); //Actualizo el display
 
-	printf("SCORE: %u\n", game_get_data().score);
-	printf("LEVEL: %d\n", game_get_data().game_level);
+		printf("SCORE: %u\n", game_get_data().score);
+		printf("LEVEL: %d\n", game_get_data().game_level);
+	}
 }
 
 // Para la animacion de borrar filas
