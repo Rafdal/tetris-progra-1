@@ -77,6 +77,10 @@ static char pause_audio[]= "./audios/pause_audio.wav";
 static char game_audio[] = "./audios/game_audio.wav";
 static char lose_audio[] = "./audios/lose_audio.wav";
 static char move_audio[] =  "./audios/move_audio.wav";
+static char 1_com_row[] =  "./audios/1_line_compl";
+static char 2_com_row[] =  "./audios/2_line_compl";
+static char 3_com_row[] =  "./audios/3_line_compl";
+
 
 
 // ******************
@@ -471,6 +475,7 @@ void animation_row_complete (void)
 				game_row_complete[i]= 0; //Coloco en cero el arreglo
 			}
 		}
+
 
 	}
 }
