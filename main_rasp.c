@@ -52,6 +52,8 @@ void restart_game(void);
 
 void resume_game(void);
 
+void audio (char * audio);
+
 
 
 // **************************************
@@ -129,8 +131,7 @@ int main(void){
 	//Setear callback de animacion de eliminar fila
 	game_set_delrow_callback(animation_row_complete);
 
-	set_file_to_play(menu_audio);
-	play_sound();
+	audio(menu_audio);
 	animation_game_start();
 
     // Ejecutar menu principal
@@ -162,13 +163,15 @@ int main(void){
 //CALLBACK DE EXIT GAME
 void exit_game(void){
 	game_quit();                  // Finalizar juego
-    menu_force_close(pause_menu); // Cerrar menu pausa
+	audio(pause_audio);
+	menu_force_close(pause_menu); // Cerrar menu pausa
 }
 
 //CALLBACK DE REINICIO DE JUEGO
 void restart_game(void){
 	rpi_clear_display(); //limpio el display
     menu_force_close(pause_menu); // Cerrar menu pausa
+	audio(game_audio);
 	game_start(); 	//Corre el juego
 }
 
@@ -177,6 +180,7 @@ void resume_game(void)
 {
 	rpi_clear_display(); 	//Limpia el display
 	menu_force_close(pause_menu); //Cierra el menu de pausa
+	audio(game_audio);
 	game_run();	//Corre el juego
 }
 
@@ -224,11 +228,13 @@ void key_press_callback(uint8_t key){
         switch (key)
         {
             case DPAD_UP:
+				audio(move_audio);
 				menu_go_up();
                 printf("menu UP\n");
                 break;
 
             case DPAD_DOWN:
+				audio(move_audio);
 				menu_go_down();
                 printf("menu DOWN\n");
                 break;
@@ -256,26 +262,31 @@ void key_press_callback(uint8_t key){
                 break;
 
             case DPAD_DOWN:
+				audio(move_audio);
 				game_move_down();
                 printf("game DOWN\n");
                 break;
 
             case DPAD_LEFT:
+				audio(move_audio);
 				game_move_horizontal(0);
                 printf("game LEFT\n");
                 break;
 
             case DPAD_RIGHT:
+				audio(move_audio);
 				game_move_horizontal(1);
                 printf("game RIGHT\n");
                 break;
 
             case DPAD_UPRIGHT:
+				audio(move_audio);
 				game_rotate(1);
                 printf("game UPRIGHT\n");
                 break;
 
             case DPAD_UPLEFT:
+				audio(move_audio);
 				game_rotate(0);
                 printf("game UPLEFT\n");
                 break;
@@ -306,10 +317,7 @@ void key_press_callback(uint8_t key){
 // ***********************************************
 void main_game_start(void){
 
-	stop_sound();
-
-	set_file_to_play(game_audio);
-	play_sound();
+	audio(game_audio);
 
 	rpi_clear_display(); //Limpio el display
 
@@ -332,10 +340,7 @@ void main_game_start(void){
         }
 
         if(game_data.state == GAME_LOSE){
-			stop_sound();
-
-			set_file_to_play(lose_audio);
-			play_sound();
+			audio(lose_audio);
 
 			animation_game_finish();
 			rpi_clear_display();
@@ -504,4 +509,21 @@ void animation_game_start (void)
 	}
 	rpi_clear_display();
 	easytimer_delay(500);
+}
+
+void audio (char * audio)
+{
+	int status = player_status();
+
+	if (status == NO_INIT)
+	{
+		init_sound()
+	}
+	else if ( status== STOPPED || status == PLAYING || status == PAUSED || status == FINISHED)
+	{
+		stop_sound();
+	}
+
+	set_file_to_play(audio);
+	play_sound();
 }
