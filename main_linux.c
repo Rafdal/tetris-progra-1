@@ -231,7 +231,6 @@ void animation_row_compleate(void)
                     //Dibujo una pieza blanca, se va haciendo mas chia a medida que rota
                     contador_filas_destruidas++; //incremento contador
                 }//este ciclo va por columnas
-                //easytimer_delay(1);
                 
                 if(contador_filas_destruidas==4 && !indicador){
 					//	manage_music(TETRIS, start);
@@ -240,10 +239,11 @@ void animation_row_compleate(void)
                 }
                 al_flip_display();
             }//este otro ciclo va por filas
+            easytimer_delay(4);
             al_flip_display();
             reductor-=decremento;
         }
-		/*switch (contador_filas_destruidas) {
+		switch (contador_filas_destruidas) {
 			case 1:
 				manage_music(clr_lane_1, start);
 				break;
@@ -254,7 +254,7 @@ void animation_row_compleate(void)
 				manage_music(clr_lane_3, start);
 				break;
 
-        }*/
+        }
         for(i=0; game_row_complete[i] != 0 && i< GAME_WIDTH ; i++){
             for(z=1; z<=ANCHO; z++){
                 al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(game_row_complete[i]), BLOCKSZ, BLOCKSZ, 0);
