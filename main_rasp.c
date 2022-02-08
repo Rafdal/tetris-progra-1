@@ -68,11 +68,11 @@ static uint8_t last_game_level = 1;
 
 static uint8_t line[16][1]={{1},{1},{1},{1}, {1},{1},{1},{1} , {1},{1},{1},{1} , {1},{1},{1},{1}};
 
-char menu_audio[]= "./audios/main_title.wav";
-char pause_audio[]= "./audios/pausa.wav";
-char game_audio[] = "./audios/tetris.wav";
-char lose_audio[] = "./audios/game_over.wav";
-char move_audio[] =  "./audios/chime.wav";
+char menu_audio[]= "./audios/menu_audio.wav";
+char pause_audio[]= "./audios/pausa_audio.wav";
+char game_audio[] = "./audios/game_audio.wav";
+char lose_audio[] = "./audios/lose_audio.wav";
+char move_audio[] =  "./audios/move_audio.wav";
 
 
 // ******************
