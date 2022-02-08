@@ -420,6 +420,7 @@ void keypress_callback(uint8_t key){
             case KEYB_SPACE:
             case KEYB_ENTER:
                 printf("menu BTN...\n");
+                manage_music(chime_select, start);
 				manage_music(menu, stop);
                 menu_go_select();
                 printf("menu BTN\n");
