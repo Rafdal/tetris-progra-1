@@ -2,7 +2,6 @@
  * File:   main_linux.c
  * Author: RD,AC,AS,SV
  */
-
 #include "./backend/game.h"
 #include "./frontend/easy_timer.h"
 #include <assert.h>
@@ -61,6 +60,9 @@ menu_t *gameover_menu = NULL;
 
 
 
+
+
+
 // ******************************
 // *	P R O T O T I P O S		*
 // ******************************
@@ -89,9 +91,9 @@ void resume_game(void);
 
 
 int main (void){
-    easytimer_set_realTimeLoop(read_events); // Leer eventos durante delays
-
 	int error = initialize_alleg(); //inicializo Allegro
+    
+    easytimer_set_realTimeLoop(read_events); // Leer eventos durante delays
 
 	error = install_audio();
 
@@ -129,7 +131,7 @@ int main (void){
     menu_set_option(pausa_menu, 1, "REINICIAR", restart_game);
     menu_set_option(pausa_menu, 2, "SALIR", exit_game);
     
-	// CALLBACKS DE OPCIONES DEL MENU DE PAUSA
+	// CALLBACKS DE OPCIONES DEL MENU DE GAME OVER
 	menu_set_option(gameover_menu, 0, "REINICIAR", restart_game);
     menu_set_option(gameover_menu, 1, "SALIR", volver_al_main_menu);
 
@@ -156,8 +158,6 @@ void exit_game(void){
 //CALLBACK DE GAMEOVER
 void volver_al_main_menu (void){
     printf("volviendo al ma");
-    manage_music(game, stop);
-	manage_music(lose, start);
     game_quit();
     menu_force_close(gameover_menu);
     printf("in menu...\n");
@@ -165,16 +165,16 @@ void volver_al_main_menu (void){
 
 //CALLBACK DE REINICIO DE JUEGO
 void restart_game(void){
+    manage_music(game, start);
 	initialize_display_game(); //inicio el display del juego
     menu_force_close_current(); // Cerrar menu pausa
-	manage_music(pausa, stop);
-	manage_music(game, start);
     game_start(); 	//Corre el juego
 }
 
 //CALLBACK DE RENAUDAR JUEGO
 void resume_game(void)
 {
+    manage_music(game, start);
 	initialize_display_game(); //inicio el display del juego
 	menu_force_close_current();	//Cierra el menu
 	game_run();	//Corre el juego
@@ -182,9 +182,10 @@ void resume_game(void)
 
 void main_game_start(void){
 
+    manage_music(game, start);
+
     game_data_t game_data;
     uint64_t lastMillis;
-	manage_music(game, start);
     game_start(); // iniciar el juego
     initialize_display_game();
 
@@ -200,16 +201,20 @@ void main_game_start(void){
         }
 
         if(game_data.state == GAME_LOSE){
-
+            manage_music(lose, start);
             printf("Perdiste! The Game\n");
             menu_run(gameover_menu);
-			manage_music(game, stop);
-			manage_music(lose, start);
         }
     }
     printf("Leaving game...\n");
 } // main_game_start
 
+uint64_t stamp;
+void printStamp(void){
+    uint64_t dif = easytimer_get_millis() - stamp;
+    printf("%lu\n", dif);
+    stamp = easytimer_get_millis();
+}
 
 void animation_row_compleate(void)
 {
@@ -222,28 +227,32 @@ void animation_row_compleate(void)
         float decremento= 0.1;
         int contador_filas_destruidas;
         int indicador;
+        stamp = easytimer_get_millis();
 
         for(reductor=2.1, angulo=0, indicador=0; reductor>=0; angulo+=(3.1415/8)){
     
-            for(z=1; z<=ANCHO; z++){
-
-                for( i=0, contador_filas_destruidas=0; game_row_complete[i] != 0 && i< GAME_WIDTH ; i++){
+            for(i=0; game_row_complete[i] != 0 && i < 4 ; i++){
+                contador_filas_destruidas=0;
+                for(z=1; z<=ANCHO; z++){
                     al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(game_row_complete[i]), BLOCKSZ, BLOCKSZ, 0);
                 //pongo el fondo en negro
                     al_draw_tinted_scaled_rotated_bitmap(pieza_blanca,  al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(pieza_blanca)/2, al_get_bitmap_height(pieza_blanca)/2, (BLOCKSZ/2 +BLOCKSZ*z), (BLOCKSZ/2 +BLOCKSZ*(game_row_complete[i])),reductor, reductor, angulo, 0);
-                    //se va haciendo mas chia a medida que rota
-                    al_flip_display();
-                    easytimer_delay(3);
+                    //Dibujo una pieza blanca, se va haciendo mas chia a medida que rota
+                    // putchar('c');
+                    // printStamp();
                     contador_filas_destruidas++; //incremento contador
-                    if(contador_filas_destruidas==4 && !indicador){
-						manage_music(TETRIS, start);
-                        al_draw_text(text_font_pointer_fetcher(),al_map_rgb(0,120,120), BLOCKSZ*6,BLOCKSZ*4,CENTRADO,"T E T R I S !");
-                        al_flip_display();
-                        indicador++;
-                    }
+                }//este ciclo va por columnas
+                
+                if(contador_filas_destruidas==4 && !indicador){
+                    manage_music(TETRIS, start);
+                    al_draw_text(text_font_pointer_fetcher(),al_map_rgb(0,120,120), BLOCKSZ*6,BLOCKSZ*4,CENTRADO,"T E T R I S !");
+                    indicador++;
                 }
-				}
-                reductor-=decremento;
+
+            }//este otro ciclo va por filas
+            // easytimer_delay(4);
+            // al_flip_display();
+            reductor-=decremento;
         }
 		switch (contador_filas_destruidas) {
 			case 1:
@@ -274,10 +283,10 @@ void screen_how_to_play (void){
     int actual=1;
     al_draw_scaled_bitmap(diagrama_teclado, 0, 0, al_get_bitmap_width(diagrama_teclado), al_get_bitmap_height(diagrama_teclado), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
     al_flip_display();
-    while (!keyb_is_pressed(KEYB_ESC) )
+    while (!keyb_is_pressed(KEYB_ESC))
     {
         read_events();
-        if((keyb_is_pressed(KEYB_LEFT) || keyb_is_pressed(KEYB_RIGHT)) && (actual==2)){
+        if(keyb_is_pressed(KEYB_LEFT) && (actual==2)){
         printf("Hasta aca llega\n");
             al_draw_scaled_bitmap(diagrama_teclado, 0, 0, al_get_bitmap_width(diagrama_teclado), al_get_bitmap_height(diagrama_teclado), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
             al_flip_display();
@@ -285,7 +294,7 @@ void screen_how_to_play (void){
             easytimer_delay(150);
         }
         
-        else if((keyb_is_pressed(KEYB_LEFT) || keyb_is_pressed(KEYB_RIGHT)) && (actual==1)){
+        else if(keyb_is_pressed(KEYB_RIGHT) && (actual==1)){
             al_draw_scaled_bitmap(jugabilidad_diagrama, 0, 0, al_get_bitmap_width(jugabilidad_diagrama), al_get_bitmap_height(jugabilidad_diagrama), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
             al_flip_display();
             actual=2;
@@ -302,8 +311,8 @@ void display_menu_display(void){
 	if (menu_is_available(pausa_menu))
 		manage_music(pausa, start);
     if (menu_is_available(gameover_menu)){
-        manage_music(lose, start);
-		manage_music(pausa, start);
+        manage_music(game, stop);
+	//	manage_music(pausa, start);
     }
 
 
@@ -402,20 +411,23 @@ void keypress_callback(uint8_t key){
         return;
     }
     if(menu_is_current_available()){
-		manage_music(clr_lane_1, start);
+		
         switch (key)
         {
             case KEYB_UP:
+                manage_music(chime_select, start);
                 menu_go_up();
                 printf("menu UP\n");
                 break;
 
             case KEYB_DOWN:
+                manage_music(chime_select, start);
                 menu_go_down();
                 printf("menu DOWN\n");
                 break;
 
             case KEYB_LEFT:
+                manage_music(chime_select, start);
                 menu_go_back();
                 printf("menu LEFT\n");
                 break;
@@ -423,6 +435,7 @@ void keypress_callback(uint8_t key){
             case KEYB_SPACE:
             case KEYB_ENTER:
                 printf("menu BTN...\n");
+                manage_music(chime, start);
 				manage_music(menu, stop);
                 menu_go_select();
                 printf("menu BTN\n");
@@ -461,13 +474,13 @@ void keypress_callback(uint8_t key){
             break;
 
         case KEYB_E:
-			manage_music(chime, start);
+			manage_music(chime_select, start);
             game_rotate(1);
             printf("UPRIGHT\n");
             break;
 
         case KEYB_Q:
-			manage_music(chime, start);
+			manage_music(chime_select, start);
             game_rotate(0);
             printf("UPLEFT\n");
             break;
@@ -507,16 +520,16 @@ void update_display(void) {
 			al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ + BLOCKSZ*x, BLOCKSZ*y, BLOCKSZ, BLOCKSZ, 0);
 		}
 	}
-    for(x=0; x<4 ; x++)
+    for(x=1; x<5 ; x++)
 	{
 		for(y=0; y<parametro_nivel ; y++)
 		{
             float val= (float) game_next_block_public_matrix[y][x];
-            al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+3+x), BLOCKSZ*(y+1), BLOCKSZ, BLOCKSZ, 0);
+            al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+2+x), BLOCKSZ*(y+1), BLOCKSZ, BLOCKSZ, 0);
             
         }
         for(y=parametro_nivel; y<10; y++){
-            al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+3+x), BLOCKSZ*(y+1), BLOCKSZ, BLOCKSZ, 0);
+            al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+2+x), BLOCKSZ*(y+1), BLOCKSZ, BLOCKSZ, 0);
         }//tapo los casilleros vacios
     }//DIBUJO PIEZA SIGUIENTE
 
@@ -612,7 +625,7 @@ int initialize_alleg(void) {
         al_destroy_event_queue(event_queue);
         return -1;
     }
-    diagrama_teclado = al_load_bitmap("./frontend/images/control3s.png");
+    diagrama_teclado = al_load_bitmap("./frontend/images/control3s2.png");
     if (!diagrama_teclado) {
         printf("failed to load diagrama_teclado !\n");
         al_destroy_bitmap(image);
@@ -623,7 +636,7 @@ int initialize_alleg(void) {
         al_destroy_event_queue(event_queue);
         return -1;
     }
-    jugabilidad_diagrama = al_load_bitmap("./frontend/images/jugabilidad_tetris.png");
+    jugabilidad_diagrama = al_load_bitmap("./frontend/images/instrucciones.png");
     if (!jugabilidad_diagrama) {
         printf("failed to load jugabilidad_diagrama !\n");
         al_destroy_bitmap(image);
@@ -648,6 +661,8 @@ int initialize_alleg(void) {
         fprintf(stderr,"failed to create display!\n");
         return -1;
     }
+    al_set_display_option(display, ALLEGRO_VSYNC, 2);
+
 
     al_register_event_source(event_queue, al_get_display_event_source(display));
     return 0;
@@ -725,8 +740,7 @@ void end_program (void){
     menu_destroy(gameover_menu);
     text_destroy(nivel);
     text_destroy(score);
-    //al_uninstall_audio(); // borrar audio
-    //al_destroy_sample(sample);
+    al_uninstall_audio(); // borrar audio
     //al_shutdown_image_addon(); VER DOCUMENTACION ES LLAMADO AUTOMATICAMENTE AL SALIR DEL PROGRAMA
     printf("Game Ended\n");
     exit(0);

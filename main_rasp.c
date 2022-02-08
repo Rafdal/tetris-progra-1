@@ -1,6 +1,9 @@
+//LIBRERIAS ESTANDAR
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
+//LIBRERIAS PROPIAS
 #include "./backend/game.h"
 #include "./backend/menu.h"
 #include "./libs/joystick.h"
@@ -9,11 +12,11 @@
 #include "./libs/rpi_display.h"
 #include "./libs/rpi_text.h"
 
-//LIBRERIA AUDIO SDL2
+//LIBRERIA AUDIO SDL
 #include <SDL2/SDL.h>
-#include "./libs/audio.h"
+#include "./libs/libaudio.h"
 
-// DEBUG
+// LIBRERIA DEBUG
 // #define USAR_DEBUG
 #include "./debug/debug.h"
 
@@ -21,11 +24,6 @@
 #define STR_SIZES 64
 #define S2WAIT 180
 
-#define MENU_AUDIO "./audios/main_title.wav"
-#define PAUSE_AUDIO "./audios/pausa.wav"
-#define GAME_AUDIO "./audios/tetris.wav"
-#define LOSE_AUDIO "./audios/game_over.wav"
-#define MOVE_AUDIO "./audios/chime.wav"
 
 // ******************************
 // *	P R O T O T I P O S		*
@@ -56,21 +54,29 @@ void restart_game(void);
 
 void resume_game(void);
 
+void audio (char * audio);
+
 
 
 // **************************************
 // *	 V A R S . G L O B A L E S		*
 // **************************************
-menu_t *main_menu = NULL;
-menu_t *pause_menu = NULL;
+menu_t *main_menu = NULL;	//Puntero para main menu
+menu_t *pause_menu = NULL;	//Puntero para menu de pausa
 
 rpi_text_block_t* text_stat = NULL; // Puntero para los bloques de texto estaticos
 rpi_text_block_t* text_anim = NULL; // Puntero para texto deslizante con anumacion
 
-static uint8_t last_game_level = 1;
+static uint8_t last_game_level = 1;	//Nivel de juego inicial
 
-static uint8_t line[16][1]={{1},{1},{1},{1}, {1},{1},{1},{1} , {1},{1},{1},{1} , {1},{1},{1},{1}};
+static uint8_t line[16][1]={{1},{1},{1},{1}, {1},{1},{1},{1} , {1},{1},{1},{1} , {1},{1},{1},{1}}; //Linea divisora de juego
 
+//Direcciones de memoria para audio
+static char menu_audio[]= "./audios/menu_audio.wav";
+static char pause_audio[]= "./audios/pause_audio.wav";
+static char game_audio[] = "./audios/game_audio.wav";
+static char lose_audio[] = "./audios/lose_audio.wav";
+static char move_audio[] =  "./audios/move_audio.wav";
 
 
 // ******************
@@ -87,7 +93,7 @@ int main(void){
 
 
 	dpad_init();	//Inicializo el pad (joystick usado como pad direccional de 4 botones)
-	initAudio();
+	init_sound();	//Inicializo el sonido
 	easytimer_set_realTimeLoop(dpad_read);
 
 
@@ -128,8 +134,8 @@ int main(void){
 	//Setear callback de animacion de eliminar fila
 	game_set_delrow_callback(animation_row_complete);
 
-	playMusic(MENU_AUDIO, SDL_MIX_MAXVOLUME);
-	animation_game_start();
+	audio(menu_audio);	//Reproduzo el audio del menu
+	animation_game_start();		// Reproduzco la animacion de inicio
 
     // Ejecutar menu principal
     menu_run(main_menu);
@@ -146,10 +152,9 @@ int main(void){
 	rpi_text_destroy(text_anim);
     rpi_text_destroy(text_stat);
 
-	//Finalizo el sistema de audio
-	endAudio();
+	stop_sound(); //Detengo el sonido
 
-	rpi_clear_display();
+	rpi_clear_display();	//Limpio el display
 
     return 0;
 }
@@ -160,16 +165,16 @@ int main(void){
 // **************************************
 //CALLBACK DE EXIT GAME
 void exit_game(void){
-	playMusic(PAUSE_AUDIO, SDL_MIX_MAXVOLUME);
-	game_quit();                  // Finalizar juego
-    menu_force_close(pause_menu); // Cerrar menu pausa
+	game_quit();	// Finalizar juego
+	rpi_clear_display();	//Limpio el display
+	menu_force_close(pause_menu); // Cerrar menu pausa
 }
 
 //CALLBACK DE REINICIO DE JUEGO
 void restart_game(void){
 	rpi_clear_display(); //limpio el display
     menu_force_close(pause_menu); // Cerrar menu pausa
-	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
+	audio(game_audio);	//Reproduzco el audio del juego
 	game_start(); 	//Corre el juego
 }
 
@@ -178,7 +183,7 @@ void resume_game(void)
 {
 	rpi_clear_display(); 	//Limpia el display
 	menu_force_close(pause_menu); //Cierra el menu de pausa
-	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
+	audio(game_audio);	//Reproduzco el audio del juego
 	game_run();	//Corre el juego
 }
 
@@ -195,6 +200,7 @@ void run_menu_effects(void)
     }
 }
 
+//Actualizo las opciones del menu
 void update_menu_display(void)
 {
     menu_t menu_data = menu_get_current_menu_data();
@@ -213,9 +219,27 @@ void update_menu_display(void)
             rpi_text_print(text_stat); //Imprimo las opciones
         }
     }
-    rpi_run_display(); //Actualizo el display
+	if(menu_is_available(main_menu)){
+		rpi_clear_area(10,0,16,16);
+
+		if(player_status() != PLAYING)
+		{
+			end_play();
+			audio(menu_audio);
+		}
+	}
+	else if(menu_is_available(pause_menu))
+	{
+		if(player_status() != PLAYING)
+		{
+			end_play();
+			audio(pause_audio);
+		}
+	}
+    rpi_run_display(); //Actualizo el displal
 }
 
+//DEFINICION DE LOS CALLBACKS
 void key_press_callback(uint8_t key){
     DEBUG("key_press_callback");
     if(easytimer_delay_active()){ // si el delay esta activo
@@ -226,13 +250,11 @@ void key_press_callback(uint8_t key){
         switch (key)
         {
             case DPAD_UP:
-				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
 				menu_go_up();
                 printf("menu UP\n");
                 break;
 
             case DPAD_DOWN:
-				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
 				menu_go_down();
                 printf("menu DOWN\n");
                 break;
@@ -260,42 +282,34 @@ void key_press_callback(uint8_t key){
                 break;
 
             case DPAD_DOWN:
-				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
 				game_move_down();
                 printf("game DOWN\n");
                 break;
 
             case DPAD_LEFT:
-				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
 				game_move_horizontal(0);
                 printf("game LEFT\n");
                 break;
 
             case DPAD_RIGHT:
-				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
 				game_move_horizontal(1);
                 printf("game RIGHT\n");
                 break;
 
             case DPAD_UPRIGHT:
-				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
 				game_rotate(1);
                 printf("game UPRIGHT\n");
                 break;
 
             case DPAD_UPLEFT:
-				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
 				game_rotate(0);
                 printf("game UPLEFT\n");
                 break;
 
             case DPAD_BTN:
-				playSound(MOVE_AUDIO, SDL_MIX_MAXVOLUME / 2);
 				easytimer_delay(200); // Delay para evitar salir del menu al entrar
+				audio(pause_audio);
 				rpi_clear_display();
-				playMusic(PAUSE_AUDIO, SDL_MIX_MAXVOLUME);
-
-
 				menu_run(pause_menu);
 				rpi_clear_display();
                 printf("game BTN\n");
@@ -317,7 +331,7 @@ void key_press_callback(uint8_t key){
 // ***********************************************
 void main_game_start(void){
 
-	playMusic(GAME_AUDIO, SDL_MIX_MAXVOLUME);
+	audio(game_audio);
 
 	rpi_clear_display(); //Limpio el display
 
@@ -332,7 +346,10 @@ void main_game_start(void){
 
 		//Funcion para que la pieza baje sola
         if(game_data.state == GAME_RUN && easytimer_get_millis()-lastMillis >= game_data.speed_interval){
-            game_move_down();
+			if(player_status() != PLAYING)
+				audio(game_audio);
+
+			game_move_down();
             game_run();	//Corro el juego
             update_game_display();  //Actualizo el display
 
@@ -340,57 +357,56 @@ void main_game_start(void){
         }
 
         if(game_data.state == GAME_LOSE){
-			pauseAudio();
-			playMusic(LOSE_AUDIO, SDL_MIX_MAXVOLUME);
 
+			audio(lose_audio);
 			animation_game_finish();
 			rpi_clear_display();
-			while (musicStatus() != FINISHED)
-			{
-
-			}
 			game_quit();
         }
     }
     printf("Leaving game...\n");
 	rpi_clear_display();
+	printf("Music Status: %d\n", player_status());
+	audio(menu_audio);
 }
 
 void update_game_display(void){
 	game_data_t game_data = game_get_data();
 
-	// Actualizo la matriz del juego y la cargo en la matriz a imprimir
-	matrix_hand_t mat_handler;
-	assert(mat_init(&mat_handler, GAME_HEIGHT, GAME_WIDTH));
-	MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, GAME_HEIGHT, GAME_WIDTH);
-	rpi_copyToDis(&mat_handler, 0, 0);
+	if(game_data.state != GAME_QUIT){
+		// Actualizo la matriz del juego y la cargo en la matriz a imprimir
+		matrix_hand_t mat_handler;
+		assert(mat_init(&mat_handler, GAME_HEIGHT, GAME_WIDTH));
+		MAT_COPY_FROM_2D_ARRAY(&mat_handler, game_public_matrix, GAME_HEIGHT, GAME_WIDTH);
+		rpi_copyToDis(&mat_handler, 0, 0);
 
-	//Actualizo la matriz de la pieza siguiente y la cargo en la matriz a imprimir
-	matrix_hand_t public_next_mat;
-	assert(mat_init(&public_next_mat, 10, 5));
-	MAT_COPY_FROM_2D_ARRAY(&public_next_mat, game_next_block_public_matrix, 10,5);
-	rpi_copyToDis(&public_next_mat, 0, 11);
+		//Actualizo la matriz de la pieza siguiente y la cargo en la matriz a imprimir
+		matrix_hand_t public_next_mat;
+		assert(mat_init(&public_next_mat, 10, 5));
+		MAT_COPY_FROM_2D_ARRAY(&public_next_mat, game_next_block_public_matrix, 10,5);
+		rpi_copyToDis(&public_next_mat, 0, 11);
 
-	//Cargo la linea divisora
-	matrix_hand_t divisor_line;
-	assert(mat_init(&divisor_line, 16, 1));
-	MAT_COPY_FROM_2D_ARRAY(&divisor_line, line, 16, 1);
-	rpi_copyToDis(&divisor_line, 0, 10);
+		//Cargo la linea divisora
+		matrix_hand_t divisor_line;
+		assert(mat_init(&divisor_line, 16, 1));
+		MAT_COPY_FROM_2D_ARRAY(&divisor_line, line, 16, 1);
+		rpi_copyToDis(&divisor_line, 0, 10);
 
-    // MOSTRAR SCORE
-    rpi_text_set_offset(text_stat,12,10,0,0);
-	char buffer[32];
-	sprintf(buffer, "%d", game_data.game_level);
-	rpi_text_set(buffer, text_stat);
-	rpi_text_print(text_stat);
+		// MOSTRAR SCORE
+		rpi_text_set_offset(text_stat,12,10,0,0);
+		char buffer[32];
+		sprintf(buffer, "%d", game_data.game_level);
+		rpi_text_set(buffer, text_stat);
+		rpi_text_print(text_stat);
 
-	rpi_run_display(); //Actualizo el display
+		rpi_run_display(); //Actualizo el display
 
-	printf("SCORE: %u\n", game_get_data().score);
-	printf("LEVEL: %d\n", game_get_data().game_level);
+		printf("SCORE: %u\n", game_get_data().score);
+		printf("LEVEL: %d\n", game_get_data().game_level);
+	}
 }
 
-// (Para la animacion de borrar filas)
+// Para la animacion de borrar filas
 void update_game_animation(uint8_t x_init, uint8_t y_init)
 {
 	// Actualizo la matriz del juego y la cargo en la matriz a imprimir
@@ -407,8 +423,6 @@ void update_game_animation(uint8_t x_init, uint8_t y_init)
 
 	rpi_run_display(); //Actualizo el display
 }
-
-
 
 void animation_row_complete (void)
 {
@@ -462,8 +476,6 @@ void animation_row_complete (void)
 	}
 }
 
-
-
 void animation_game_finish(void)
 {
 	game_data_t game_data = game_get_data();
@@ -515,3 +527,23 @@ void animation_game_start (void)
 	rpi_clear_display();
 	easytimer_delay(500);
 }
+<<<<<<< HEAD
+=======
+
+void audio (char * audio)
+{
+	int status = player_status();
+
+	if (status == NO_INIT)
+	{
+		init_sound();
+	}
+	else if ( status== STOPPED || status == PLAYING || status == PAUSED || status == FINISHED)
+	{
+		stop_sound();
+	}
+
+	set_file_to_play(audio);
+	play_sound();
+}
+>>>>>>> bbc3698d9522440461252ee2b1040e5920e66a7e

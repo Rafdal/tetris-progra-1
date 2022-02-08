@@ -37,7 +37,8 @@ int text_drawer (blocktext_t* bloque){
         // int ancho_fondo = al_get_text_width(font, bloque->texto);
         // int alto_fondo = al_get_font_line_height(font);
 
-        // al_draw_filled_rectangle(bloque->posx, bloque->posy, ((bloque->posx) + ancho_fondo), ((bloque->posy) + alto_fondo), bloque->block_color);
+        //al_draw_filled_rectangle(bloque->posx, bloque->posy, ((bloque->posx) + ancho_fondo), ((bloque->posy) + alto_fondo), bloque->block_color);
+        //dibujo un rectangulo detras del texto, sirve para borrar lo que estaba escrito antes
         al_draw_text(font, bloque->font_color, bloque->posx, bloque->posy, bloque->alineacion, bloque->texto);//el parametro es un enum que usa alegro del 0 al 2 
     }
     return 0;
