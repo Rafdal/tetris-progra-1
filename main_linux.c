@@ -246,7 +246,7 @@ void animation_row_compleate(void)
         float decremento = 0.1;
 
         if(game_data.streak == 4){ // Si se completaron 4 filas a la vez
-            al_draw_text(text_font_pointer_fetcher(),al_map_rgb(0,120,120), BLOCKSZ*6,BLOCKSZ*4,CENTRADO,"T E T R I S !");
+            al_draw_text(text_font_pointer_fetcher(),al_map_rgb(255,0,0), BLOCKSZ*6,BLOCKSZ*4,CENTRADO,"T E T R I S !");
             al_flip_display();
         }
         audio_play(line_comp_audio[game_data.streak-1]); // filas completadas - 1
