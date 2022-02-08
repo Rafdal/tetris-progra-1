@@ -549,7 +549,7 @@ void update_display(void) {
             al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+2+x), BLOCKSZ*(y+1), BLOCKSZ, BLOCKSZ, 0);
             
         }
-        for(y=parametro_nivel; y<10; y++){
+        for(y=parametro_nivel; y<8; y++){
             al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+2+x), BLOCKSZ*(y+1), BLOCKSZ, BLOCKSZ, 0);
         }//tapo los casilleros vacios
     }//DIBUJO PIEZA SIGUIENTE
@@ -734,8 +734,8 @@ void  initialize_display_game (void){
     blocktext_t * puntaje = text_init_alleg(TXT_BLANCO, 40, "PUNTAJE:", PATH_TTF, BLOCKSZ*(ANCHO+2.5), YPOS_SCORE, ALINEADO_IZQUIERDA );
     blocktext_t * lvl_game = text_init_alleg(TXT_BLANCO, 40, "NIVEL:", PATH_TTF, BLOCKSZ*(ANCHO+2.5), YPOS_NIVEL, ALINEADO_IZQUIERDA );
     
-    score = text_init_alleg( TXT_BLANCO, 30, "", PATH_TTF, BLOCKSZ*(ANCHO+2.5), YPOS_SCORE+BLOCKSZ, ALINEADO_IZQUIERDA );
-    nivel = text_init_alleg(TXT_BLANCO, 30, "", PATH_TTF, BLOCKSZ*(ANCHO+2.5), YPOS_NIVEL+BLOCKSZ, ALINEADO_IZQUIERDA );
+    score = text_init_alleg( TXT_BLANCO, 40, "", PATH_TTF, BLOCKSZ*(ANCHO+2.5), YPOS_SCORE+BLOCKSZ, ALINEADO_IZQUIERDA );
+    nivel = text_init_alleg(TXT_BLANCO, 40, "", PATH_TTF, BLOCKSZ*(ANCHO+2.5), YPOS_NIVEL+BLOCKSZ, ALINEADO_IZQUIERDA );
 
     if(puntaje==NULL || pieza_sig==NULL || lvl_game==NULL){
         printf("problema con titulo de initialize_display_game");   
@@ -820,7 +820,7 @@ uint8_t param_lvl_fetch (void){
     case 1:
     case 2:
     case 3:
-        temporal=10;
+        temporal=8;
         break;
 /*        temporal=7;
         break;
@@ -828,17 +828,18 @@ uint8_t param_lvl_fetch (void){
         break;*/
     case 4:
     case 5:
-    //    temporal=7;
-    //    break;
+        temporal=5;
+        break;
     case 6:
-    //    temporal=4;
-    //    break;
+        temporal=2;
+        break;
     case 7:
     case 8:
-        temporal=1;
+        temporal=0;
+        break;
 
     default:
-        temporal=10;
+        temporal=8;
         break;
     }
     return temporal;
