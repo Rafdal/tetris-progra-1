@@ -324,7 +324,7 @@ void main_game_start(void){
 		//Funcion para que la pieza baje sola
         if(game_data.state == GAME_RUN && easytimer_get_millis()-lastMillis >= game_data.speed_interval){
 			if(player_status() != PLAYING)
-				audio(game);
+				audio(game_audio);
 
 			game_move_down();
             game_run();	//Corro el juego
