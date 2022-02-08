@@ -286,8 +286,8 @@ void key_press_callback(uint8_t key){
             case DPAD_BTN:
 				easytimer_delay(200); // Delay para evitar salir del menu al entrar
 				audio(pause_audio);
-				menu_run(pause_menu);
 				rpi_clear_display();
+				menu_run(pause_menu);
                 printf("game BTN\n");
                 break;
 
