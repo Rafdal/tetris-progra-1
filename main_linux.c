@@ -227,8 +227,14 @@ void main_game_start(void){
         }
 
         if(game_data.state == GAME_LOSE){
+            audio_force_stop(game_audio);
             audio_play(lose_audio);
             printf("Perdiste! The Game\n");
+
+            while (audio_is_playing(lose_audio))
+            {
+                read_events();
+            }
             menu_run(gameover_menu);
         }
     }
