@@ -5,7 +5,7 @@
 #include <stdarg.h>
 
 #ifdef USAR_DEBUG
-#define LOG(...)  deb_println( __VA_ARGS__ );
+#define LOG(...)    deb_println( __VA_ARGS__ );
 #define DEBUG(...) {printf(__VA_ARGS__);putchar('\n');}
 #warning Usando DEBUG, para desactivar, comentar el    #define USAR_DEBUG     antes de incluir la libreria
 #else
