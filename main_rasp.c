@@ -162,8 +162,8 @@ int main(void){
 //CALLBACK DE EXIT GAME
 void exit_game(void){
 	game_quit();                  // Finalizar juego
-	menu_force_close(pause_menu); // Cerrar menu pausa
 	rpi_clear_display();
+	menu_force_close(pause_menu); // Cerrar menu pausa
 }
 
 //CALLBACK DE REINICIO DE JUEGO
@@ -242,7 +242,6 @@ void key_press_callback(uint8_t key){
                 break;
 
             case DPAD_BTN:
-				rpi_clear_display();
 				menu_go_select();
                 printf("menu BTN\n");
                 break;
