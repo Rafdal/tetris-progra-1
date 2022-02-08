@@ -723,8 +723,6 @@ int initialize_alleg(void) {
         printf("failed to create display!\n");
         return -1;
     }
-    al_set_display_option(display, ALLEGRO_VSYNC, 2);
-
     al_register_event_source(event_queue, al_get_display_event_source(display));
     return 0;
 }
