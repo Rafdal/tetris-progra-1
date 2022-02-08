@@ -7,16 +7,30 @@
 
 static ALLEGRO_FONT *font = NULL;
 
-blocktext_t* text_init_alleg ( ALLEGRO_COLOR color_bloque, ALLEGRO_COLOR color_font, int tamanio_letra, char* palabras, char* nombre_letra, int x, int y, int align)
+blocktext_t* text_init_alleg (text_color_t color, int tamanio_letra, char* palabras, char* nombre_letra, int x, int y, int align)
 {
     blocktext_t * text = (blocktext_t*) calloc(1, sizeof(blocktext_t)); 
     
     if( text != NULL){
+
+        switch (color)
+        {
+        case TXT_VERDE:
+            text->font_color=al_map_rgb(0, 255, 0);
+            break;
+        case TXT_BLANCO:
+            text->font_color=al_map_rgb(255, 255, 255);
+            break;
+        case TXT_ROJO:
+            text->font_color=al_map_rgb(255, 0, 0);
+            break;
+        
+        default:
+            break;
+        }
         // Asignar los datos
         text->texto = palabras;
         text->font_size=tamanio_letra;
-        text->font_color=color_font;
-        text->block_color=color_bloque;
         text->tipo_letra=nombre_letra;
         text->posx=x;
         text->posy=y;
