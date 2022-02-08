@@ -303,13 +303,14 @@ void game_run(void){
             _clear_block_matrix();
 
             colision = false;
-            uint8_t streak = _check_row_complete();
+            game_data.streak = _check_row_complete();
 
 			// printf("STREAK : %d\n", streak );
-			_update_score(streak, game_data.game_level);
+			_update_score(game_data.streak, game_data.game_level);
 			_update_level_and_speed();
 
 			_animation_callback();
+            game_data.streak = 0; // reinicio la variable
         }
 		_update_game_public_matrix();
 		_refresh_next_block_mat();

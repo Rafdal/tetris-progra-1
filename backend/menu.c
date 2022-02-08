@@ -77,9 +77,7 @@ void menu_run(menu_t *menu){
         update_display();                   // Renderizar el menu
 
         while (menu->state != MENU_STATE_CLOSE) // Mientras el menu no se haya cerrado o este cerrado
-        {
-            menu->state = MENU_STATE_AVAILABLE; // reset state
-        
+        {        
             event_listener();                   // escuchar cambios de estado (bajar,seleccionar,cerrar,etc)
 
             switch (menu->state)
@@ -136,10 +134,8 @@ void menu_run(menu_t *menu){
 
             // Si estamos en un estado de transicion, actualizamos el display
             if(menu->state != MENU_STATE_AVAILABLE && menu->state != MENU_STATE_CLOSE){
-                menu_state_t last_state = menu->state;
                 menu->state = MENU_STATE_AVAILABLE;
                 update_display();
-                menu->state = last_state;
             }
         }
         printf("saliendo del menu\n");

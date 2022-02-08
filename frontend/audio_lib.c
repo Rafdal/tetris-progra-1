@@ -100,8 +100,8 @@ void audio_play(audio_t* audio){
 			if(audio->status != AUDIO_PLAY || !al_get_sample_instance_playing(audio->instance)){
 				audio->status = AUDIO_PLAY;
 				current_music = audio;
-				al_set_sample_instance_playmode(audio->instance, ALLEGRO_PLAYMODE_LOOP);
 				al_set_sample_instance_gain(audio->instance, audio->gain);
+				al_set_sample_instance_playmode(audio->instance, ALLEGRO_PLAYMODE_LOOP);
 				al_play_sample_instance(audio->instance);
 			}
 		}

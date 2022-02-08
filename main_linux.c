@@ -52,6 +52,13 @@ menu_t *principal_menu = NULL;
 menu_t *pausa_menu = NULL;
 menu_t *gameover_menu = NULL;
 
+// EFECTOS DE SONIDO Y MUSICA
+audio_t* lose_audio = NULL;
+
+audio_t* menu_audio = NULL;
+audio_t* game_audio = NULL;
+audio_t* pause_audio = NULL;
+audio_t* line_comp_audio[4] = {NULL,NULL,NULL,NULL};
 
 /*void playAudio(void){
     al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
@@ -89,11 +96,6 @@ void volver_al_main_menu(void);
 void restart_game(void);
 void resume_game(void);
 
-audio_t* menu_audio = NULL;
-audio_t* game_audio = NULL;
-audio_t* pause_audio = NULL;
-audio_t* one_line_audio = NULL;
-
 int main (void){
 	if(initialize_alleg()){
         printf("Allegro FAIL!\n");
@@ -109,11 +111,22 @@ int main (void){
     }
 
     menu_audio = audio_init("main_title.wav", 1, AUDIO_MUSIC);
-    game_audio = audio_init("tetris.wav", 1, AUDIO_MUSIC);
+    game_audio = audio_init("tetris.wav", 0.4, AUDIO_MUSIC);
     pause_audio = audio_init("pausa.wav", 1, AUDIO_MUSIC);
-    one_line_audio = audio_init("1_line_compl.wav", 1, AUDIO_EFFECT);
+    lose_audio = audio_init("lose.wav", 1, AUDIO_MUSIC);
 
-    if(menu_audio == NULL || game_audio == NULL || pause_audio == NULL){
+    line_comp_audio[0] = audio_init("1_line_compl.wav", 1, AUDIO_EFFECT);
+    line_comp_audio[1] = audio_init("2_line_compl.wav", 1, AUDIO_EFFECT);
+    line_comp_audio[2] = audio_init("3_line_compl.wav", 1, AUDIO_EFFECT);
+
+    int i;
+    for(i=0; i<3 ; i++){
+        if(line_comp_audio[i] == NULL){
+            end_program();
+            return -1;
+        }
+    }
+    if(menu_audio == NULL || game_audio == NULL || pause_audio == NULL || lose_audio == NULL){
         end_program(); // aca se destruye el audio
         return -1;
     }
@@ -194,9 +207,6 @@ void resume_game(void)
 }
 
 void main_game_start(void){
-
-    // manage_music(game, start);
-
     game_data_t game_data;
     uint64_t lastMillis;
     game_start(); // iniciar el juego
@@ -204,10 +214,10 @@ void main_game_start(void){
 
     while ((game_data = game_get_data()).state != GAME_QUIT)
     {
+        audio_play(game_audio);
         read_events(); // Leer teclado y eventos (Allegro)
         
         if(game_data.state == GAME_RUN && easytimer_get_millis()-lastMillis >= game_data.speed_interval){
-            audio_play(game_audio);
             game_move_down();
             game_run();
             update_display();
@@ -215,6 +225,7 @@ void main_game_start(void){
         }
 
         if(game_data.state == GAME_LOSE){
+            audio_play(lose_audio);
             // manage_music(lose, start);
             printf("Perdiste! The Game\n");
             menu_run(gameover_menu);
@@ -223,72 +234,44 @@ void main_game_start(void){
     printf("Leaving game...\n");
 } // main_game_start
 
-uint64_t stamp;
-void printStamp(void){
-    uint64_t dif = easytimer_get_millis() - stamp;
-    printf("%lu\n", dif);
-    stamp = easytimer_get_millis();
-}
-
 void animation_row_compleate(void)
 {
+    game_data_t game_data = game_get_data();
     if(game_row_complete[0])
     {
-        int i;
-        int z;
+        int i,z;
         float reductor;
         float angulo;
-        float decremento= 0.1;
-        int contador_filas_destruidas;
-        int indicador;
-        stamp = easytimer_get_millis();
+        float decremento = 0.1;
+        int f; // fila
 
-        for(reductor=2.1, angulo=0, indicador=0; reductor>=0; angulo+=(3.1415/8)){
-    
-            for(z=1; z<=ANCHO; z++){
-                contador_filas_destruidas=0;
-                for(i=0; game_row_complete[i] != 0 && i < 4 ; i++){
-                    al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(game_row_complete[i]), BLOCKSZ, BLOCKSZ, 0);
-                //pongo el fondo en negro
-                    al_draw_tinted_scaled_rotated_bitmap(pieza_blanca,  al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(pieza_blanca)/2, al_get_bitmap_height(pieza_blanca)/2, (BLOCKSZ/2 +BLOCKSZ*z), (BLOCKSZ/2 +BLOCKSZ*(game_row_complete[i])),reductor, reductor, angulo, 0);
-                    //Dibujo una pieza blanca, se va haciendo mas chia a medida que rota
-                    // putchar('c');
-                    // printStamp();
-                    contador_filas_destruidas++; //incremento contador
-                }//este ciclo va por columnas
-                
-                if(contador_filas_destruidas==4 && !indicador){
-                    // manage_music(TETRIS, start);
-                    al_draw_text(text_font_pointer_fetcher(),al_map_rgb(0,120,120), BLOCKSZ*6,BLOCKSZ*4,CENTRADO,"T E T R I S !");
-                    indicador++;
-                }
-
-            }//este otro ciclo va por filas
+        if(game_data.streak == 4){ // Si se completaron 4 filas a la vez
+            al_draw_text(text_font_pointer_fetcher(),al_map_rgb(0,120,120), BLOCKSZ*6,BLOCKSZ*4,CENTRADO,"T E T R I S !");
             al_flip_display();
-            // easytimer_delay(4);
-            reductor-=decremento;
         }
-		switch (contador_filas_destruidas) {
-			case 1:
-                audio_play(one_line_audio);
-				// manage_music(clr_lane_1, start);
-				break;
-			case 2:
-				// manage_music(clr_lane_2, start);
-				break;
-			case 3:
-				// manage_music(clr_lane_3, start);
-				break;
+        audio_play(line_comp_audio[game_data.streak-1]); // filas completadas - 1
 
-        }
-        for(i=0; game_row_complete[i] != 0 && i< GAME_WIDTH ; i++){
-            for(z=1; z<=ANCHO; z++){
-                al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(game_row_complete[i]), BLOCKSZ, BLOCKSZ, 0);
+        for(reductor=2.1, angulo=0; reductor>=0; angulo+=(3.1415/8)){
+            for(f=0; game_row_complete[f] != 0 && f < 4 ; f++){
+                for(z=1; z<=ANCHO; z++){
+                    al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(game_row_complete[f]), BLOCKSZ, BLOCKSZ, 0);
+                    //pongo el fondo en negro
+                    al_draw_tinted_scaled_rotated_bitmap(pieza_blanca,  al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(pieza_blanca)/2, al_get_bitmap_height(pieza_blanca)/2, (BLOCKSZ/2 +BLOCKSZ*z), (BLOCKSZ/2 +BLOCKSZ*(game_row_complete[f])),reductor, reductor, angulo, 0);
+                    //Dibujo una pieza blanca, se va haciendo mas chia a medida que rota
+                }//este ciclo va por columnas
                 al_flip_display();
+            }//este otro ciclo va por filas
+            reductor-=decremento;
+        }		
+
+        for(f=0; game_row_complete[f] != 0 && f < 4 ; f++){
+            for(z=1; z<=ANCHO; z++){
+                al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(game_row_complete[f]), BLOCKSZ, BLOCKSZ, 0);
             } //pongo el fondo en negro de nuevo
-            delete_row(game_row_complete[i]);
-            game_row_complete[i]= 0;
+            delete_row(game_row_complete[f]);
+            game_row_complete[f]= 0;
         }
+        al_flip_display();
         
     }
 }
@@ -777,8 +760,6 @@ void end_program (void){
     al_uninstall_keyboard();        
     al_destroy_event_queue(event_queue);
     al_destroy_display(display);
-
-    printf("destruyendo audio y font\n");
 
     audio_destroy();
     font_destroyer();
