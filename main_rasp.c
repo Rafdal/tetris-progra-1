@@ -323,7 +323,10 @@ void main_game_start(void){
 
 		//Funcion para que la pieza baje sola
         if(game_data.state == GAME_RUN && easytimer_get_millis()-lastMillis >= game_data.speed_interval){
-            game_move_down();
+			if(player_status() != PLAYING)
+				audio(game);
+
+			game_move_down();
             game_run();	//Corro el juego
             update_game_display();  //Actualizo el display
 
@@ -339,6 +342,7 @@ void main_game_start(void){
         }
     }
     printf("Leaving game...\n");
+	audio(menu_audio);
 	rpi_clear_display();
 }
 
