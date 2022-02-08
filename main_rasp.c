@@ -517,7 +517,7 @@ void audio (char * audio)
 
 	if (status == NO_INIT)
 	{
-		init_sound()
+		init_sound();
 	}
 	else if ( status== STOPPED || status == PLAYING || status == PAUSED || status == FINISHED)
 	{
