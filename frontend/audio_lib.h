@@ -25,6 +25,7 @@ typedef struct {
 	audio_type_t type;
 	audio_status_t status;
 	float gain;
+	float speed;
 }audio_t;
 
 /* typedef struct {
@@ -44,7 +45,10 @@ void audio_play(audio_t* audio);
 
 void audio_destroy(void);
 
+// Si se esta reproduciendo lo detiene
+void audio_force_stop(audio_t* audio);
 
+void audio_set_speed(audio_t* audio, float speed);
 
 
 #endif //AUDIO_LIB_H

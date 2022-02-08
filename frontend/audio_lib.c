@@ -55,6 +55,7 @@ audio_t* audio_init(const char* filename, float gain, audio_type_t type){
 				audio->gain = gain;
 				audio->status = AUDIO_STOP;
 				audio->type = type;
+				audio->speed = 1; // velocidad normal
 
 				if(audio_counter<AUDIO_SAMPLES-1)
 					audio_list[audio_counter++] = audio; // Guardo el puntero
@@ -120,11 +121,25 @@ void audio_destroy(void){
 			al_destroy_sample_instance(audio_list[i]->instance);
 			al_destroy_sample(audio_list[i]->sample);
 			free(audio_list[i]);
+			audio_list[i] = NULL;
 		}
 	}
 	al_uninstall_audio();
 }
 
+void audio_set_speed(audio_t* audio, float speed){
+	if(audio != NULL && audio->speed != speed){
+		al_set_sample_instance_speed(audio->instance, audio->speed);
+		audio->speed = speed;
+	}
+}
+
+// Si se esta reproduciendo lo detiene
+void audio_force_stop(audio_t* audio){
+	if(audio != NULL && al_get_sample_instance_playing(audio->instance)){
+		al_stop_sample_instance(audio->instance);
+	}
+}
 /* void manage_music (char optn, char mode) {
 
 	printf("music state = %d,  optn: %u, mode: %u\n", is_music_playing, optn, mode);
