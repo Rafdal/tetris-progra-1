@@ -70,6 +70,8 @@ audio_t* win_audio = NULL;
 }
 */
 
+#define USAR_DEBUG
+#include "debug.h"
 
 
 
@@ -102,6 +104,9 @@ void restart_game(void);
 void resume_game(void);
 
 int main (void){
+
+    DEB_SET_FILE("log.txt")
+
 	if(initialize_alleg()){
         printf("Allegro FAIL!\n");
         return -1;
@@ -176,8 +181,11 @@ int main (void){
     game_set_delrow_callback(animation_row_compleate);
 
     // MAIN MENU
+    DEBLINE()
     menu_run(principal_menu);
     
+    DEBLINE()
+    LOGN("END PROGRAM")
     end_program(); //borro todo
 
     return 0;
@@ -185,36 +193,45 @@ int main (void){
 }
 
 void exit_game(void){
+    DEBLINE()
     game_quit();                // Finalizar juego
     menu_force_close(pausa_menu); // Cerrar menu pausa
+    DEBLINE()
 }
 
 //CALLBACK DE GAMEOVER
 void volver_al_main_menu (void){
+    DEBLINE()
     printf("volviendo al ma");
     game_quit();
     menu_force_close(gameover_menu);
     printf("in menu...\n");
+    DEBLINE()
 }
 
 //CALLBACK DE REINICIO DE JUEGO
 void restart_game(void){
+    DEBLINE()
     // manage_music(game, start);
 	initialize_display_game(); //inicio el display del juego
     menu_force_close_current(); // Cerrar menu pausa
     game_start(); 	//Corre el juego
+    DEBLINE()
 }
 
 //CALLBACK DE RENAUDAR JUEGO
 void resume_game(void)
 {
+    DEBLINE()
     // manage_music(game, start);
 	initialize_display_game(); //inicio el display del juego
 	menu_force_close_current();	//Cierra el menu
 	game_run();	//Corre el juego
+    DEBLINE()
 }
 
 void main_game_start(void){
+    DEBLINE()
     game_data_t game_data;
     uint64_t lastMillis;
     game_start(); // iniciar el juego
@@ -248,10 +265,12 @@ void main_game_start(void){
         }
     }
     printf("Leaving game...\n");
+    DEBLINE()
 } // main_game_start
 
 void animation_row_compleate(void)
 {
+    DEBLINE()
     game_data_t game_data = game_get_data();
     if(game_row_complete[0])
     {
@@ -288,10 +307,12 @@ void animation_row_compleate(void)
         }
         al_flip_display();
     }
+    DEBLINE()
 }
 
 //CALLBACK DE CONTROLES/INSTRUCCIONES
 void screen_how_to_play (void){
+    DEBLINE()
     int actual=1;
     al_draw_scaled_bitmap(diagrama_teclado, 0, 0, al_get_bitmap_width(diagrama_teclado), al_get_bitmap_height(diagrama_teclado), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
     al_flip_display();
@@ -313,9 +334,11 @@ void screen_how_to_play (void){
             easytimer_delay(150);
         }
     }
+    DEBLINE()
 }
 
 void display_menu_display(void){
+    DEBLINE()
     menu_t menu_data = menu_get_current_menu_data();    //consigo los datos del menu actual
 
 	if (menu_is_available(principal_menu))
@@ -404,6 +427,7 @@ void display_menu_display(void){
             al_flip_display();
         }   //imprimo cada opcion del menu en pantalla una abajo de la otra
     }
+    DEBLINE()
 }
 
 // Leer los eventos de Allegro (teclado, display, etc)
@@ -411,6 +435,7 @@ void read_events(void){
     ALLEGRO_EVENT ev;
     if (event_queue != NULL && al_get_next_event(event_queue, &ev)) //Toma un evento de la cola
     {
+        DEBLINE()
         if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
             game_quit();
         }
@@ -778,8 +803,11 @@ void  initialize_display_game (void){
 
 void end_program (void){
 
-
+    LOGN("\n\n")
     printf("destruyendo bitmaps...\n");
+    PULL_TIME()
+
+    LOGTIME() // * OK
 // DESTRUCCION DE BITMAPS
     al_destroy_bitmap(image);
     al_destroy_bitmap(muroH);
@@ -789,15 +817,24 @@ void end_program (void){
     al_destroy_bitmap(diagrama_teclado);
     al_destroy_bitmap(jugabilidad_diagrama);
     al_destroy_bitmap(gameoverfoto);
+    LOGTIME() // * OK
 
 // DESTRUCCION DE OTRAS UTILIDADES ALLEGRO
     printf("destruyendo utils...\n");
+    LOG("keyb: ")
+    LOGTIME()
     al_uninstall_keyboard();        
+    LOG("queue: ")
+    LOGTIME()
     al_destroy_event_queue(event_queue);
+    LOGTIME()
+    LOG("disp: ")
     al_destroy_display(display);
+    LOGTIME()
 
     audio_destroy();
     font_destroyer();
+    LOGTIME()
 
 //DESTRUCCION DE UTILIDADES EXTRA
     printf("destruyendo menus y texto...\n");
@@ -807,7 +844,11 @@ void end_program (void){
     text_destroy(nivel);
     text_destroy(score);
 
+    LOGTIME()
     al_uninstall_system();
+
+    LOGTIME()
+
     printf("Game Ended\n");
     exit(0);
 }

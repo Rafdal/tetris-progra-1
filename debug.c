@@ -6,7 +6,7 @@
 
 static FILE *file = NULL;
 static char *filename = NULL;
-static uint64_t start_stamp=0;
+static uint64_t stamp=0;
 
 // -1 = ERROR   |   0 ~ MAX_DEBUG_FILES-1 = OK
 bool debug_new_file(char* _filename)
@@ -22,7 +22,7 @@ bool debug_new_file(char* _filename)
         printf("ERROR OPENING FILE!\n");
         return false;
     }
-    start_stamp = easytimer_get_millis();
+    stamp = easytimer_get_millis();
     fclose(file);
     return true;
 }
@@ -31,8 +31,12 @@ bool debug_new_file(char* _filename)
 //     filename = _filename;
 // }
 void deb_stamp(void){
-    uint64_t dif = easytimer_get_millis()-start_stamp;
+    uint64_t dif = easytimer_get_millis()-stamp;
     deb_println("ms: %lu", dif);
+}
+
+void deb_update_stamp(void){
+    stamp = easytimer_get_millis();
 }
 
 int deb_println(const char *__format, ...){
