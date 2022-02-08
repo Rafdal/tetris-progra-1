@@ -52,8 +52,9 @@ void keyb_use_press_callback_for_longpress(uint8_t key){
 
 // Inicializar el teclado
 bool keyb_init(ALLEGRO_EVENT_QUEUE *queue){
-
-    if(!al_install_keyboard() || queue == NULL)
+    if(queue == NULL)
+        return false;
+    if(!al_install_keyboard())
         return false; // error
 
     event_queue = queue;

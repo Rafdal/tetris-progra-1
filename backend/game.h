@@ -43,6 +43,7 @@ typedef struct {
     uint8_t y;
     uint8_t id;
     uint8_t rot;
+    uint8_t streak; // cantidad de filas completadas en una sola vez
     uint32_t score;
     game_state_t state;
     uint64_t speed_interval;
