@@ -270,6 +270,7 @@ void animation_row_compleate(void)
         }
 		switch (contador_filas_destruidas) {
 			case 1:
+                audio_play(one_line_audio);
 				// manage_music(clr_lane_1, start);
 				break;
 			case 2:
