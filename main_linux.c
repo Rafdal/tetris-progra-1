@@ -129,7 +129,7 @@ int main (void){
     menu_set_option(pausa_menu, 1, "REINICIAR", restart_game);
     menu_set_option(pausa_menu, 2, "SALIR", exit_game);
     
-	// CALLBACKS DE OPCIONES DEL MENU DE PAUSA
+	// CALLBACKS DE OPCIONES DEL MENU DE GAME OVER
 	menu_set_option(gameover_menu, 0, "REINICIAR", restart_game);
     menu_set_option(gameover_menu, 1, "SALIR", volver_al_main_menu);
 
@@ -156,8 +156,6 @@ void exit_game(void){
 //CALLBACK DE GAMEOVER
 void volver_al_main_menu (void){
     printf("volviendo al ma");
-    manage_music(game, stop);
-	manage_music(lose, start);
     game_quit();
     menu_force_close(gameover_menu);
     printf("in menu...\n");
@@ -165,16 +163,16 @@ void volver_al_main_menu (void){
 
 //CALLBACK DE REINICIO DE JUEGO
 void restart_game(void){
+    manage_music(game, start);
 	initialize_display_game(); //inicio el display del juego
     menu_force_close_current(); // Cerrar menu pausa
-	manage_music(pausa, stop);
-	manage_music(game, start);
     game_start(); 	//Corre el juego
 }
 
 //CALLBACK DE RENAUDAR JUEGO
 void resume_game(void)
 {
+    manage_music(game, start);
 	initialize_display_game(); //inicio el display del juego
 	menu_force_close_current();	//Cierra el menu
 	game_run();	//Corre el juego
@@ -182,9 +180,10 @@ void resume_game(void)
 
 void main_game_start(void){
 
+    manage_music(game, start);
+
     game_data_t game_data;
     uint64_t lastMillis;
-	manage_music(game, start);
     game_start(); // iniciar el juego
     initialize_display_game();
 
@@ -200,11 +199,9 @@ void main_game_start(void){
         }
 
         if(game_data.state == GAME_LOSE){
-
+            manage_music(lose, start);
             printf("Perdiste! The Game\n");
             menu_run(gameover_menu);
-			manage_music(game, stop);
-			manage_music(lose, start);
         }
     }
     printf("Leaving game...\n");
@@ -223,29 +220,29 @@ void animation_row_compleate(void)
         int contador_filas_destruidas;
         int indicador;
 
-        for(reductor=2.1, angulo=0, indicador=0; reductor>=0; angulo+=(3.1415/8)){
+        for(reductor=2.1, angulo=0, indicador=0, contador_filas_destruidas=0; reductor>=0; angulo+=(3.1415/8)){
     
             for(z=1; z<=ANCHO; z++){
 
-                for( i=0, contador_filas_destruidas=0; game_row_complete[i] != 0 && i< GAME_WIDTH ; i++){
+                for( i=0; game_row_complete[i] != 0 && i< GAME_WIDTH ; i++){
                     al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(game_row_complete[i]), BLOCKSZ, BLOCKSZ, 0);
                 //pongo el fondo en negro
                     al_draw_tinted_scaled_rotated_bitmap(pieza_blanca,  al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(pieza_blanca)/2, al_get_bitmap_height(pieza_blanca)/2, (BLOCKSZ/2 +BLOCKSZ*z), (BLOCKSZ/2 +BLOCKSZ*(game_row_complete[i])),reductor, reductor, angulo, 0);
-                    //se va haciendo mas chia a medida que rota
-                    al_flip_display();
-                    easytimer_delay(3);
+                    //Dibujo una pieza blanca, se va haciendo mas chia a medida que rota
+                    //easytimer_delay(0);
                     contador_filas_destruidas++; //incremento contador
+                }//este ciclo va por columnas
                     if(contador_filas_destruidas==4 && !indicador){
-						manage_music(TETRIS, start);
+					//	manage_music(TETRIS, start);
                         al_draw_text(text_font_pointer_fetcher(),al_map_rgb(0,120,120), BLOCKSZ*6,BLOCKSZ*4,CENTRADO,"T E T R I S !");
                         al_flip_display();
                         indicador++;
                     }
-                }
-				}
+				}//este otro ciclo va por filas
+                al_flip_display();
                 reductor-=decremento;
         }
-		switch (contador_filas_destruidas) {
+		/*switch (contador_filas_destruidas) {
 			case 1:
 				manage_music(clr_lane_1, start);
 				break;
@@ -256,7 +253,7 @@ void animation_row_compleate(void)
 				manage_music(clr_lane_3, start);
 				break;
 
-        }
+        }*/
         for(i=0; game_row_complete[i] != 0 && i< GAME_WIDTH ; i++){
             for(z=1; z<=ANCHO; z++){
                 al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(game_row_complete[i]), BLOCKSZ, BLOCKSZ, 0);
@@ -302,8 +299,8 @@ void display_menu_display(void){
 	if (menu_is_available(pausa_menu))
 		manage_music(pausa, start);
     if (menu_is_available(gameover_menu)){
-        manage_music(lose, start);
-		manage_music(pausa, start);
+        manage_music(game, stop);
+	//	manage_music(pausa, start);
     }
 
 
@@ -402,20 +399,23 @@ void keypress_callback(uint8_t key){
         return;
     }
     if(menu_is_current_available()){
-		manage_music(clr_lane_1, start);
+		
         switch (key)
         {
             case KEYB_UP:
+                manage_music(chime_select, start);
                 menu_go_up();
                 printf("menu UP\n");
                 break;
 
             case KEYB_DOWN:
+                manage_music(chime_select, start);
                 menu_go_down();
                 printf("menu DOWN\n");
                 break;
 
             case KEYB_LEFT:
+                manage_music(chime_select, start);
                 menu_go_back();
                 printf("menu LEFT\n");
                 break;
@@ -423,6 +423,7 @@ void keypress_callback(uint8_t key){
             case KEYB_SPACE:
             case KEYB_ENTER:
                 printf("menu BTN...\n");
+                manage_music(chime, start);
 				manage_music(menu, stop);
                 menu_go_select();
                 printf("menu BTN\n");
@@ -461,13 +462,13 @@ void keypress_callback(uint8_t key){
             break;
 
         case KEYB_E:
-			manage_music(chime, start);
+			manage_music(chime_select, start);
             game_rotate(1);
             printf("UPRIGHT\n");
             break;
 
         case KEYB_Q:
-			manage_music(chime, start);
+			manage_music(chime_select, start);
             game_rotate(0);
             printf("UPLEFT\n");
             break;
@@ -507,16 +508,16 @@ void update_display(void) {
 			al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ + BLOCKSZ*x, BLOCKSZ*y, BLOCKSZ, BLOCKSZ, 0);
 		}
 	}
-    for(x=0; x<4 ; x++)
+    for(x=1; x<5 ; x++)
 	{
 		for(y=0; y<parametro_nivel ; y++)
 		{
             float val= (float) game_next_block_public_matrix[y][x];
-            al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+3+x), BLOCKSZ*(y+1), BLOCKSZ, BLOCKSZ, 0);
+            al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+2+x), BLOCKSZ*(y+1), BLOCKSZ, BLOCKSZ, 0);
             
         }
         for(y=parametro_nivel; y<10; y++){
-            al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+3+x), BLOCKSZ*(y+1), BLOCKSZ, BLOCKSZ, 0);
+            al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+2+x), BLOCKSZ*(y+1), BLOCKSZ, BLOCKSZ, 0);
         }//tapo los casilleros vacios
     }//DIBUJO PIEZA SIGUIENTE
 
@@ -725,8 +726,7 @@ void end_program (void){
     menu_destroy(gameover_menu);
     text_destroy(nivel);
     text_destroy(score);
-    //al_uninstall_audio(); // borrar audio
-    //al_destroy_sample(sample);
+    al_uninstall_audio(); // borrar audio
     //al_shutdown_image_addon(); VER DOCUMENTACION ES LLAMADO AUTOMATICAMENTE AL SALIR DEL PROGRAMA
     printf("Game Ended\n");
     exit(0);
