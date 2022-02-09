@@ -1,8 +1,12 @@
 .idea
 .vscode
 
+# bytes raw
 *.o
 *.wav
+
+#logfiles
+*.txt 
 
 # para evitar los merge conflicts
 back
