@@ -64,7 +64,6 @@ const BLOCK_t blocks[] = {
         { BLOCK_7, 3, },
 };
 
-
 // V A R I A B L E S   Y   C O N S T A N T E S
 
 static char matrix[GAME_HEIGHT][GAME_WIDTH]; // Privada

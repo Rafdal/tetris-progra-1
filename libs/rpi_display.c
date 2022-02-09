@@ -39,13 +39,13 @@ void rpi_set_display(uint8_t y, uint8_t x, char val){
 // Recibe un puntero a una matriz y esta la copia en la matriz del juego
 void rpi_copyToDis (matrix_hand_t* pfromMat, uint8_t y_offset, uint8_t x_offset)
 {
-	assert(pfromMat->height+y_offset <= RPI_HEIGHT);
-	assert(pfromMat->width+x_offset <= RPI_WIDTH);
-
-	int x,y;
-	for(y=0; y<pfromMat->height; y++){
-		for(x=0; x<pfromMat->width; x++){
-			matrix[y+y_offset][x+x_offset] = mat_get_byte(pfromMat, y, x);
+	if(pfromMat != NULL && pfromMat->height+y_offset <= RPI_HEIGHT && pfromMat->width+x_offset <= RPI_WIDTH)
+	{
+		int x,y;
+		for(y=0; y<pfromMat->height; y++){
+			for(x=0; x<pfromMat->width; x++){
+				matrix[y+y_offset][x+x_offset] = mat_get_byte(pfromMat, y, x);
+			}
 		}
 	}
 }
@@ -53,13 +53,13 @@ void rpi_copyToDis (matrix_hand_t* pfromMat, uint8_t y_offset, uint8_t x_offset)
 //Recibe un puntero a una matriz y esta la imprime en la matriz del juego en una cierta area
 void rpi_copyToDis_area (matrix_hand_t *pfromMat, uint8_t x_init, uint8_t x_offset , uint8_t y_init, uint8_t y_offset)
 {
-	assert(pfromMat->height+y_offset <= RPI_HEIGHT);
-	assert(pfromMat->width+x_offset <= RPI_WIDTH);
-
-	int x,y;
-	for(y=y_init; y<pfromMat->height; y++){
-		for(x=x_init; x<pfromMat->width; x++){
-			matrix[y+y_offset][x+x_offset] = mat_get_byte(pfromMat, y, x);
+	if(pfromMat != NULL && pfromMat->height+y_offset <= RPI_HEIGHT && pfromMat->width+x_offset <= RPI_WIDTH)
+	{
+		int x,y;
+		for(y=y_init; y<pfromMat->height; y++){
+			for(x=x_init; x<pfromMat->width; x++){
+				matrix[y+y_offset][x+x_offset] = mat_get_byte(pfromMat, y, x);
+			}
 		}
 	}
 }
@@ -89,12 +89,15 @@ void rpi_run_display (void)
 
 // Limpia una cierta area del display
 void rpi_clear_area(uint8_t from_y, uint8_t from_x, uint8_t to_y, uint8_t to_x){
-	uint8_t x, y;
-	for (y = from_y; y < to_y ; y++)
+	if (from_y <= RPI_HEIGHT && from_x <= RPI_WIDTH && to_y <= RPI_HEIGHT && to_x <= RPI_HEIGHT)
 	{
-		for (x= from_x; x < to_x ; x++)
+		uint8_t x, y;
+		for (y = from_y; y < to_y ; y++)
 		{
-			rpi_set_display(y,x, 0);
+			for (x= from_x; x < to_x ; x++)
+			{
+				rpi_set_display(y,x, 0);
+			}
 		}
 	}
 }

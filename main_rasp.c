@@ -42,19 +42,19 @@ void animation_row_complete (void);  //Ejecuta la animacion de fila completa
 
 void key_press_callback(uint8_t key); // Define los Callbacks de las teclas
 
-void update_game_animation(uint8_t x_init, uint8_t y_init);
+void update_game_animation(uint8_t x_init, uint8_t y_init); //Actualiza cierta area del display
 
-void animation_game_finish(void);
+void animation_game_finish(void); //Muestra una animacion de terminacion de juego
 
-void animation_game_start (void);
+void animation_game_start (void); //Muestra una animacion de inicializacion del juego
 
-void exit_game(void);
+void exit_game(void); //Funcion callback de salida del juego desde el menu
 
-void restart_game(void);
+void restart_game(void); //Funcion callback de reinicio del juego desde el menu
 
-void resume_game(void);
+void resume_game(void); //Funcion callback que resume el juego
 
-void audio (char * audio);
+void audio (char * audio); //Funcion que inicializa el audio
 
 
 
