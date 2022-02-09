@@ -512,16 +512,16 @@ void game_rotate(int direction){
 void _update_score(int streak, uint8_t lvl){
 	switch (streak) {
 		case 1:
-			game_data.score += 40*(lvl+1); // ! REVISAR (lvl+1)
+			game_data.score += 40*(lvl); 
 			break;
 		case 2:
-			game_data.score += 100*(lvl+1);
+			game_data.score += 100*(lvl);
 			break;
 		case 3:
-			game_data.score += 300*(lvl+1);
+			game_data.score += 300*(lvl);
 			break;
 		case 4:
-			game_data.score += 1200*(lvl+1);
+			game_data.score += 1200*(lvl);
 			break;
 	}
 }
