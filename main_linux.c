@@ -41,6 +41,7 @@ ALLEGRO_BITMAP *tetris_cartel = NULL;
 ALLEGRO_BITMAP *diagrama_teclado = NULL;
 ALLEGRO_BITMAP *jugabilidad_diagrama = NULL;
 ALLEGRO_BITMAP *gameoverfoto = NULL;
+ALLEGRO_BITMAP *cerrando_juego = NULL;
 
 //UTILIDADES ALLEGRO
 ALLEGRO_DISPLAY *display = NULL;
@@ -297,7 +298,7 @@ void animation_row_compleate(void)
                 al_flip_display();
             }//este otro ciclo recorre las columnas
             reductor-=decremento;//
-            easytimer_delay(3);
+            easytimer_delay(7);
         }		
 
         for(i=0; game_row_complete[i] != 0 && i < 4 ; i++){
@@ -717,7 +718,7 @@ int initialize_alleg(void) {
         printf("failed to load jugabilidad_diagrama !\n");
         return -1;
     }
-        gameoverfoto = al_load_bitmap("./frontend/images/gameover.png");
+    gameoverfoto = al_load_bitmap("./frontend/images/gameover.png");
     if (!gameoverfoto) {
         al_destroy_bitmap(jugabilidad_diagrama);
         al_destroy_bitmap(diagrama_teclado);
@@ -726,6 +727,22 @@ int initialize_alleg(void) {
         al_destroy_bitmap(muroV);
         al_destroy_bitmap(muroH);
         al_destroy_bitmap(image);
+        
+        al_uninstall_keyboard();        
+        al_destroy_event_queue(event_queue);
+        printf("failed to load jugabilidad_diagrama !\n");
+        return -1;
+    }
+    cerrando_juego = al_load_bitmap("./frontend/images/cerrando.png");
+    if (!cerrando_juego) {
+        al_destroy_bitmap(jugabilidad_diagrama);
+        al_destroy_bitmap(diagrama_teclado);
+        al_destroy_bitmap(tetris_cartel);
+        al_destroy_bitmap(pieza_blanca);
+        al_destroy_bitmap(muroV);
+        al_destroy_bitmap(muroH);
+        al_destroy_bitmap(image);
+        al_destroy_bitmap(gameoverfoto);
         
         al_uninstall_keyboard();        
         al_destroy_event_queue(event_queue);
@@ -743,6 +760,8 @@ int initialize_alleg(void) {
         al_destroy_bitmap(muroH);
         al_destroy_bitmap(image);
         al_destroy_bitmap(gameoverfoto);
+        al_destroy_bitmap(cerrando_juego);
+
 
         al_uninstall_keyboard();        
         al_destroy_event_queue(event_queue);
@@ -806,6 +825,9 @@ void  initialize_display_game (void){
 
 
 void end_program (void){
+    al_clear_to_color(al_map_rgb(0,0,0));
+    al_draw_scaled_bitmap(cerrando_juego, 0, 0, al_get_bitmap_width(cerrando_juego), al_get_bitmap_height(cerrando_juego), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
+    al_flip_display();
 
     LOGN("\n\n")
     printf("destruyendo bitmaps...\n");
@@ -821,6 +843,8 @@ void end_program (void){
     al_destroy_bitmap(diagrama_teclado);
     al_destroy_bitmap(jugabilidad_diagrama);
     al_destroy_bitmap(gameoverfoto);
+    al_destroy_bitmap(cerrando_juego);
+
     LOGTIME() // * OK
 
 // DESTRUCCION DE OTRAS UTILIDADES ALLEGRO
