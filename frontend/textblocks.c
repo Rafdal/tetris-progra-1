@@ -13,22 +13,7 @@ blocktext_t* text_init_alleg (ALLEGRO_COLOR color, int tamanio_letra, char* pala
     
     if( text != NULL){
 
-        /*switch (color)  //Dependiendo del parametro recibido, pongo colores predeterminados. Usamos esto ya que no usamos muchos otros colores.
-        {
-        case TXT_VERDE:
-            text->font_color=al_map_rgb(0, 255, 0);
-            break;
-        case TXT_BLANCO:
-            text->font_color=al_map_rgb(255, 255, 255);
-            break;
-        case TXT_ROJO:
-            text->font_color=al_map_rgb(255, 0, 0);
-            break;
-        
-        default:
-            text->font_color=al_map_rgb(255, 255, 255);
-            break;
-        }*/
+      
         
         // Asignar los datos
         text->font_color = color;

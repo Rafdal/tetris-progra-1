@@ -67,13 +67,8 @@ audio_t* chime_select_audio = NULL;
 audio_t* win_audio = NULL;
 
 
-/*void playAudio(void){
-    al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
-}
-*/
 
-//#define USAR_DEBUG
-#include "debug/debug.h"
+#include "debug.h"
 
 
 
@@ -214,7 +209,6 @@ void volver_al_main_menu (void){
 //CALLBACK DE REINICIO DE JUEGO
 void restart_game(void){
     DEBLINE()
-    // manage_music(game, start);
 	initialize_display_game(); //inicio el display del juego
     menu_force_close_current(); // Cerrar menu pausa
     game_start(); 	//Corre el juego
@@ -225,7 +219,6 @@ void restart_game(void){
 void resume_game(void)
 {
     DEBLINE()
-    // manage_music(game, start);
 	initialize_display_game(); //inicio el display del juego
 	menu_force_close_current();	//Cierra el menu
 	game_run();	//Corre el juego
@@ -254,7 +247,6 @@ void main_game_start(void){
         if(game_data.state == GAME_LOSE){
             audio_force_stop(game_audio);
             audio_play(lose_audio);
-            // manage_music(lose, start);
             al_draw_scaled_bitmap(gameoverfoto, 0, 0, al_get_bitmap_width(gameoverfoto), al_get_bitmap_height(gameoverfoto), BLOCKSZ*3, BLOCKSZ*3, BLOCKSZ*8, BLOCKSZ*4, 0 );
             al_flip_display();
             printf("Perdiste! The Game\n");
@@ -268,7 +260,7 @@ void main_game_start(void){
     }
     printf("Leaving game...\n");
     DEBLINE()
-} // main_game_start
+}
 
 void animation_row_compleate(void)
 {
@@ -344,14 +336,10 @@ void display_menu_display(void){
 
 	if (menu_is_available(principal_menu))
         audio_play(menu_audio);
-		// manage_music(menu, start);
 	if (menu_is_available(pausa_menu))
         audio_play(pause_audio);
-		// manage_music(pausa, start);
     if (menu_is_available(gameover_menu)){
         audio_play(pause_audio);
-        // manage_music(game, stop);
-	//	manage_music(pausa, start);
     }
 
 
@@ -456,21 +444,18 @@ void keypress_callback(uint8_t key){
         switch (key)
         {
             case KEYB_UP:
-                // manage_music(chime_select, start);
                 audio_play(chime_audio);
                 menu_go_up();
                 printf("menu UP\n");
                 break;
 
             case KEYB_DOWN:
-                // manage_music(chime_select, start);
                 audio_play(chime_audio);
                 menu_go_down();
                 printf("menu DOWN\n");
                 break;
 
             case KEYB_LEFT:
-                // manage_music(chime_select, start);
                 audio_play(chime_audio);
                 menu_go_back();
                 printf("menu LEFT\n");
@@ -479,8 +464,6 @@ void keypress_callback(uint8_t key){
             case KEYB_SPACE:
             case KEYB_ENTER:
                 printf("menu BTN...\n");
-                // manage_music(chime, start);
-				// manage_music(menu, stop);
                 audio_play(chime_select_audio);
                 menu_go_select();
                 printf("menu BTN\n");
@@ -519,25 +502,21 @@ void keypress_callback(uint8_t key){
             break;
 
         case KEYB_E:
-			// manage_music(chime_select, start);
             audio_play(chime_audio);
             game_rotate(1);
             printf("UPRIGHT\n");
             break;
 
         case KEYB_Q:
-			// manage_music(chime_select, start);
             audio_play(chime_audio);
             game_rotate(0);
             printf("UPLEFT\n");
             break;
 
         case KEYB_SPACE:
-            // printf("FAST RUN\n");
             break;
 
         case KEYB_ESC:
-			// manage_music(game, stop);
             menu_run(pausa_menu);
             printf("Juego Pausado\n");
             break;
@@ -816,7 +795,6 @@ void  initialize_display_game (void){
     
     al_flip_display();
     
-    //playAudio();
     text_destroy(pieza_sig);
     text_destroy(puntaje);  
     text_destroy(lvl_game);    //libero la memoria dinamica
@@ -889,10 +867,6 @@ uint8_t param_lvl_fetch (void){
     case 3:
         temporal=8;
         break;
-/*        temporal=7;
-        break;
-        temporal=4;
-        break;*/
     case 4:
     case 5:
         temporal=5;
@@ -911,23 +885,4 @@ uint8_t param_lvl_fetch (void){
     }
     return temporal;
 }
-/*void deleteline (int numfil){
-    int x;
-    int reductor;
-    float angulo;
-        for(x=1; x<=GAME_WIDTH; x++){
-            al_draw_scaled_bitmap(image,(al_get_bitmap_width(image)/8), 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*x, BLOCKSZ*numfil, BLOCKSZ, BLOCKSZ, 0);
-        }  //pongo el fondo en negro
-        for(reductor=1, angulo=(3,1415/8); reductor<10; reductor++, angulo+=(3,1415/8)){
-            for(x=1; x<=GAME_WIDTH; x++){
-                al_draw_tinted_scaled_rotated_bitmap_region(whitepiece, 0, 0, al_get_bitmap_width(whitepiece), al_get_bitmap_height(whitepiece), al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(whitepiece)/2,al_get_bitmap_height(whitepiece), (BLOCKSZ/2 +BLOCKSZ*x), (BLOCKSZ/2 +BLOCKSZ*numfil),1/reductor, 1/reductor, angulo, 0);
-                //se va haciendo mas chia a medida que rota
-            }
-        }
-}
-*/
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////AUDIO/////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
