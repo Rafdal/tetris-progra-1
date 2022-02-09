@@ -478,52 +478,52 @@ void keypress_callback(uint8_t key){
 
         switch (key)
         {
-        case KEYB_UP:
-            printf("UP\n");
-            break;
+            case KEYB_UP:
+                printf("UP\n");
+                break;
 
-        case KEYB_DOWN:
-            if(game_get_data().id == 0)
-                game_insert_block();
-            else
-                game_move_down();
-            printf("DOWN\n");
-            break;
+            case KEYB_DOWN:
+                if(game_get_data().id == 0)
+                    game_insert_block();
+                else
+                    game_move_down();
+                printf("DOWN\n");
+                break;
 
-        case KEYB_LEFT:
-            game_move_horizontal(0);
-            printf("LEFT\n");
-            break;
+            case KEYB_LEFT:
+                game_move_horizontal(0);
+                printf("LEFT\n");
+                break;
 
-        case KEYB_RIGHT:
-            game_move_horizontal(1);
-            printf("RIGHT\n");
-            break;
+            case KEYB_RIGHT:
+                game_move_horizontal(1);
+                printf("RIGHT\n");
+                break;
 
-        case KEYB_E:
-            audio_play(chime_audio);
-            game_rotate(1);
-            printf("UPRIGHT\n");
-            break;
+            case KEYB_E:
+                audio_play(chime_audio);
+                game_rotate(1);
+                printf("UPRIGHT\n");
+                break;
 
-        case KEYB_Q:
-            audio_play(chime_audio);
-            game_rotate(0);
-            printf("UPLEFT\n");
-            break;
+            case KEYB_Q:
+                audio_play(chime_audio);
+                game_rotate(0);
+                printf("UPLEFT\n");
+                break;
 
-        case KEYB_SPACE:
-            break;
+            case KEYB_SPACE:
+                break;
 
-        case KEYB_ESC:
-            menu_run(pausa_menu);
-            printf("Juego Pausado\n");
-            break;
-            
+            case KEYB_ESC:
+                menu_run(pausa_menu);
+                printf("Juego Pausado\n");
+                break;
+                
 
-        default:
-        break;
-    }
+            default:
+            break;
+        }
     printf("game run\n");
     game_run();
     update_display(); // estamos viendo si esto buguea la eliminacion de filas
