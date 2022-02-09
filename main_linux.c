@@ -41,7 +41,6 @@ ALLEGRO_BITMAP *tetris_cartel = NULL;
 ALLEGRO_BITMAP *diagrama_teclado = NULL;
 ALLEGRO_BITMAP *jugabilidad_diagrama = NULL;
 ALLEGRO_BITMAP *gameoverfoto = NULL;
-ALLEGRO_BITMAP *cerrando_juego = NULL;
 
 //UTILIDADES ALLEGRO
 ALLEGRO_DISPLAY *display = NULL;
@@ -68,7 +67,7 @@ audio_t* win_audio = NULL;
 
 
 
-#include "debug.h"
+#include "./debug/debug.h"
 
 
 
@@ -712,22 +711,6 @@ int initialize_alleg(void) {
         printf("failed to load jugabilidad_diagrama !\n");
         return -1;
     }
-    cerrando_juego = al_load_bitmap("./frontend/images/cerrando.png");
-    if (!cerrando_juego) {
-        al_destroy_bitmap(jugabilidad_diagrama);
-        al_destroy_bitmap(diagrama_teclado);
-        al_destroy_bitmap(tetris_cartel);
-        al_destroy_bitmap(pieza_blanca);
-        al_destroy_bitmap(muroV);
-        al_destroy_bitmap(muroH);
-        al_destroy_bitmap(image);
-        al_destroy_bitmap(gameoverfoto);
-        
-        al_uninstall_keyboard();        
-        al_destroy_event_queue(event_queue);
-        printf("failed to load jugabilidad_diagrama !\n");
-        return -1;
-    }
 
     display = al_create_display(((ANCHO+8)*BLOCKSZ), ((ALTO+1)*BLOCKSZ));
     if (!display) {
@@ -739,8 +722,6 @@ int initialize_alleg(void) {
         al_destroy_bitmap(muroH);
         al_destroy_bitmap(image);
         al_destroy_bitmap(gameoverfoto);
-        al_destroy_bitmap(cerrando_juego);
-
 
         al_uninstall_keyboard();        
         al_destroy_event_queue(event_queue);
@@ -804,9 +785,14 @@ void  initialize_display_game (void){
 
 void end_program (void){
     al_clear_to_color(al_map_rgb(0,0,0));
-    al_draw_scaled_bitmap(cerrando_juego, 0, 0, al_get_bitmap_width(cerrando_juego), al_get_bitmap_height(cerrando_juego), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
+    al_draw_scaled_bitmap(tetris_cartel, 0, 0, al_get_bitmap_width(tetris_cartel), al_get_bitmap_height(tetris_cartel),BLOCKSZ*3, BLOCKSZ, al_get_display_width(display)-BLOCKSZ*6, BLOCKSZ*8, 0);
+    blocktext_t * closing_game = text_init_alleg(al_map_rgb(255,255,255), 60, "CERRANDO EL JUEGO...", PATH_TTF, al_get_display_width(display)/2,BLOCKSZ*10, CENTRADO );
+    blocktext_t * thanks = text_init_alleg(al_map_rgb(255,255,255), 50, "MUCHAS GRACIAS POR JUGAR", PATH_TTF,  al_get_display_width(display)/2,BLOCKSZ*13, CENTRADO );
+    text_drawer(closing_game);
+    text_drawer(thanks);
+    text_destroy(closing_game);
+    text_destroy(thanks);
     al_flip_display();
-
     LOGN("\n\n")
     printf("destruyendo bitmaps...\n");
     PULL_TIME()
@@ -821,8 +807,6 @@ void end_program (void){
     al_destroy_bitmap(diagrama_teclado);
     al_destroy_bitmap(jugabilidad_diagrama);
     al_destroy_bitmap(gameoverfoto);
-    al_destroy_bitmap(cerrando_juego);
-
     LOGTIME() // * OK
 
 // DESTRUCCION DE OTRAS UTILIDADES ALLEGRO
