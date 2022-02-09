@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include "rpi_display.h"
-#include "../testing/disdrv.h" // RASPBERRY DISPLAY
+#include "disdrv.h" // RASPBERRY DISPLAY
 
 static char matrix[RPI_HEIGHT][RPI_WIDTH]; //Matriz del display de la RPI
 
