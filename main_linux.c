@@ -64,10 +64,6 @@ audio_t* chime_select_audio = NULL;
 audio_t* win_audio = NULL;
 
 
-/*void playAudio(void){
-    al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
-}
-*/
 
 
 
@@ -812,23 +808,14 @@ uint8_t param_lvl_fetch (void){
     }
     return temporal;
 }
-/*void deleteline (int numfil){
-    int x;
-    int reductor;
-    float angulo;
-        for(x=1; x<=GAME_WIDTH; x++){
-            al_draw_scaled_bitmap(image,(al_get_bitmap_width(image)/8), 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*x, BLOCKSZ*numfil, BLOCKSZ, BLOCKSZ, 0);
-        }  //pongo el fondo en negro
-        for(reductor=1, angulo=(3,1415/8); reductor<10; reductor++, angulo+=(3,1415/8)){
-            for(x=1; x<=GAME_WIDTH; x++){
-                al_draw_tinted_scaled_rotated_bitmap_region(whitepiece, 0, 0, al_get_bitmap_width(whitepiece), al_get_bitmap_height(whitepiece), al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(whitepiece)/2,al_get_bitmap_height(whitepiece), (BLOCKSZ/2 +BLOCKSZ*x), (BLOCKSZ/2 +BLOCKSZ*numfil),1/reductor, 1/reductor, angulo, 0);
-                //se va haciendo mas chia a medida que rota
-            }
-        }
-}
-*/
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////AUDIO/////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+
+
+
+
+
+
+// BRUEAJASNDOAINSDOAISNDASD
