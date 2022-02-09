@@ -27,6 +27,7 @@
 #define PATH_TTF "./frontend/images/Arcade Regular.ttf"
 #define YPOS_SCORE BLOCKSZ*12
 #define YPOS_NIVEL BLOCKSZ*14
+#define numero_pi 3.141592
 
 // **************************************
 // *	 V A R S . G L O B A L E S		*
@@ -257,17 +258,17 @@ void animation_row_compleate(void)
         }
         audio_play(line_comp_audio[game_data.streak-1]); // filas completadas - 1
 
-        for(reductor=2.1, angulo=0; reductor>=0; angulo+=(3.1415/8)){
+        for(reductor=2.1, angulo=0; reductor>=0; angulo+=(numero_pi/8)){
             for(i=0; game_row_complete[i] != 0 && i < 4 ; i++){
                 for(z=1; z<=ANCHO; z++){
                     al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image), BLOCKSZ*z, BLOCKSZ*(game_row_complete[i]), BLOCKSZ, BLOCKSZ, 0);
                     //pongo el fondo en negro
                     al_draw_tinted_scaled_rotated_bitmap(pieza_blanca,  al_map_rgba_f(1, 1, 1, 1), al_get_bitmap_width(pieza_blanca)/2, al_get_bitmap_height(pieza_blanca)/2, (BLOCKSZ/2 +BLOCKSZ*z), (BLOCKSZ/2 +BLOCKSZ*(game_row_complete[i])),reductor, reductor, angulo, 0);
                     //Dibujo una pieza blanca, se va haciendo mas chia a medida que rota
-                }//este ciclo va por columnas
+                }//este ciclo recorre una fila
                 al_flip_display();
-            }//este otro ciclo va por filas
-            reductor-=decremento;
+            }//este otro ciclo recorre las columnas
+            reductor-=decremento;//
         }		
 
         for(i=0; game_row_complete[i] != 0 && i < 4 ; i++){
@@ -286,23 +287,21 @@ void screen_how_to_play (void){
     int actual=1;
     al_draw_scaled_bitmap(diagrama_teclado, 0, 0, al_get_bitmap_width(diagrama_teclado), al_get_bitmap_height(diagrama_teclado), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
     al_flip_display();
+    //con esto muestro la pantalla de los controles, aparece al abrir el menu de how to play
     while (!keyb_is_pressed(KEYB_ESC))
     {
         read_events();
         if(keyb_is_pressed(KEYB_LEFT) && (actual==2)){
-        printf("Hasta aca llega\n");
             al_draw_scaled_bitmap(diagrama_teclado, 0, 0, al_get_bitmap_width(diagrama_teclado), al_get_bitmap_height(diagrama_teclado), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
             al_flip_display();
             actual=1;
-            easytimer_delay(150);
-        }
+        }// si esta mostrandose el diagrama del teclado y presiono la flecha izquierda, muestro los controles
         
         else if(keyb_is_pressed(KEYB_RIGHT) && (actual==1)){
             al_draw_scaled_bitmap(jugabilidad_diagrama, 0, 0, al_get_bitmap_width(jugabilidad_diagrama), al_get_bitmap_height(jugabilidad_diagrama), 0, 0, al_get_display_width(display), al_get_display_height(display), 0);
             al_flip_display();
             actual=2;
-            easytimer_delay(150);
-        }
+        }//si se estan mostrando los controles y presiono la tecla derecha paso al diagrama del teclado
     }
 }
 
@@ -403,7 +402,7 @@ void read_events(void){
     if (event_queue != NULL && al_get_next_event(event_queue, &ev)) //Toma un evento de la cola
     {
         if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
-            game_quit();
+            end_program();  //termino el programa si se cierra el display
         }
     }
     keyb_run(&ev); // Siempre debe ejecutarse el keyb_run
@@ -528,9 +527,10 @@ void update_display(void) {
 	{
 		for(y=0; y<GAME_HEIGHT ; y++)
 		{
-			float val = (float)game_public_matrix[y][x];
+			float val = (float)game_public_matrix[y][x];    //obtengo el valor del casillero[y][x]
 			al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ + BLOCKSZ*x, BLOCKSZ*y, BLOCKSZ, BLOCKSZ, 0);
-		}
+            //dibujo cada casillero de la matriz con su pieza correspondiente
+        }
 	}
     for(x=1; x<5 ; x++)
 	{
@@ -538,21 +538,21 @@ void update_display(void) {
 		{
             float val= (float) game_next_block_public_matrix[y][x];
             al_draw_scaled_bitmap(image, (al_get_bitmap_width(image)/8) * val, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+2+x), BLOCKSZ*(y+1), BLOCKSZ, BLOCKSZ, 0);
-            
+            //Dibujo todos los casilleros de la matriz de proxima pieza
         }
         for(y=parametro_nivel; y<8; y++){
             al_draw_scaled_bitmap(image, 0, 0, (al_get_bitmap_width(image)/8), al_get_bitmap_height(image),BLOCKSZ*(ANCHO+2+x), BLOCKSZ*(y+1), BLOCKSZ, BLOCKSZ, 0);
-        }//tapo los casilleros vacios
-    }//DIBUJO PIEZA SIGUIENTE
+        }//tapo los casilleros segun el nivel de dificultad
+    }
 
     if(text_number_drawer(score, game_get_data().score)){
         end_program();
-    }
+    }//Dibujo el puntaje y si hay fallos salgo.
 	printf("SCORE:\n%u\n", game_get_data().score);
     
     if(text_number_drawer(nivel, game_get_data().game_level)){
         end_program();
-    }
+    }//Dibujo el nivel y si hay fallos salgo.
 
 	al_flip_display(); //despues de esribir toda la matriz muestro lo que escribi
     printf("Update Display Out\n");
@@ -754,6 +754,7 @@ void end_program (void){
 
 
     printf("destruyendo bitmaps...\n");
+    
 // DESTRUCCION DE BITMAPS
     al_destroy_bitmap(image);
     al_destroy_bitmap(muroH);
@@ -767,6 +768,7 @@ void end_program (void){
     printf("destruyendo utils...\n");
     al_uninstall_keyboard();        
     al_destroy_event_queue(event_queue);
+    al_clear_to_color(al_map_rgb(0,0,0));
     al_destroy_display(display);
 
     audio_destroy();
@@ -780,7 +782,6 @@ void end_program (void){
     text_destroy(nivel);
     text_destroy(score);
 
-    al_uninstall_system();
     printf("Game Ended\n");
     exit(0);
 }
