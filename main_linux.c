@@ -121,7 +121,7 @@ int main (void){
         return -1;   
     }
 
-    menu_audio = audio_init("main_title.wav", 1, AUDIO_MUSIC);
+    menu_audio = audio_init("main_title.wav", 0.5, AUDIO_MUSIC);
     game_audio = audio_init("tetris.wav", 0.4, AUDIO_MUSIC);
     pause_audio = audio_init("pausa.wav", 3, AUDIO_MUSIC);
 
@@ -749,6 +749,8 @@ int initialize_alleg(void) {
         printf("failed to create display!\n");
         return -1;
     }
+    al_set_display_option(display, ALLEGRO_VSYNC, 2);
+    
     al_register_event_source(event_queue, al_get_display_event_source(display));
     al_set_display_option(display, ALLEGRO_VSYNC, 2);
     return 0;
