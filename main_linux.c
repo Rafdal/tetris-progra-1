@@ -73,7 +73,7 @@ audio_t* win_audio = NULL;
 */
 
 //#define USAR_DEBUG
-#include "debug.h"
+#include "debug/debug.h"
 
 
 
