@@ -89,7 +89,7 @@ int main(void){
     debug_new_file("debug.txt");
     #endif
 
-	// init_audio(1);  //Inicializo el audio
+	
 
 	//Defino los callback for longpress
     dpad_on_press(key_press_callback);
@@ -140,13 +140,11 @@ int main(void){
     menu_destroy(main_menu);
     menu_destroy(pause_menu);
 
-	// Destruye el audio
-	// init_audio(0);
-	// Destruye los bloques de textos deslizantes
-    printf("Lol\n");
+
+
     rpi_text_destroy(text_anim);
     rpi_text_destroy(text_stat);
-    printf("boe\n");
+
 
     return 0;
 }
@@ -245,9 +243,7 @@ void key_press_callback(uint8_t key){
             default:
                 break;
         }
-            // DEBUG
-            // menu_t data = menu_get_current_menu_data();
-            // printf("menu: %s, option: %u %s\n", data.title, data.current_option, data.option_titles[data.current_option]);
+            
     }else if(game_get_data().state == GAME_RUN){
         switch (key)
         {
@@ -290,7 +286,7 @@ void key_press_callback(uint8_t key){
                 break;
         }
         game_run();
-		//animation_row_complete();
+		
 		update_game_display();
     }else{
         printf("Error state.\n");
@@ -442,7 +438,6 @@ void animation_row_complete (void)
 int init_audio(char destroy) {
 	ALLEGRO_DISPLAY *display = NULL;
 	ALLEGRO_SAMPLE *sample = NULL;
-	//ALLEGRO_SAMPLE *sample1 = NULL;
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 
 	if (!al_install_audio()) {

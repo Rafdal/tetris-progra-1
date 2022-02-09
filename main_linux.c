@@ -52,7 +52,7 @@ menu_t *principal_menu = NULL;
 menu_t *pausa_menu = NULL;
 menu_t *gameover_menu = NULL;
 
-// EFECTOS DE SOline_comp_audioNIDO Y MUSICA
+// EFECTOS DE SONIDO Y MUSICA
 audio_t* lose_audio = NULL;
 
 audio_t* menu_audio = NULL;
@@ -85,7 +85,7 @@ void animation_row_compleate(void);
 void main_game_start(void);
 void screen_how_to_play (void);
 uint8_t param_lvl_fetch (void);
-//int init_audio(void);
+
 
 // ******************************
 // *	C A L L B A C K S		*
@@ -194,8 +194,7 @@ void volver_al_main_menu (void){
 
 //CALLBACK DE REINICIO DE JUEGO
 void restart_game(void){
-    // manage_music(game, start);
-	initialize_display_game(); //inicio el display del juego
+    initialize_display_game(); //inicio el display del juego
     menu_force_close_current(); // Cerrar menu pausa
     game_start(); 	//Corre el juego
 }
@@ -229,13 +228,12 @@ void main_game_start(void){
 
         if(game_data.state == GAME_LOSE){
             audio_play(lose_audio);
-            // manage_music(lose, start);
             printf("Perdiste! The Game\n");
             menu_run(gameover_menu);
         }
     }
     printf("Leaving game...\n");
-} // main_game_start
+} 
 
 void animation_row_compleate(void)
 {
@@ -741,8 +739,7 @@ void  initialize_display_game (void){
     
     al_flip_display();
     
-    //playAudio();
-    text_destroy(pieza_sig);
+        text_destroy(pieza_sig);
     text_destroy(puntaje);  
     text_destroy(lvl_game);    //libero la memoria dinamica
 
@@ -808,11 +805,3 @@ uint8_t param_lvl_fetch (void){
     }
     return temporal;
 }
-
-
-
-
-
-
-
-
